@@ -1,0 +1,413 @@
+{
+    "project_name": "FELT - うたかたの風と蝉時雨 MV",
+    "duration": 189.4,
+    "resolution": {
+        "width": 1280,
+        "height": 720
+    },
+    "tracks": [
+        {
+            "id": "track_video",
+            "type": "video",
+            "clips": [
+                {
+                    "id": "v0",
+                    "name": "竹林光影 开场",
+                    "path": "/assets/projects/felt_utakata/vjshi_bamboo_2.mp4",
+                    "start": 0,
+                    "duration": 27,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v1",
+                    "name": "回忆：夕阳奔跑",
+                    "path": "/assets/projects/felt_utakata/vjshi_love_memory_1.mp4",
+                    "start": 27,
+                    "duration": 27,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v2",
+                    "name": "日本庭院 园林",
+                    "path": "/assets/projects/felt_utakata/vjshi_japanese_garden_1.mp4",
+                    "start": 54,
+                    "duration": 27,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v3",
+                    "name": "水面倒影",
+                    "path": "/assets/projects/felt_utakata/vjshi_water_1.mp4",
+                    "start": 81,
+                    "duration": 27,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v4",
+                    "name": "回忆：森林嬉戏",
+                    "path": "/assets/projects/felt_utakata/vjshi_love_memory_2.mp4",
+                    "start": 108,
+                    "duration": 27,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v5",
+                    "name": "日本庭院 传统",
+                    "path": "/assets/projects/felt_utakata/vjshi_japanese_garden_2.mp4",
+                    "start": 135,
+                    "duration": 27,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v6",
+                    "name": "回忆：并肩风景",
+                    "path": "/assets/projects/felt_utakata/vjshi_love_memory_3.mp4",
+                    "start": 162,
+                    "duration": 27.4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "id": "track_text",
+            "type": "text",
+            "clips": [
+                {
+                    "id": "text1",
+                    "text": "我还记得那年夏天",
+                    "start": 2,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.3,
+                        "y": 0.7
+                    }
+                },
+                {
+                    "id": "text2",
+                    "text": "蝉声从清晨响到黄昏",
+                    "start": 9,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.7,
+                        "y": 0.3
+                    }
+                },
+                {
+                    "id": "text3",
+                    "text": "竹林深处，你说太吵了",
+                    "start": 16,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.6
+                    }
+                },
+                {
+                    "id": "text4",
+                    "text": "我笑着说",
+                    "start": 23,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.35,
+                        "y": 0.45
+                    }
+                },
+                {
+                    "id": "text5",
+                    "text": "这是夏天最美的歌",
+                    "start": 29,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.65,
+                        "y": 0.55
+                    }
+                },
+                {
+                    "id": "text6",
+                    "text": "阳光透过竹叶",
+                    "start": 36,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.7
+                    }
+                },
+                {
+                    "id": "text7",
+                    "text": "在你脸上跳跃",
+                    "start": 42,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.3,
+                        "y": 0.35
+                    }
+                },
+                {
+                    "id": "text8",
+                    "text": "风吹过你的发梢",
+                    "start": 49,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.7,
+                        "y": 0.65
+                    }
+                },
+                {
+                    "id": "text9",
+                    "text": "带着竹叶的清香",
+                    "start": 55,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.45,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "text10",
+                    "text": "像泡沫一样",
+                    "start": 62,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.6,
+                        "y": 0.4
+                    }
+                },
+                {
+                    "id": "text11",
+                    "text": "轻轻飘散",
+                    "start": 68,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.35,
+                        "y": 0.6
+                    }
+                },
+                {
+                    "id": "text12",
+                    "text": "那一刻的美好",
+                    "start": 74,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.7,
+                        "y": 0.35
+                    }
+                },
+                {
+                    "id": "text13",
+                    "text": "我想永远留住",
+                    "start": 81,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.55
+                    }
+                },
+                {
+                    "id": "text14",
+                    "text": "庭院里的石灯笼",
+                    "start": 87,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.4,
+                        "y": 0.45
+                    }
+                },
+                {
+                    "id": "text15",
+                    "text": "静静地看着我们",
+                    "start": 94,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.65,
+                        "y": 0.6
+                    }
+                },
+                {
+                    "id": "text16",
+                    "text": "见证了那些秘密",
+                    "start": 100,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.3,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "text17",
+                    "text": "你笑着说",
+                    "start": 107,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.7,
+                        "y": 0.4
+                    }
+                },
+                {
+                    "id": "text18",
+                    "text": "要把这一刻记住",
+                    "start": 113,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.65
+                    }
+                },
+                {
+                    "id": "text19",
+                    "text": "水面倒映着你的笑容",
+                    "start": 120,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.35,
+                        "y": 0.35
+                    }
+                },
+                {
+                    "id": "text20",
+                    "text": "那么清晰",
+                    "start": 126,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.65,
+                        "y": 0.55
+                    }
+                },
+                {
+                    "id": "text21",
+                    "text": "我伸手想要抓住",
+                    "start": 132,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.45,
+                        "y": 0.7
+                    }
+                },
+                {
+                    "id": "text22",
+                    "text": "却只触到了波纹",
+                    "start": 139,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.6,
+                        "y": 0.4
+                    }
+                },
+                {
+                    "id": "text23",
+                    "text": "水面荡漾开去",
+                    "start": 145,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.3,
+                        "y": 0.6
+                    }
+                },
+                {
+                    "id": "text24",
+                    "text": "时光如水",
+                    "start": 151,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.7,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "text25",
+                    "text": "那些日子",
+                    "start": 158,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.45
+                    }
+                },
+                {
+                    "id": "text26",
+                    "text": "像夏蝉的生命",
+                    "start": 164,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.4,
+                        "y": 0.65
+                    }
+                },
+                {
+                    "id": "text27",
+                    "text": "短暂",
+                    "start": 171,
+                    "duration": 3,
+                    "position": {
+                        "x": 0.65,
+                        "y": 0.35
+                    }
+                },
+                {
+                    "id": "text28",
+                    "text": "却永恒地留在了心底",
+                    "start": 176,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.55
+                    }
+                },
+                {
+                    "id": "text29",
+                    "text": "多少年过去了",
+                    "start": 183,
+                    "duration": 3.4,
+                    "position": {
+                        "x": 0.35,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "text30",
+                    "text": "如今再听蝉鸣",
+                    "start": 188,
+                    "duration": 1.4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.6
+                    }
+                }
+            ]
+        },
+        {
+            "id": "track_audio",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "bgm",
+                    "name": "FELT - うたかたの風と蝉時雨",
+                    "path": "/assets/projects/felt_utakata/felt_utakata.mp3",
+                    "start": 0,
+                    "duration": 189.4,
+                    "volume": 1.0
+                }
+            ]
+        }
+    ]
+}

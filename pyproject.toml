@@ -1,0 +1,15 @@
+[project]
+name = "aicut"
+version = "0.1.0"
+description = "AIcut - AI Native Video Production Engine based on Remotion"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "imageio>=2.37.0",
+    "mcp[cli]>=1.12.4",
+    "pymediainfo>=7.0.1",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
+    "uiautomation>=2.0.29",
+    "uvicorn[standard]>=0.35.0",
+]

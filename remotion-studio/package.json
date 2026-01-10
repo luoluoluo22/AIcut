@@ -1,0 +1,19 @@
+{
+    "name": "aicut-studio",
+    "version": "1.0.0",
+    "description": "AIcut - AI Driven Video Editing Studio",
+    "scripts": {
+        "start": "remotion preview src/index.tsx",
+        "build": "remotion render src/index.tsx MemoryVideo out.mp4"
+    },
+    "dependencies": {
+        "@remotion/cli": "^4.0.400",
+        "@remotion/renderer": "^4.0.400",
+        "@types/react": "^19.2.7",
+        "@types/react-dom": "^19.2.3",
+        "react": "^19.2.3",
+        "react-dom": "^19.2.3",
+        "remotion": "^4.0.400",
+        "typescript": "^5.9.3"
+    }
+}

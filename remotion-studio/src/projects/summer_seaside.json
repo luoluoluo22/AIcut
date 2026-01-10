@@ -1,0 +1,120 @@
+{
+    "project_name": "夏日海边旅行",
+    "duration": 20,
+    "resolution": {
+        "width": 1920,
+        "height": 1080
+    },
+    "tracks": [
+        {
+            "id": "track_video",
+            "type": "video",
+            "clips": [
+                {
+                    "id": "v1",
+                    "name": "夏日阳光海滩",
+                    "path": "/assets/materials/summer_seaside/vjshi_beach_sun.mp4",
+                    "start": 0,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v2",
+                    "name": "唯美海景",
+                    "path": "/assets/materials/summer_seaside/vjshi_scenery.mp4",
+                    "start": 5,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v3",
+                    "name": "海边奔跑",
+                    "path": "/assets/materials/summer_seaside/vjshi_girl_running.mp4",
+                    "start": 10,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "id": "v4",
+                    "name": "贝壳特写",
+                    "path": "/assets/materials/summer_seaside/vjshi_shells.mp4",
+                    "start": 15,
+                    "duration": 5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "id": "track_text",
+            "type": "text",
+            "clips": [
+                {
+                    "id": "t1",
+                    "text": "夏日的风",
+                    "start": 0.5,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.7
+                    }
+                },
+                {
+                    "id": "t2",
+                    "text": "带我去海边",
+                    "start": 5.5,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.3
+                    }
+                },
+                {
+                    "id": "t3",
+                    "text": "自由的奔跑",
+                    "start": 10.5,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.6,
+                        "y": 0.6
+                    }
+                },
+                {
+                    "id": "t4",
+                    "text": "收集美好",
+                    "start": 15.5,
+                    "duration": 4,
+                    "position": {
+                        "x": 0.4,
+                        "y": 0.4
+                    }
+                }
+            ]
+        },
+        {
+            "id": "track_audio",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "bgm",
+                    "name": "BGM",
+                    "path": "/assets/projects/felt_utakata/felt_utakata.mp3",
+                    "start": 0,
+                    "duration": 20,
+                    "volume": 0.8
+                }
+            ]
+        }
+    ]
+}
