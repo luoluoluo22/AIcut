@@ -1,115 +1,43 @@
 {
     "project_name": "AIcut B站宣传片",
-    "duration": 110,
+    "duration": 92,
     "resolution": {
         "width": 1920,
         "height": 1080
     },
     "tracks": [
         {
-            "id": "track_video_pain",
+            "id": "track_video",
             "type": "video",
             "clips": [
                 {
-                    "id": "pain_timeline",
-                    "name": "视频编辑时间轴",
-                    "path": "/assets/projects/promo_video/images/white_bg.png",
+                    "id": "clip_screen_1",
+                    "name": "录屏1",
+                    "path": "/assets/projects/promo_video/videos/screen_recording.mp4",
                     "start": 0,
-                    "duration": 3,
+                    "duration": 58,
                     "position": {
                         "x": 0.5,
                         "y": 0.5
                     }
                 },
                 {
-                    "id": "pain_overwhelmed",
-                    "name": "压力办公",
-                    "path": "/assets/projects/promo_video/images/white_bg.png",
-                    "start": 3,
-                    "duration": 3,
+                    "id": "clip_screen_2",
+                    "name": "录屏2",
+                    "path": "/assets/projects/promo_video/videos/screen_recording_2.mp4",
+                    "start": 58,
+                    "duration": 27,
                     "position": {
                         "x": 0.5,
                         "y": 0.5
                     }
                 },
                 {
-                    "id": "pain_pr",
-                    "name": "视频编辑界面",
-                    "path": "/assets/projects/promo_video/images/white_bg.png",
-                    "start": 6,
-                    "duration": 3,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
-                },
-                {
-                    "id": "pain_coder",
-                    "name": "办公压力",
-                    "path": "/assets/projects/promo_video/images/white_bg.png",
-                    "start": 9,
-                    "duration": 3,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
-                }
-            ]
-        },
-        {
-            "id": "track_demo_assets",
-            "type": "video",
-            "clips": [
-                {
-                    "id": "magic_bamboo",
-                    "name": "竹林自然",
-                    "path": "/assets/projects/promo_video/videos/bamboo_forest_1.mp4",
-                    "start": 15,
-                    "duration": 5,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
-                },
-                {
-                    "id": "magic_water",
-                    "name": "海浪",
-                    "path": "/assets/projects/promo_video/videos/beach_waves_1.mp4",
-                    "start": 20,
-                    "duration": 5,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
-                },
-                {
-                    "id": "demo_beach",
-                    "name": "实战：海滩",
-                    "path": "/assets/projects/promo_video/videos/beach_waves_1.mp4",
-                    "start": 40,
-                    "duration": 5,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
-                },
-                {
-                    "id": "demo_runner",
-                    "name": "实战：海边奔跑",
-                    "path": "/assets/projects/promo_video/videos/running_beach_1.mp4",
-                    "start": 45,
-                    "duration": 5,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
-                },
-                {
-                    "id": "outro_white",
+                    "id": "clip_ending",
                     "name": "结尾白底",
                     "path": "/assets/projects/promo_video/images/white_bg.png",
-                    "start": 65,
-                    "duration": 15,
+                    "start": 85,
+                    "duration": 7,
                     "position": {
                         "x": 0.5,
                         "y": 0.5
@@ -122,100 +50,153 @@
             "type": "text",
             "clips": [
                 {
-                    "id": "txt_p1",
-                    "text": "找素材 1 小时？",
-                    "start": 1,
-                    "duration": 2,
+                    "id": "txt_title",
+                    "text": "AIcut丨全自动AI剪辑师",
+                    "start": 85,
+                    "duration": 7,
                     "position": {
                         "x": 0.5,
-                        "y": 0.5
+                        "y": 0.35
                     },
-                    "color": "black",
+                    "color": "#555555",
                     "style": {
-                        "fontSize": 120,
+                        "fontSize": 100,
                         "fontWeight": "900",
-                        "fontFamily": "Heiti SC, SimHei, sans-serif"
-                    }
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
+                    },
+                    "effects": [
+                        {
+                            "type": "scale",
+                            "from": 0.8,
+                            "to": 1.0,
+                            "duration": 0.3
+                        }
+                    ]
                 },
                 {
-                    "id": "txt_p2",
-                    "text": "剪辑 2 小时？",
-                    "start": 4,
-                    "duration": 2,
+                    "id": "txt_sub_1",
+                    "text": "自动找素材",
+                    "start": 86.5,
+                    "duration": 5.5,
                     "position": {
-                        "x": 0.5,
-                        "y": 0.5
+                        "x": 0.28,
+                        "y": 0.55
                     },
-                    "color": "black",
+                    "color": "#777777",
                     "style": {
-                        "fontSize": 120,
-                        "fontWeight": "900",
-                        "fontFamily": "Heiti SC, SimHei, sans-serif"
-                    }
-                },
-                {
-                    "id": "txt_p3",
-                    "text": "崩溃 5 分钟！",
-                    "start": 7,
-                    "duration": 4,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    },
-                    "color": "black",
-                    "style": {
-                        "fontSize": 150,
-                        "fontWeight": "900",
-                        "fontFamily": "Heiti SC, SimHei, sans-serif"
-                    }
-                },
-                {
-                    "id": "txt_ai_input",
-                    "text": "✨ 帮我做个“夏日乡村”短片...",
-                    "start": 13,
-                    "duration": 5,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.5
-                    },
-                    "style": {
-                        "fontSize": 80,
-                        "backgroundColor": "rgba(0,0,0,0.7)",
-                        "padding": "30px",
-                        "fontWeight": "bold"
-                    }
-                },
-                {
-                    "id": "txt_outro_1",
-                    "text": "AIcut",
-                    "start": 100,
-                    "duration": 10,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.4
-                    },
-                    "color": "black",
-                    "style": {
-                        "fontSize": 200,
-                        "fontWeight": "900",
-                        "fontFamily": "Heiti SC, SimHei, sans-serif"
-                    }
-                },
-                {
-                    "id": "txt_outro_2",
-                    "text": "全自动剪辑师",
-                    "start": 101,
-                    "duration": 9,
-                    "position": {
-                        "x": 0.5,
-                        "y": 0.6
-                    },
-                    "color": "black",
-                    "style": {
-                        "fontSize": 80,
+                        "fontSize": 50,
                         "fontWeight": "bold",
-                        "fontFamily": "Heiti SC, SimHei, sans-serif"
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
+                    },
+                    "effects": [
+                        {
+                            "type": "scale",
+                            "from": 0.8,
+                            "to": 1.0,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                {
+                    "id": "txt_dot_1",
+                    "text": "·",
+                    "start": 87.5,
+                    "duration": 4.5,
+                    "position": {
+                        "x": 0.40,
+                        "y": 0.55
+                    },
+                    "color": "#999999",
+                    "style": {
+                        "fontSize": 50,
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
+                },
+                {
+                    "id": "txt_sub_2",
+                    "text": "自动找音乐",
+                    "start": 87.5,
+                    "duration": 4.5,
+                    "position": {
+                        "x": 0.50,
+                        "y": 0.55
+                    },
+                    "color": "#777777",
+                    "style": {
+                        "fontSize": 50,
+                        "fontWeight": "bold",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
+                    },
+                    "effects": [
+                        {
+                            "type": "scale",
+                            "from": 0.8,
+                            "to": 1.0,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                {
+                    "id": "txt_dot_2",
+                    "text": "·",
+                    "start": 88.5,
+                    "duration": 3.5,
+                    "position": {
+                        "x": 0.62,
+                        "y": 0.55
+                    },
+                    "color": "#999999",
+                    "style": {
+                        "fontSize": 50,
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
+                    }
+                },
+                {
+                    "id": "txt_sub_3",
+                    "text": "自动配音",
+                    "start": 88.5,
+                    "duration": 3.5,
+                    "position": {
+                        "x": 0.72,
+                        "y": 0.55
+                    },
+                    "color": "#777777",
+                    "style": {
+                        "fontSize": 50,
+                        "fontWeight": "bold",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
+                    },
+                    "effects": [
+                        {
+                            "type": "scale",
+                            "from": 0.8,
+                            "to": 1.0,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                {
+                    "id": "txt_cta",
+                    "text": "一键三连 私信发项目地址",
+                    "start": 89,
+                    "duration": 3,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.75
+                    },
+                    "color": "#999999",
+                    "style": {
+                        "fontSize": 36,
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
+                    },
+                    "effects": [
+                        {
+                            "type": "scale",
+                            "from": 0.9,
+                            "to": 1.0,
+                            "duration": 0.2
+                        }
+                    ]
                 }
             ]
         },
@@ -235,7 +216,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -250,7 +232,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -265,7 +248,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -280,7 +264,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -295,7 +280,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -310,7 +296,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -325,7 +312,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -340,7 +328,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -355,7 +344,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -370,7 +360,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -385,7 +376,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -400,7 +392,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -415,7 +408,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -430,7 +424,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -445,7 +440,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -460,7 +456,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -475,7 +472,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -490,7 +488,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -505,7 +504,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -520,7 +520,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -535,7 +536,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 },
                 {
@@ -550,7 +552,8 @@
                     "style": {
                         "fontSize": 40,
                         "color": "white",
-                        "textStroke": "2px black"
+                        "textStroke": "2px black",
+                        "fontFamily": "Heiti SC, SimHei, Microsoft YaHei, sans-serif"
                     }
                 }
             ]

@@ -4,9 +4,14 @@
 [![Python](https://img.shields.io/badge/Logic-Python-green.svg)](https://python.org)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-orange.svg)](https://modelcontextprotocol.io)
 
+<p align="center">
+  <img src="docs/promo_banner.png" alt="AIcut Banner" width="100%">
+</p>
+
 **AIcut** 是一款 **AI 原生** 的全自动视频制作引擎。只需给 AI 一个想法，它就能自动完成：素材搜索、脚本撰写、配音生成、字幕对齐、视频合成。
 
 > 🎬 **告别手动剪辑，让 AI 成为你的私人剪辑师。**
+
 
 ## ✨ 核心特性
 

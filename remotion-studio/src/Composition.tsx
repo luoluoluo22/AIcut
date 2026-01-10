@@ -254,7 +254,7 @@ const ClipItem: React.FC<{
                             whiteSpace: 'nowrap',
                             pointerEvents: showDebugUI ? 'auto' : 'none',
                             border: (showDebugUI && isSelected) ? '2px solid #00E5FF' : 'none',
-                            textShadow: '2px 2px 10px rgba(0,0,0,0.8)',
+                            textShadow: clip.style?.textShadow || 'none',
                             lineHeight: 1.4,
                         }}
                     >
