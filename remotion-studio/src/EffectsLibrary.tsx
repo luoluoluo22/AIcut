@@ -95,7 +95,8 @@ export const FloatingEffect: React.FC<EffectProps> = ({ children, frame, duratio
 
     return (
         <div style={{
-            transform: `scale3d(${scale}, ${scale}, 1)`,
+            transform: `scale3d(${scale}, ${scale}, 1) rotate(0.01deg)`,
+            willChange: 'transform',
             width: '100%',
             height: '100%'
         }}>

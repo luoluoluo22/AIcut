@@ -1,6 +1,6 @@
 {
     "project_name": "AIcut B站宣传片",
-    "duration": 11.62,
+    "duration": 12.696,
     "resolution": {
         "width": 1920,
         "height": 1080
@@ -12,24 +12,24 @@
             "clips": [
                 {
                     "id": "c1",
-                    "type": "image",
-                    "path": "/assets/projects/demo/images/kolors_scene_01.png",
+                    "type": "video",
+                    "path": "/assets/projects/demo/videos/grok_video_01.mp4",
                     "start": 0.0,
-                    "duration": 3.1
+                    "duration": 4.232
                 },
                 {
                     "id": "c2",
-                    "type": "image",
-                    "path": "/assets/projects/demo/images/kolors_scene_02.png",
-                    "start": 3.1,
-                    "duration": 3.4
+                    "type": "video",
+                    "path": "/assets/projects/demo/videos/grok_video_02.mp4",
+                    "start": 4.232,
+                    "duration": 4.232
                 },
                 {
                     "id": "c3",
-                    "type": "image",
-                    "path": "/assets/projects/demo/images/kolors_scene_03.png",
-                    "start": 6.5,
-                    "duration": 5.12
+                    "type": "video",
+                    "path": "/assets/projects/demo/videos/grok_video_03.mp4",
+                    "start": 8.464,
+                    "duration": 4.232
                 }
             ]
         },
@@ -123,8 +123,8 @@
                         {
                             "type": "Floating",
                             "props": {
-                                "start": 1.0,
-                                "end": 1.25
+                                "start": 1.02,
+                                "end": 1.12
                             }
                         },
                         {
@@ -176,9 +176,9 @@
             "clips": [
                 {
                     "id": "sub_s01",
-                    "text": "你好，我是 AIcut",
-                    "start": 0.5,
-                    "duration": 2.448,
+                    "text": "你好呀，我是 AIcut，欢迎来到 AI 原生自动化视频剪辑的世界。",
+                    "start": 0.0,
+                    "duration": 6.024,
                     "position": {
                         "x": 0.5,
                         "y": 0.85
@@ -192,7 +192,7 @@
                 {
                     "id": "sub_s02",
                     "text": "我是一个 AI 原生视频剪辑引擎",
-                    "start": 2.948,
+                    "start": 6.024,
                     "duration": 3.408,
                     "position": {
                         "x": 0.5,
@@ -207,7 +207,7 @@
                 {
                     "id": "sub_s03",
                     "text": "只需给我一个想法，剩下的交给我",
-                    "start": 6.356,
+                    "start": 9.432,
                     "duration": 3.264,
                     "position": {
                         "x": 0.5,
@@ -226,28 +226,28 @@
             "type": "audio",
             "clips": [
                 {
-                    "id": "vo_s01",
-                    "name": "配音-s01",
+                    "id": "voice_1",
+                    "type": "audio",
                     "path": "/assets/projects/demo/audio/segments/s01.mp3",
-                    "start": 0.5,
-                    "duration": 2.448,
-                    "volume": 1.2
+                    "start": 0.0,
+                    "duration": 6.024,
+                    "volume": 1.0
                 },
                 {
-                    "id": "vo_s02",
-                    "name": "配音-s02",
+                    "id": "voice_2",
+                    "type": "audio",
                     "path": "/assets/projects/demo/audio/segments/s02.mp3",
-                    "start": 2.948,
+                    "start": 6.024,
                     "duration": 3.408,
-                    "volume": 1.2
+                    "volume": 1.0
                 },
                 {
-                    "id": "vo_s03",
-                    "name": "配音-s03",
+                    "id": "voice_3",
+                    "type": "audio",
                     "path": "/assets/projects/demo/audio/segments/s03.mp3",
-                    "start": 6.356,
+                    "start": 9.432,
                     "duration": 3.264,
-                    "volume": 1.2
+                    "volume": 1.0
                 }
             ]
         },

@@ -121,7 +121,7 @@ const ClipItem: React.FC<{
                 <div style={{
                     width: '100%',
                     height: '100%',
-                    transform: `scale3d(${scale}, ${scale}, 1)`,
+                    transform: `scale3d(${scale}, ${scale}, 1) rotate(0.01deg)`,
                     transformOrigin: '50% 50%',
                     willChange: 'transform',
                     display: 'flex',
@@ -256,6 +256,9 @@ const ClipItem: React.FC<{
                             border: (showDebugUI && isSelected) ? '2px solid #00E5FF' : 'none',
                             textShadow: clip.style?.textShadow || 'none',
                             lineHeight: 1.4,
+                            backfaceVisibility: 'hidden',
+                            transform: 'translateZ(0)',
+                            WebkitFontSmoothing: 'antialiased'
                         }}
                     >
                         {renderContent()}
