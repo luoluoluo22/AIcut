@@ -5,10 +5,7 @@
 [![MCP](https://img.shields.io/badge/Protocol-MCP-orange.svg)](https://modelcontextprotocol.io)
 
 <p align="center">
-<p align="center">
-  <img src="docs/demo.gif" alt="AIcut Demo" width="100%">
-  <br>
-  <i>👆 10秒演示 (GIF) | <a href="docs/demo.mp4">点击观看有声高清版 (MP4)</a></i>
+  <img src="docs/promo_banner.png" alt="AIcut Banner" width="100%">
 </p>
 
 **AIcut** 是一款 **AI 原生** 的全自动视频制作引擎。只需给 AI 一个想法，它就能自动完成：素材搜索、脚本撰写、配音生成、字幕对齐、视频合成。
@@ -22,44 +19,32 @@
 - 🎙️ **智能配音**：支持 Edge TTS (云扬等)、Google Gemini TTS 自动生成旁白。
 - 📝 **字幕自动对齐**：配音生成后自动生成精确到毫秒的 SRT 字幕。
 - 🎨 **模块化特效**：Fade、Typewriter、Floating 等特效可自由叠加。
-- � **并行渲染**：基于 Remotion 的多核并行导出，速度提升 300%+。
-- � **导出工程文件**：生成可编辑的 Remotion 项目或剪映草稿。
+- 🚀 **并行渲染**：基于 Remotion 的多核并行导出，速度提升 300%+。
+- 📁 **导出工程文件**：生成可编辑的 Remotion 项目或剪映草稿。
 
 ---
 
-## � 快速开始
+## 🚀 极速上手
 
-### 1. 环境准备
-确保已安装：
-- **Python 3.10+** (推荐使用 `uv` 管理依赖)
-- **Node.js 18+** (用于 Remotion)
-- **FFmpeg** (用于音视频处理)
+### 1. 安装依赖
+需要 Python 3.10+ 和 Node.js 18+。
 
 ```bash
-# 安装 Python 依赖
-pip install edge-tts pydub requests
+# 1. 安装 Python 依赖
+pip install -r requirements.txt
 
-# 安装 Remotion 前端
+# 2. 安装渲染引擎依赖
 cd remotion-studio
 npm install
 ```
 
-### 3. 配置 API Key (可选)
-如果需要使用自动下载素材功能 (Pixabay/Pexels)，请配置 API Key。
-
-1. 复制 `.env.example` 为 `.env`：
-   ```bash
-   cp .env.example .env
-   # Windows PowerShell: copy .env.example .env
-   ```
-2. 编辑 `.env` 文件，填入你的 API Key。
-
-### 2. 启动预览服务器
+### 2. 启动预览
 ```bash
-cd remotion-studio
 npm start
 ```
-打开浏览器访问 `http://localhost:3000`，即可预览视频项目。
+*浏览器自动打开 `http://localhost:3000`，即可看到生成的演示视频。*
+
+> **提示**：如需使用自动下载素材功能，请参考下方的进阶配置。
 
 ---
 
@@ -119,7 +104,7 @@ python update_project_json.py           # 更新 JSON
 
 ---
 
-## � 项目结构
+## 📁 项目结构
 
 ```
 AIcut/
@@ -154,6 +139,20 @@ cd remotion-studio
 # 导出为 MP4 (1080p, 30fps)
 npx remotion render src/index.tsx demo out/demo.mp4 --codec=h264
 ```
+
+---
+
+## ⚙️ 进阶配置
+
+### 配置 API Key (可选)
+如果需要使用 `free_stock_api.py` 自动下载 Pexels/Pixabay 素材：
+
+1. 复制 `.env.example` 为 `.env`：
+   ```bash
+   # Windows PowerShell
+   copy .env.example .env
+   ```
+2. 编辑 `.env` 文件，填入你的 Pexels/Pixabay API Key。
 
 ---
 
