@@ -228,7 +228,7 @@ if __name__ == "__main__":
     ]
     
     # 输出目录 - 按项目组织
-    project_name = "promo_video"  # 项目名称
+    project_name = "demo"  # 项目名称
     output_dir = Path(f"remotion-studio/public/assets/projects/{project_name}/videos")
     
     print("=" * 60)

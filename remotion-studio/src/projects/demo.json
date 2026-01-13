@@ -1,0 +1,185 @@
+{
+    "project_name": "AIcut B站宣传片",
+    "duration": 11.62,
+    "resolution": {
+        "width": 1920,
+        "height": 1080
+    },
+    "tracks": [
+        {
+            "id": "track_video",
+            "type": "video",
+            "clips": [
+                {
+                    "id": "bg_white_full",
+                    "name": "全屏白底",
+                    "path": "/assets/projects/demo/images/white_bg.png",
+                    "start": 0,
+                    "duration": 11.62,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "id": "track_text_overlay",
+            "type": "text",
+            "clips": [
+                {
+                    "id": "hl_1",
+                    "text": "AIcut",
+                    "start": 0.2,
+                    "duration": 2.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.4
+                    },
+                    "color": "#FFD700",
+                    "style": {
+                        "fontSize": 120,
+                        "fontWeight": "900",
+                        "textShadow": "4px 4px 0 #000"
+                    },
+                    "effects": [
+                        {
+                            "type": "scale",
+                            "from": 0.8,
+                            "to": 1.0,
+                            "duration": 0.3
+                        }
+                    ]
+                },
+                {
+                    "id": "hl_2",
+                    "text": "AI Native",
+                    "start": 3.0,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.4
+                    },
+                    "color": "#00FF00",
+                    "style": {
+                        "fontSize": 100,
+                        "fontWeight": "bold",
+                        "textShadow": "3px 3px 0 #000"
+                    }
+                },
+                {
+                    "id": "hl_3",
+                    "text": "Just One Idea",
+                    "start": 6.5,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.4
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 90,
+                        "fontWeight": "bold",
+                        "textShadow": "3px 3px 0 #000"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "track_subtitles",
+            "type": "text",
+            "clips": [
+                {
+                    "id": "sub_s01",
+                    "text": "你好，我是 AIcut",
+                    "start": 0.5,
+                    "duration": 2.448,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "style": {
+                        "fontSize": 40,
+                        "color": "white",
+                        "textStroke": "2px black"
+                    }
+                },
+                {
+                    "id": "sub_s02",
+                    "text": "我是一个 AI 原生视频剪辑引擎",
+                    "start": 2.948,
+                    "duration": 3.408,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "style": {
+                        "fontSize": 40,
+                        "color": "white",
+                        "textStroke": "2px black"
+                    }
+                },
+                {
+                    "id": "sub_s03",
+                    "text": "只需给我一个想法，剩下的交给我",
+                    "start": 6.356,
+                    "duration": 3.264,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "style": {
+                        "fontSize": 40,
+                        "color": "white",
+                        "textStroke": "2px black"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "track_voiceover",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "vo_s01",
+                    "name": "配音-s01",
+                    "path": "/assets/projects/demo/audio/segments/s01.mp3",
+                    "start": 0.5,
+                    "duration": 2.448,
+                    "volume": 1.2
+                },
+                {
+                    "id": "vo_s02",
+                    "name": "配音-s02",
+                    "path": "/assets/projects/demo/audio/segments/s02.mp3",
+                    "start": 2.948,
+                    "duration": 3.408,
+                    "volume": 1.2
+                },
+                {
+                    "id": "vo_s03",
+                    "name": "配音-s03",
+                    "path": "/assets/projects/demo/audio/segments/s03.mp3",
+                    "start": 6.356,
+                    "duration": 3.264,
+                    "volume": 1.2
+                }
+            ]
+        },
+        {
+            "id": "track_bgm",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "bgm_energetic",
+                    "name": "Sports Highlights - Mixkit",
+                    "path": "/assets/projects/demo/music/energetic/Track_989_989.mp3",
+                    "start": 0,
+                    "duration": 80,
+                    "volume": 0.1
+                }
+            ]
+        }
+    ]
+}

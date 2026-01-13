@@ -8,6 +8,12 @@
   <img src="docs/promo_banner.png" alt="AIcut Banner" width="100%">
 </p>
 
+<p align="center">
+  <video src="docs/demo.mp4" controls width="100%"></video>
+  <br>
+  <i>👆 点击播放 10秒 演示视频</i>
+</p>
+
 **AIcut** 是一款 **AI 原生** 的全自动视频制作引擎。只需给 AI 一个想法，它就能自动完成：素材搜索、脚本撰写、配音生成、字幕对齐、视频合成。
 
 > 🎬 **告别手动剪辑，让 AI 成为你的私人剪辑师。**
@@ -139,7 +145,7 @@ AIcut/
 ### 素材管理规范
 - 所有素材存放在 `remotion-studio/public/assets/projects/[project_name]/` 下
 - 在项目 JSON 中，`path` 字段以 `/assets/projects/` 开头
-- 示例：`"/assets/projects/promo_video/videos/beach_waves.mp4"`
+- 示例：`"/assets/projects/demo/videos/beach_waves.mp4"`
 
 ---
 
@@ -149,7 +155,7 @@ AIcut/
 cd remotion-studio
 
 # 导出为 MP4 (1080p, 30fps)
-npx remotion render src/index.tsx promo-video out/promo_video.mp4 --codec=h264
+npx remotion render src/index.tsx demo out/demo.mp4 --codec=h264
 ```
 
 ---

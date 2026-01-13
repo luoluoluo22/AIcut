@@ -28,9 +28,11 @@ remotion-studio/out/
 out/
 
 # Media Assets (Strict)
-# Ignore all assets in remotion-studio/public/assets
-remotion-studio/public/assets/projects/
-# Also ignore any random media files in root or subdirs
+# Ignore all assets in remotion-studio/public/assets by default
+remotion-studio/public/assets/projects/*
+!remotion-studio/public/assets/projects/demo/
+
+# Global ignore for media files
 *.mp4
 *.mov
 *.webm
@@ -41,6 +43,15 @@ remotion-studio/public/assets/projects/
 *.jpg
 *.jpeg
 *.gif
+
+# Exceptions for Documentation and Demo
+!docs/*.png
+!docs/*.mp4
+!docs/*.gif
+!remotion-studio/public/assets/projects/demo/**/*.png
+!remotion-studio/public/assets/projects/demo/**/*.mp3
+!remotion-studio/public/assets/projects/demo/**/*.wav
+!remotion-studio/public/assets/projects/demo/**/*.mp4
 
 # Exceptions (if you want to keep logos or icons, uncomment below)
 # !remotion-studio/public/logo.png

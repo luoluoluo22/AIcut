@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 
 # 路径配置
-segments_path = Path("remotion-studio/public/assets/projects/promo_video/audio/segments/segments_info.json")
-project_path = Path("remotion-studio/src/projects/promo_video.json")
+segments_path = Path("remotion-studio/public/assets/projects/demo/audio/segments/segments_info.json")
+project_path = Path("remotion-studio/src/projects/demo.json")
 
 def main():
     # 读取配音片段信息
@@ -24,7 +24,7 @@ def main():
         clip = {
             "id": f"vo_{seg['id']}",
             "name": f"配音-{seg['id']}",
-            "path": f"/assets/projects/promo_video/audio/segments/{seg['file']}",
+            "path": f"/assets/projects/demo/audio/segments/{seg['file']}",
             "start": seg['start'],
             "duration": seg['duration'],
             "volume": 1.2  # 提高配音音量
@@ -80,6 +80,23 @@ def main():
     with open(project_path, 'w', encoding='utf-8') as f:
         json.dump(project, f, ensure_ascii=False, indent=4)
     
+    # 计算总时长 (最后一句话结束 + 2秒缓冲)
+    total_duration = segments[-1]['end'] + 2.0
+    project['duration'] = total_duration
+    print(f"✅ 更新项目总时长: {total_duration}s")
+
+    # 更新所有视频/背景轨道的 Clips 时长
+    if 'tracks' in project:
+        for track in project['tracks']:
+            if track['type'] == 'video':
+                for clip in track['clips']:
+                    clip['duration'] = total_duration
+                print(f"✅ 更新视频轨道 Clips 时长: {total_duration}s")
+    
+    # 再次保存文件以应用时长更新
+    with open(project_path, 'w', encoding='utf-8') as f:
+        json.dump(project, f, ensure_ascii=False, indent=4)
+
     print(f"✅ 已保存到 {project_path}")
 
 if __name__ == "__main__":
