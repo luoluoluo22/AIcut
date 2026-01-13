@@ -41,6 +41,16 @@ cd remotion-studio
 npm install
 ```
 
+### 3. 配置 API Key (可选)
+如果需要使用自动下载素材功能 (Pixabay/Pexels)，请配置 API Key。
+
+1. 复制 `.env.example` 为 `.env`：
+   ```bash
+   cp .env.example .env
+   # Windows PowerShell: copy .env.example .env
+   ```
+2. 编辑 `.env` 文件，填入你的 API Key。
+
 ### 2. 启动预览服务器
 ```bash
 cd remotion-studio
