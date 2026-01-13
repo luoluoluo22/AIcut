@@ -5,13 +5,10 @@
 [![MCP](https://img.shields.io/badge/Protocol-MCP-orange.svg)](https://modelcontextprotocol.io)
 
 <p align="center">
-  <img src="docs/promo_banner.png" alt="AIcut Banner" width="100%">
-</p>
-
 <p align="center">
-  <video src="docs/demo.mp4" controls width="100%"></video>
+  <img src="docs/demo.gif" alt="AIcut Demo" width="100%">
   <br>
-  <i>👆 点击播放 10秒 演示视频</i>
+  <i>👆 10秒演示 (GIF) | <a href="docs/demo.mp4">点击观看有声高清版 (MP4)</a></i>
 </p>
 
 **AIcut** 是一款 **AI 原生** 的全自动视频制作引擎。只需给 AI 一个想法，它就能自动完成：素材搜索、脚本撰写、配音生成、字幕对齐、视频合成。
