@@ -53,6 +53,15 @@ remotion-studio/public/assets/projects/*
 !remotion-studio/public/assets/projects/demo/**/*.wav
 !remotion-studio/public/assets/projects/demo/**/*.mp4
 
+# Allow CNY and Product Promo assets
+!remotion-studio/public/assets/projects/cny/**/*.mp4
+!remotion-studio/public/assets/projects/cny/**/*.mp3
+!remotion-studio/public/assets/projects/cny/**/*.png
+!remotion-studio/public/assets/projects/product_promo/**/*.mp3
+!remotion-studio/public/assets/projects/product_promo/**/*.png
+!remotion-studio/public/assets/projects/product_promo/**/*.json
+!remotion-studio/public/assets/projects/product_promo/**/*.mp4
+
 # Exceptions (if you want to keep logos or icons, uncomment below)
 # !remotion-studio/public/logo.png
 
@@ -64,7 +73,9 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+chrome_debug_profile/
 
 # Temp
 tmp/
 .agent/
+!.agent/workflows/

@@ -21,12 +21,13 @@ const ClipItem: React.FC<{
     const seqFrame = useCurrentFrame();
     const durationInFrames = Math.round(clip.duration * fps);
 
-    if (track.type === 'image' || track.type === 'video') {
-        const assetPath = clip.path || '';
-        const normalizedPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath;
-        const assetUrl = staticFile(normalizedPath);
+    const assetPath = clip.path || '';
+    const normalizedPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath;
+    const isVideoAsset = /\.(mp4|webm|mov|m4v)$/i.test(normalizedPath);
+    const isImageAsset = /\.(png|jpg|jpeg|gif|webp)$/i.test(normalizedPath);
 
-        const isVideoAsset = /\.(mp4|webm|mov|m4v)$/i.test(normalizedPath);
+    if (isImageAsset || isVideoAsset) {
+        const assetUrl = staticFile(normalizedPath);
 
         // 调试日志：帮助诊断视频缩放问题
         useEffect(() => {
@@ -35,14 +36,44 @@ const ClipItem: React.FC<{
             }
         }, []);
 
-        // Ken Burns 缩放动画
-        const rawScale = interpolate(
+        // 基础缩放动画
+        const baseScale = interpolate(
             seqFrame,
             [0, durationInFrames],
-            [1.0, 1.25],
+            [1.0, 1.05],
             { extrapolateRight: 'clamp' }
         );
-        const scale = Math.round(rawScale * 1000000) / 1000000;
+
+        // 获取动态缩放特效 (Zoom Effect)
+        let zoomScale = baseScale;
+        let transformOrigin = '50% 50%';
+        const zoomEffect = clip.effects?.find((e: any) => e.type === 'Zoom');
+        if (zoomEffect) {
+            const { startFrame, endFrame, scale: targetScale, x, y, stayConstant, zoomOutAtEnd } = zoomEffect.props;
+
+            if (stayConstant) {
+                if (zoomOutAtEnd && seqFrame > durationInFrames - 30) {
+                    zoomScale = interpolate(
+                        seqFrame,
+                        [durationInFrames - 30, durationInFrames],
+                        [targetScale, 1.0],
+                        { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+                    );
+                } else {
+                    zoomScale = targetScale;
+                }
+            } else {
+                zoomScale = interpolate(
+                    seqFrame,
+                    [startFrame, startFrame + 10, endFrame - 10, endFrame],
+                    [baseScale, targetScale, targetScale, baseScale],
+                    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+                );
+            }
+            transformOrigin = `${x * 100}% ${y * 100}%`;
+        }
+
+        const scale = Math.round(zoomScale * 1000000) / 1000000;
 
         // 调试：输出当前帧和缩放值
         if (isVideoAsset && seqFrame % 60 === 0) {
@@ -67,7 +98,7 @@ const ClipItem: React.FC<{
                         height: '100%',
                         // 添加极小的旋转角度来修复浏览器的视频缩放抖动问题
                         transform: `scale3d(${scale}, ${scale}, 1) rotate(0.02deg)`,
-                        transformOrigin: '50% 50%',
+                        transformOrigin: transformOrigin,
                         willChange: 'transform',
                         display: 'flex',
                         justifyContent: 'center',
@@ -81,9 +112,18 @@ const ClipItem: React.FC<{
                                 height: '100%',
                                 objectFit: 'cover',
                             }}
+                            startFrom={Math.round((clip.startFrom || 0) * fps)}
                             muted
-                            volume={0}
                         />
+                        {/* 补充：OffthreadVideo 本身不带声音，通过 Audio 组件实现原声播放 */}
+                        {/* 仅当 JSON 中 clip.volume > 0 时播放声音，实现按需控制 */}
+                        {(clip.volume !== undefined ? clip.volume : 0) > 0 && (
+                            <Audio
+                                src={assetUrl}
+                                volume={clip.volume}
+                                startFrom={Math.round((clip.startFrom || 0) * fps)}
+                            />
+                        )}
                     </div>
 
                     {/* 选中高亮框 */}
@@ -277,6 +317,7 @@ const ClipItem: React.FC<{
             <Audio
                 src={assetUrl}
                 volume={clip.volume !== undefined ? clip.volume : 1.0}
+                startFrom={Math.round((clip.startFrom || 0) * fps)}
             />
         );
     }

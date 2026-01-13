@@ -1,0 +1,182 @@
+{
+    "project_name": "AIcut - 2026新年特辑",
+    "duration": 16.0,
+    "resolution": {
+        "width": 1504,
+        "height": 832
+    },
+    "tracks": [
+        {
+            "id": "track_video",
+            "type": "video",
+            "clips": [
+                {
+                    "id": "cny_mkt",
+                    "type": "video",
+                    "path": "/assets/projects/cny/grok_t2v_15193.mp4",
+                    "start": 0.0,
+                    "duration": 5.5,
+                    "volume": 0.0
+                },
+                {
+                    "id": "cny_lion",
+                    "type": "video",
+                    "path": "/assets/projects/cny/grok_t2v_15284.mp4",
+                    "start": 5.5,
+                    "duration": 5.5,
+                    "volume": 0.0
+                },
+                {
+                    "id": "cny_fw",
+                    "type": "video",
+                    "path": "/assets/projects/cny/grok_t2v_15353.mp4",
+                    "start": 11.0,
+                    "duration": 5.0,
+                    "volume": 0.0
+                }
+            ]
+        },
+        {
+            "id": "track_voiceover",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "v1",
+                    "path": "/assets/projects/cny/audio/segments/s01.mp3",
+                    "start": 0.5,
+                    "duration": 2.256,
+                    "volume": 1.0
+                },
+                {
+                    "id": "v2",
+                    "path": "/assets/projects/cny/audio/segments/s02.mp3",
+                    "start": 2.756,
+                    "duration": 3.696,
+                    "volume": 1.0
+                },
+                {
+                    "id": "v3",
+                    "path": "/assets/projects/cny/audio/segments/s03.mp3",
+                    "start": 6.452,
+                    "duration": 2.664,
+                    "volume": 1.0
+                },
+                {
+                    "id": "v4",
+                    "path": "/assets/projects/cny/audio/segments/s04.mp3",
+                    "start": 9.116,
+                    "duration": 2.184,
+                    "volume": 1.0
+                },
+                {
+                    "id": "v5",
+                    "path": "/assets/projects/cny/audio/segments/s05.mp3",
+                    "start": 11.3,
+                    "duration": 3.192,
+                    "volume": 1.0
+                }
+            ]
+        },
+        {
+            "id": "track_text",
+            "type": "text",
+            "clips": [
+                {
+                    "id": "t1",
+                    "text": "AIcut 创作",
+                    "start": 0.5,
+                    "duration": 5.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.8
+                    },
+                    "color": "#FFD700",
+                    "style": {
+                        "fontSize": 80,
+                        "fontWeight": "900",
+                        "textShadow": "0 0 20px rgba(255, 215, 0, 0.8)"
+                    },
+                    "effects": [
+                        {
+                            "type": "Fade",
+                            "props": {
+                                "in": 15,
+                                "out": 15
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "t2",
+                    "text": "2026 农历新年快乐",
+                    "start": 6.0,
+                    "duration": 5.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "color": "#FFD700",
+                    "style": {
+                        "fontSize": 120,
+                        "fontWeight": "900",
+                        "textShadow": "2px 2px 10px #FF0000"
+                    },
+                    "effects": [
+                        {
+                            "type": "Fade",
+                            "props": {
+                                "in": 20,
+                                "out": 20
+                            }
+                        },
+                        {
+                            "type": "Floating",
+                            "props": {
+                                "start": 1,
+                                "end": 1.2
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "t3",
+                    "text": "用 AI 剪出中国年",
+                    "start": 11.5,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "color": "#FFD700",
+                    "style": {
+                        "fontSize": 100,
+                        "fontWeight": "900",
+                        "textShadow": "0 0 30px #FF0000"
+                    },
+                    "effects": [
+                        {
+                            "type": "Fade",
+                            "props": {
+                                "in": 20,
+                                "out": 20
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "track_bgm",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "bgm",
+                    "path": "/assets/projects/demo/music/energetic/Track_989_989.mp3",
+                    "start": 0,
+                    "duration": 16.0,
+                    "volume": 0.2
+                }
+            ]
+        }
+    ]
+}

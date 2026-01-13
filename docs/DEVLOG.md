@@ -151,6 +151,47 @@ const premountFrames = isMediaTrack ? 60 : 0;
 
 ---
 
+---
+
+## 2026-01-13: 字体与图片抖动细化解决方案
+
+### 🐛 问题描述
+
+在应用慢速动画（如浮动、缓慢缩放）时：
+- **字体**：在缩放或位移过程中，文字边缘会出现微小的像素跳动，产生“毛刺感”或抖动。
+- **图片/通用组件**：在某些浏览器下，慢速 `scale` 缩放仍存在不够顺滑的“阶梯跳变”。
+
+### 🔍 根本原因
+
+- 浏览器亚像素（sub-pixel）渲染精度限制，尤其是在处理文本抗锯齿时。
+- CSS 动画在非 3D 转换下可能不会始终开启硬件加速。
+
+### ✅ 解决方案
+
+#### 1. 针对字体内容抖动 (`Composition.tsx`)
+在文本容器上添加固定防抖样式：
+```tsx
+style={{
+    backfaceVisibility: 'hidden',
+    transform: 'translateZ(0)',
+    WebkitFontSmoothing: 'antialiased'
+}}
+```
+
+#### 2. 针对图片/浮动内容抖动 (`EffectsLibrary.tsx`)
+在 `FloatingEffect` 中应用微量旋转修正技巧：
+```tsx
+transform: `scale3d(${scale}, ${scale}, 1) rotate(0.01deg)`,
+willChange: 'transform'
+```
+
+### 💡 最佳实践
+
+1. **文字稳定化**：对于所有动态生成的字幕或标题，默认开启 `backface-visibility: hidden` 以保证文字边缘丝滑。
+2. **通用的 0.01 修正法**：即使是静态图片，只要涉及 `scale` 动画，建议都添加 `rotate(0.01deg)` 强制浏览器启用最优渲染路径。
+
+---
+
 ## 日志模板
 
 ```markdown
@@ -168,3 +209,5 @@ const premountFrames = isMediaTrack ? 60 : 0;
 ### 💡 最佳实践
 [总结的最佳实践]
 ```
+
+

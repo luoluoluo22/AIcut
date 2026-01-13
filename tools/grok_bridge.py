@@ -89,6 +89,13 @@ async def grok_generate_video(image_path, prompt="Make this image move into a hi
                 await page.wait_for_selector('button[aria-label="下载"]', timeout=180000)
                 print("✨ 预览视频已生成")
 
+                # ⚠️ 处理 A/B 测试反馈弹窗
+                skip_btn = page.get_by_text("跳过")
+                if await skip_btn.count() > 0:
+                    print("🛡️ 检测到意见反馈/AB测试界面，正在点击‘跳过’...")
+                    await skip_btn.first.click()
+                    await asyncio.sleep(1.0)
+
                 # 5. 执行 HD 升级
                 print("🚀 正在尝试执行 HD 升级以获取高清画面...")
                 
@@ -164,17 +171,39 @@ async def grok_generate_video(image_path, prompt="Make this image move into a hi
 
 if __name__ == "__main__":
     import sys
-    # 默认处理场景 2 和 3
-    scenes = [
-        {"img": "remotion-studio/public/assets/projects/demo/images/kolors_scene_02.png", "id": "02"},
-        {"img": "remotion-studio/public/assets/projects/demo/images/kolors_scene_03.png", "id": "03"}
-    ]
+    import os
     
-    # 如果用户想指定运行某一个
-    idx = int(sys.argv[1]) if len(sys.argv) > 1 else 0
-    if idx < len(scenes):
-        s = scenes[idx]
-        print(f"🎬 开始处理场景 {s['id']}...")
-        asyncio.run(grok_generate_video(s['img'], video_id=s['id']))
+    # 动态参数支持: python tools/grok_bridge.py [图片路径/模式] [提示词/索引] [视频ID]
+    arg1 = sys.argv[1] if len(sys.argv) > 1 else "img"
+    
+    if os.path.exists(arg1):
+        # 路径模式: 直接传入图片路径
+        img_path = arg1
+        custom_prompt = sys.argv[2] if len(sys.argv) > 2 else "Make this image move"
+        v_id = sys.argv[3] if len(sys.argv) > 3 else "99"
+        print(f"🎬 运行路径模式: {img_path}")
+        asyncio.run(grok_generate_video(img_path, prompt=custom_prompt, video_id=v_id))
     else:
-        print("💡 请指定场景索引 (0 或 1)")
+        # 索引模式: 保持原有逻辑
+        scenes = [
+            {"img": "remotion-studio/public/assets/projects/demo/images/kolors_scene_01.png", "id": "01", "prompt": "A futuristic spherical robot"},
+            {"img": "remotion-studio/public/assets/projects/demo/images/kolors_scene_02.png", "id": "02", "prompt": "A futuristic female warrior"},
+            {"img": "remotion-studio/public/assets/projects/demo/images/kolors_scene_03.png", "id": "03", "prompt": "A young man standing in field"}
+        ]
+        mode = arg1 # txt 或 img
+        try:
+            idx = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+            if idx < len(scenes):
+                s = scenes[idx]
+                if mode == "txt":
+                    print(f"🎬 开始【文生视频】场景 {s['id']}...")
+                    asyncio.run(grok_generate_video(None, prompt=s['prompt'], video_id=f"{s['id']}_txt"))
+                else:
+                    print(f"🎬 开始【图生视频】场景 {s['id']}...")
+                    asyncio.run(grok_generate_video(s['img'], prompt=s['prompt'], video_id=s['id']))
+            else:
+                print("❌ 索引超出范围")
+        except (ValueError, IndexError):
+            print("💡 使用说明:")
+            print("1. 路径模式: python tools/grok_bridge.py [图片绝对路径] [提示词] [ID]")
+            print("2. 索引模式: python tools/grok_bridge.py txt/img [0-2]")

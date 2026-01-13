@@ -1,0 +1,595 @@
+{
+    "project_name": "AIcut 产品功能演示",
+    "duration": 118.56,
+    "resolution": {
+        "width": 1920,
+        "height": 1080
+    },
+    "tracks": [
+        {
+            "id": "track_video",
+            "type": "video",
+            "clips": [
+                {
+                    "id": "promo_cover",
+                    "type": "image",
+                    "path": "/assets/projects/product_promo/v6_promo_cover16x9.png",
+                    "start": 0.0,
+                    "duration": 1.5
+                },
+                {
+                    "id": "master_demo_part1",
+                    "type": "video",
+                    "path": "/assets/projects/demo/videos/master_demo1.mp4",
+                    "start": 1.5,
+                    "duration": 3.0,
+                    "startFrom": 0.0,
+                    "volume": 0.4,
+                    "effects": [
+                        {
+                            "type": "Zoom",
+                            "props": {
+                                "scale": 2.2,
+                                "x": 0.5,
+                                "y": 0.9,
+                                "stayConstant": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "master_demo_part2",
+                    "type": "video",
+                    "path": "/assets/projects/demo/videos/master_demo1.mp4",
+                    "start": 4.5,
+                    "duration": 6.0,
+                    "startFrom": 32.0,
+                    "volume": 0.4,
+                    "effects": [
+                        {
+                            "type": "Zoom",
+                            "props": {
+                                "scale": 2.2,
+                                "x": 0.5,
+                                "y": 0.9,
+                                "stayConstant": true,
+                                "zoomOutAtEnd": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "pixpin_demo",
+                    "type": "video",
+                    "path": "/assets/projects/product/pixpin_demo.mp4",
+                    "start": 10.5,
+                    "duration": 92.0,
+                    "volume": 0.6
+                },
+                {
+                    "id": "cny_result_highlight",
+                    "type": "video",
+                    "path": "/assets/projects/product_promo/cny_special_preview.mp4",
+                    "start": 102.5,
+                    "duration": 16.06,
+                    "volume": 1.0
+                }
+            ]
+        },
+        {
+            "id": "track_voice",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "voice_promo_detailed",
+                    "path": "/assets/projects/product_promo/audio/segments/s01.mp3",
+                    "start": 4.5,
+                    "duration": 76.7,
+                    "volume": 1.0
+                }
+            ]
+        },
+        {
+            "id": "track_bgm",
+            "type": "audio",
+            "clips": [
+                {
+                    "id": "bgm",
+                    "path": "/assets/projects/demo/music/energetic/Track_989_989.mp3",
+                    "start": 0,
+                    "duration": 118.56,
+                    "volume": 0.08
+                }
+            ]
+        },
+        {
+            "id": "track_text",
+            "type": "text",
+            "clips": [
+                {
+                    "id": "sub_1",
+                    "text": "大家好 AIcut 现在迎来了",
+                    "start": 4.5,
+                    "duration": 2.2,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_1_2",
+                    "text": "文字生成视频的新功能",
+                    "start": 6.7,
+                    "duration": 1.8,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_2",
+                    "text": "我们不仅是一个剪辑工具",
+                    "start": 8.5,
+                    "duration": 2.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_2_2",
+                    "text": "更是一个全自动的内容生产引擎",
+                    "start": 10.5,
+                    "duration": 2.2,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_3",
+                    "text": "现在 我们深度集成了",
+                    "start": 12.7,
+                    "duration": 1.8,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_3_2",
+                    "text": "Grok 3 的原生视频生成能力",
+                    "start": 14.5,
+                    "duration": 2.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_4",
+                    "text": "接下来 我将带大家完整复盘",
+                    "start": 16.5,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_4_2",
+                    "text": "一个实战项目 2026新年快乐短片",
+                    "start": 19.5,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_5",
+                    "text": "你会看到 从 AI 自动开启浏览器",
+                    "start": 22.5,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_5_2",
+                    "text": "到分镜生成 素材抓取 智能对齐",
+                    "start": 26.5,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_6",
+                    "text": "AIcut 实现了全链路自动化生产",
+                    "start": 30.5,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_7",
+                    "text": "操作细节非常硬核 在 Antigravity 中",
+                    "start": 34.5,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_7_2",
+                    "text": "Gemini 3 AI 接收到指令后",
+                    "start": 37.5,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_8",
+                    "text": "会瞬间启动 Chrome 浏览器调试模式",
+                    "start": 40.5,
+                    "duration": 3.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_8_2",
+                    "text": "通过 Python 指令精准操控",
+                    "start": 44.0,
+                    "duration": 3.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_9",
+                    "text": "配合 JS 脚本完美模拟用户行为",
+                    "start": 47.0,
+                    "duration": 3.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_9_2",
+                    "text": "自动完成网页登录并输入提示词",
+                    "start": 50.5,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_10",
+                    "text": "等待 Grok 视频生成后 自动下载",
+                    "start": 54.5,
+                    "duration": 4.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_10_2",
+                    "text": "这个例子中共下载了三段视频",
+                    "start": 59.0,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_11",
+                    "text": "然后 AI 会剪辑到一起 完成短片",
+                    "start": 63.0,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_11_2",
+                    "text": "让技术服务创意 创作从未如此简单",
+                    "start": 67.0,
+                    "duration": 4.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_12",
+                    "text": "赶快来体验 Grok 文生视频震撼魅力",
+                    "start": 71.0,
+                    "duration": 3.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_12_2",
+                    "text": "项目已经开源在 Github 上",
+                    "start": 74.5,
+                    "duration": 2.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_13",
+                    "text": "想要地址的请一键三连 私信博主",
+                    "start": 77.0,
+                    "duration": 2.5,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "sub_13_2",
+                    "text": "并附上关键词 AIcut",
+                    "start": 79.5,
+                    "duration": 1.7,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.85
+                    },
+                    "color": "#FFFFFF",
+                    "style": {
+                        "fontSize": 42,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.6)",
+                        "padding": "8px 20px",
+                        "borderRadius": "10px"
+                    }
+                },
+                {
+                    "id": "promo_oss",
+                    "text": "开源代码见 Github | 私信: AIcut",
+                    "start": 102.5,
+                    "duration": 15.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.9
+                    },
+                    "color": "#FFD700",
+                    "style": {
+                        "fontSize": 45,
+                        "fontWeight": "bold",
+                        "background": "rgba(0,0,0,0.5)",
+                        "padding": "10px 30px"
+                    }
+                },
+                {
+                    "id": "promo_result",
+                    "text": "实战项目：2026新年快乐短片诞生成果",
+                    "start": 102.5,
+                    "duration": 15.0,
+                    "position": {
+                        "x": 0.5,
+                        "y": 0.1
+                    },
+                    "color": "#FFD700",
+                    "style": {
+                        "fontSize": 50,
+                        "fontWeight": "bold",
+                        "textShadow": "0 0 20px rgba(255,215,0,0.8)"
+                    }
+                }
+            ]
+        }
+    ]
+}
