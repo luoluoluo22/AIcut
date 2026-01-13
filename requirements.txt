@@ -1,0 +1,9 @@
+edge-tts
+pydub
+requests
+python-dotenv
+imageio
+pymediainfo
+uiautomation
+uvicorn[standard]
+mcp[cli]
