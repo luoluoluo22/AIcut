@@ -15,12 +15,12 @@
 
 ## ✨ 核心特性
 
-- 🤖 **AI 全自动剪辑**：通过 MCP 协议，AI 可直接操控视频时间轴、素材、特效。
-- 🎙️ **智能配音**：支持 Edge TTS (云扬等)、Google Gemini TTS 自动生成旁白。
+- 🤖 **AI 全自动剪辑**：通过 Antigravity IDE 的 AI 工具能力，可直接操控视频时间轴、素材、特效。
+- 🎙️ **智能配音**：支持 Edge TTS (云扬等) 自动生成旁白。
 - 📝 **字幕自动对齐**：配音生成后自动生成精确到毫秒的 SRT 字幕。
 - 🎨 **模块化特效**：Fade、Typewriter、Floating 等特效可自由叠加。
 - 🚀 **并行渲染**：基于 Remotion 的多核并行导出，速度提升 300%+。
-- 📁 **导出工程文件**：生成可编辑的 Remotion 项目或剪映草稿。
+- 📁 **导出工程文件**：生成可编辑的 Remotion 项目。
 
 ---
 
@@ -83,24 +83,7 @@ AIcut 的核心设计理念是 **让 AI 能够直接操控视频制作流程**�
 6. **预览和微调**：在 Remotion Studio 中预览，AI 可根据你的反馈继续调整。
 
 
-### 方式二：手动调用工具脚本
 
-如果你想更精细地控制流程，可以使用 `tools/` 目录下的脚本：
-
-| 脚本                              | 功能                               |
-| --------------------------------- | ---------------------------------- |
-| `generate_voiceovers_segments.py` | 根据文案生成分段配音 (Edge TTS)    |
-| `update_project_json.py`          | 将配音/字幕信息更新到项目 JSON     |
-| `update_video_track.py`           | 更新视频轨道的素材编排             |
-| `free_stock_api.py`               | 从 Pexels/Pixabay API 下载免费素材 |
-| `mixkit_music_scraper.py`         | 爬取 Mixkit 免费背景音乐           |
-
-**示例：生成配音并更新项目**
-```bash
-cd tools
-python generate_voiceovers_segments.py  # 生成配音
-python update_project_json.py           # 更新 JSON
-```
 
 ---
 
