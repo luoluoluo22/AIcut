@@ -5,7 +5,7 @@ export interface MediaFile {
   id: string;
   name: string;
   type: MediaType;
-  file: File;
+  file?: File;
   url?: string; // Object URL for preview
   thumbnailUrl?: string; // For video thumbnails
   duration?: number; // For video/audio duration

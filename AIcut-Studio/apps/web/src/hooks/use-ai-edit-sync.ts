@@ -16,12 +16,11 @@ interface PendingEdit {
 }
 
 export function useAIEditSync(enabled: boolean = true) {
-    const { addElementToTrack, removeElement, updateElement, tracks, addTrack } = useTimelineStore();
+    const { tracks } = useTimelineStore();
     const processedIds = useRef<Set<string>>(new Set());
-    const lastPollTime = useRef<number>(0);
-
-
-
+    const lastReportedState = useRef<string>("");
+    const hasSynced = useRef<boolean>(false);
+    const reportTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const applyEdit = useCallback((edit: PendingEdit) => {
         console.log("[AI Edit] Applying:", edit.action, edit.data);
@@ -212,7 +211,6 @@ export function useAIEditSync(enabled: boolean = true) {
                         const file = new File([blob], media.name, { type: media.mimeType });
 
                         // Calculate real duration for accurate timeline placement
-                        // Calculate real duration for accurate timeline placement
                         let realDuration = 0;
                         try {
                             realDuration = await getMediaDuration(file);
@@ -299,42 +297,105 @@ export function useAIEditSync(enabled: boolean = true) {
         }
     }, []);
 
+    // Helper to handle snapshot data
+    const handleSnapshotData = useCallback((data: any) => {
+        if (!data) return;
+
+        // --- Sync Tracks ---
+        if (data.tracks) {
+            console.log(`[AI Sync] <Handle> Processing ${data.tracks.length} tracks from snapshot`);
+            const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
+            const newTracksSnapshot = JSON.stringify(data.tracks);
+            if (currentTracksSnapshot !== newTracksSnapshot) {
+                console.log("[AI Sync] <Handle> Applying external track snapshot update...");
+                useTimelineStore.getState().setTracks(data.tracks);
+            } else {
+                console.log("[AI Sync] <Handle> Tracks match current state, skipping setTracks");
+            }
+        }
+
+        // --- Sync Assets (Media Library) ---
+        if (data.assets && Array.isArray(data.assets)) {
+            const mediaStore = useMediaStore.getState();
+            const currentAssets = mediaStore.mediaFiles;
+            console.log(`[AI Sync] <Handle> Processing ${data.assets.length} assets. Current store has ${currentAssets.length} assets.`);
+
+            for (const remoteAsset of data.assets) {
+                const exists = currentAssets.find(a =>
+                    a.id === remoteAsset.id || (remoteAsset.url && a.url === remoteAsset.url)
+                );
+
+                if (exists) {
+                    console.log(`[AI Sync] <Asset> Skipping existing asset: ${remoteAsset.name} (ID: ${remoteAsset.id})`);
+                    continue;
+                }
+
+                if (!remoteAsset.url) {
+                    console.warn(`[AI Sync] <Asset> Missing URL for asset: ${remoteAsset.name}, cannot link.`);
+                    continue;
+                }
+
+                console.log(`[AI Sync] <Asset> Linking local asset: ${remoteAsset.name} -> ${remoteAsset.url}`);
+                mediaStore.addMediaFile(data.project?.id || "demo", {
+                    id: remoteAsset.id,
+                    name: remoteAsset.name,
+                    type: remoteAsset.type || "video",
+                    url: remoteAsset.url,
+                    filePath: remoteAsset.filePath,
+                    thumbnailUrl: remoteAsset.thumbnailUrl,
+                    duration: remoteAsset.duration || 0,
+                    width: remoteAsset.width,
+                    height: remoteAsset.height,
+                    isLinked: true
+                } as any);
+            }
+            console.log("[AI Sync] <Handle> Asset synchronization complete.");
+            hasSynced.current = true;
+        } else {
+            console.log("[AI Sync] <Handle> No assets found in snapshot or invalid assets format");
+        }
+
+        // --- Sync Project Metadata ---
+        const projectStore = useProjectStore.getState();
+        const currentProject = projectStore.activeProject;
+        if (currentProject) {
+            const updates: any = {};
+            if (data.name && data.name !== currentProject.name) updates.name = data.name;
+            if (data.fps && data.fps !== currentProject.fps) updates.fps = data.fps;
+            if (data.width && data.width !== currentProject.width) updates.width = data.width;
+            if (data.height && data.height !== currentProject.height) updates.height = data.height;
+            if (data.backgroundColor && data.backgroundColor !== currentProject.backgroundColor) updates.backgroundColor = data.backgroundColor;
+
+            if (Object.keys(updates).length > 0) {
+                console.log("[AI Sync] <Project> Applying metadata update:", updates);
+                projectStore.updateProject(updates);
+            }
+        }
+    }, []);
 
     // 监听来自 Electron 主进程的 Python 日志 (IPC Channel)
     useEffect(() => {
         if (typeof window !== 'undefined' && window.electronAPI) {
             const handlePythonLog = (text: string) => {
-                // Handle multiple lines in one chunk (fixes JSON parse errors when events are batched)
                 const lines = text.split(/\r?\n/);
-
                 for (const line of lines) {
                     if (!line.trim()) continue;
-
-                    // Check for IPC Events from Python
                     const eventIndex = line.indexOf("::AI_EVENT::");
                     if (eventIndex !== -1) {
                         try {
-                            // Extract potential log before the event
                             if (eventIndex > 0) {
                                 console.log("%c[Python AI]", "color: #3b82f6; font-weight: bold", line.substring(0, eventIndex));
                             }
-
                             const jsonStr = line.substring(eventIndex + "::AI_EVENT::".length).trim();
                             const event = JSON.parse(jsonStr);
-                            console.log("%c[AI IPC]", "color: #10b981; font-weight: bold", "Received Event:", event.action);
-
-                            // Apply the edit directly
                             if (!processedIds.current.has(event.id)) {
                                 processedIds.current.add(event.id);
                                 applyEdit(event);
                             }
                         } catch (err) {
-                            console.error("[AI IPC] Parse error:", err, "Line:", line);
-                            // Fallback: log the original line so we don't lose the info
-                            console.log("%c[Python AI]", "color: #3b82f6; font-weight: bold", line);
+                            console.error("[AI IPC] Parse error:", err);
                         }
                     } else {
-                        // Normal log
                         console.log("%c[Python AI]", "color: #3b82f6; font-weight: bold", line);
                     }
                 }
@@ -352,189 +413,100 @@ export function useAIEditSync(enabled: boolean = true) {
     useEffect(() => {
         if (!enabled) return;
 
-        console.log("[AI Sync] Establishing SSE connection for hot-reload...");
+        console.log("[AI Sync] Establishing SSE connection...");
         const eventSource = new EventSource("/api/ai-edit/sync");
 
-        // Handle full snapshot updates (from project-snapshot.json)
         eventSource.addEventListener("snapshot_update", (event) => {
             try {
                 const data = JSON.parse(event.data);
-                console.log("[AI Sync] Received snapshot update:", data);
-
-                if (data.tracks) {
-                    const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
-                    const newTracksSnapshot = JSON.stringify(data.tracks);
-
-                    // Only update if fundamentally different to avoid loop
-                    if (currentTracksSnapshot !== newTracksSnapshot) {
-                        console.log("[AI Sync] Applying external track snapshot update...");
-                        useTimelineStore.getState().setTracks(data.tracks);
-                    }
-                }
-
-                // Update Project Metadata
-                const projectStore = useProjectStore.getState();
-                const currentProject = projectStore.activeProject;
-
-                if (currentProject) {
-                    const updates: any = {};
-                    // Check common fields
-                    if (data.name && data.name !== currentProject.name) updates.name = data.name;
-                    if (data.fps && data.fps !== currentProject.fps) updates.fps = data.fps;
-                    if (data.width && data.width !== currentProject.width) updates.width = data.width;
-                    if (data.height && data.height !== currentProject.height) updates.height = data.height;
-                    if (data.backgroundColor && data.backgroundColor !== currentProject.backgroundColor) updates.backgroundColor = data.backgroundColor;
-
-                    if (Object.keys(updates).length > 0) {
-                        console.log("[AI Sync] Applying project metadata update:", updates);
-                        projectStore.updateProject(updates);
-                    }
-                }
-
+                console.log("[AI Sync] <SSE> Got full snapshot update");
+                handleSnapshotData(data);
             } catch (e) {
-                console.error("[AI Sync] Failed to parse snapshot_update data:", e);
+                console.error("[AI Sync] Snapshot parse error:", e);
             }
         });
 
         eventSource.addEventListener("update", (event) => {
             try {
                 const data = JSON.parse(event.data);
-                console.log("[AI Sync] Received hot-update:", data.action);
-
                 if (data.action === "setFullState" && data.tracks) {
                     const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
                     const newTracksSnapshot = JSON.stringify(data.tracks);
                     if (currentTracksSnapshot !== newTracksSnapshot) {
-                        console.log("[AI Sync] Applying external track hot-update...");
                         useTimelineStore.getState().setTracks(data.tracks);
                     }
                 } else if (data.action === "updateElement" && data.elementId) {
                     useTimelineStore.getState().updateElement(data.elementId, data.updates);
                 }
             } catch (e) {
-                console.error("[AI Sync] Failed to parse SSE data:", e);
+                console.error("[AI Sync] Update parse error:", e);
             }
         });
 
-        // 监听 pending-edits 的实时推送
         eventSource.addEventListener("edit", (event) => {
             try {
                 const edit = JSON.parse(event.data);
-
-                // 去重：检查是否已处理过
-                if (processedIds.current.has(edit.id)) {
-                    console.log("[AI Sync] Skipping duplicate edit:", edit.id);
-                    return;
-                }
-
-                console.log("[AI Sync] Received real-time edit:", edit.action);
+                if (processedIds.current.has(edit.id)) return;
                 processedIds.current.add(edit.id);
                 applyEdit(edit);
             } catch (e) {
-                console.error("[AI Sync] Failed to parse edit event:", e);
+                console.error("[AI Sync] Edit parse error:", e);
             }
         });
 
         eventSource.onerror = (e) => {
-            console.warn("[AI Sync] SSE Connection lost, will retry...", e);
+            console.warn("[AI Sync] SSE lost, retrying...");
         };
 
         return () => {
             eventSource.close();
-            console.log("[AI Sync] SSE Connection closed.");
         };
-    }, [enabled, applyEdit]);
-
-    // --- Professional Debounced Reporter ---
-    const reportTimeout = useRef<NodeJS.Timeout | null>(null);
-    const lastReportedState = useRef<string>("");
+    }, [enabled, applyEdit, handleSnapshotData]);
 
     const reportState = useCallback(async () => {
-        const tracks = useTimelineStore.getState().tracks;
-        const mediaFiles = useMediaStore.getState().mediaFiles;
+        const currentTracks = useTimelineStore.getState().tracks;
         const activeProject = useProjectStore.getState().activeProject;
 
-        if (!activeProject) return;
+        if (!activeProject || !hasSynced.current) return;
 
-        // Create a summary to check for changes - now includes a simple stable hash of the track structure
-        // We focus on things that matter for the global view
         const stateSummary = JSON.stringify({
             projectId: activeProject.id,
-            lastTracksHash: tracks.map(t => ({
+            tracks: currentTracks.map(t => ({
                 id: t.id,
-                elements: t.elements.map(e => ({
-                    id: e.id,
-                    start: e.startTime,
-                    content: (e as any).content,
-                    x: (e as any).x,
-                    y: (e as any).y,
-                    scale: (e as any).scale,
-                    rotation: (e as any).rotation,
-                    opacity: (e as any).opacity,
-                    volume: (e as any).volume
-                }))
-            })),
-            assetCount: mediaFiles.length
+                elements: t.elements.map(e => ({ id: e.id, start: e.startTime, content: (e as any).content }))
+            }))
         });
 
-        // Only report if significantly changed (simplified check)
-        // For a true pro version, we'd do a deeper check or use a version counter
         if (stateSummary === lastReportedState.current) return;
 
         try {
-            console.log("[AI Sync] Reporting state to global view (debounced)...");
+            console.log("[AI Sync] Reporting tracks to backend...");
             await fetch("/api/ai-edit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "updateSnapshot",
-                    data: {
-                        project: activeProject,
-                        tracks,
-                        assets: mediaFiles.map(m => ({
-                            id: m.id,
-                            name: m.name,
-                            type: m.type,
-                            duration: m.duration,
-                            width: m.width,
-                            height: m.height
-                        }))
-                    }
+                    data: { project: activeProject, tracks: currentTracks }
                 })
             });
             lastReportedState.current = stateSummary;
         } catch (e) {
-            console.error("[AI Sync] Failed to report state:", e);
+            console.error("[AI Sync] Report failed:", e);
         }
     }, []);
 
-    // Reactively watch for changes
     useEffect(() => {
         if (!enabled) return;
-
-        // Clear previous pending report
-        if (reportTimeout.current) {
-            clearTimeout(reportTimeout.current);
-        }
-
-        // Set a new debounced report (3 seconds of inactivity)
+        if (reportTimeout.current) clearTimeout(reportTimeout.current);
         reportTimeout.current = setTimeout(() => {
             reportState();
         }, 3000);
-
         return () => {
             if (reportTimeout.current) clearTimeout(reportTimeout.current);
         };
-    }, [enabled, tracks, reportState]); // tracks changes trigger the effect
-
-    useEffect(() => {
-        if (!enabled) return;
-
-        // Initial check for any leftover edits
-        // pollForEdits(); // We could keep one initial poll if needed
-    }, [enabled]);
+    }, [enabled, tracks, reportState]);
 
     return {
-        triggerSync: () => { console.log("[AI Sync] Manual sync trigger is now handled via SSE."); },
+        triggerSync: () => { },
     };
 }

@@ -142,13 +142,20 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
   addMediaFile: async (projectId, file) => {
     const newItem: MediaFile = {
       ...file,
-      id: generateUUID(),
+      id: (file as any).id || generateUUID(),
     };
 
     // Add to local state immediately for UI responsiveness
     set((state) => ({
       mediaFiles: [...state.mediaFiles, newItem],
     }));
+
+    // If it's a linked file (e.g. from local filesystem via AI sync), 
+    // OR if we are in local development mode where we want to avoid IndexedDB blobs
+    if ((file as any).isLinked || newItem.filePath || newItem.url?.startsWith("/materials")) {
+      console.log("[Media Store] Asset is local/linked, skipping IndexedDB blobbing:", newItem.name);
+      return newItem;
+    }
 
     // Save to persistent storage in background
     try {

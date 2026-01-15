@@ -59,7 +59,9 @@ const nextConfig: NextConfig = {
           "**/.git/**",
           "**/.next/**",
           "**/node_modules/**",
-          path.resolve(__dirname, "../../.aicut") // Absolute path to ignore
+          path.resolve(__dirname, "../../.aicut"), // Absolute path to ignore
+          path.resolve(__dirname, "../../tools"),
+          path.resolve(__dirname, "public/materials"),
         ],
       };
     }

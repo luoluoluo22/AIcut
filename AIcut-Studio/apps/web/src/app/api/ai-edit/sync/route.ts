@@ -22,6 +22,21 @@ export async function GET(req: NextRequest) {
             // 发送初始连接成功消息
             controller.enqueue(encoder.encode("event: connected\ndata: { \"status\": \"ready\" }\n\n"));
 
+            // --- NEW: 发送初始快照 (初始全量同步) ---
+            const SNAPSHOT_FILE = path.join(EDITS_DIR, "project-snapshot.json");
+            if (fs.existsSync(SNAPSHOT_FILE)) {
+                try {
+                    const content = fs.readFileSync(SNAPSHOT_FILE, "utf-8");
+                    if (content.trim()) {
+                        const data = JSON.parse(content);
+                        console.log("[SSE] Sending initial project snapshot to new client...");
+                        controller.enqueue(encoder.encode(`event: snapshot_update\ndata: ${JSON.stringify(data)}\n\n`));
+                    }
+                } catch (e) {
+                    console.error("[SSE] Failed to send initial snapshot:", e);
+                }
+            }
+
             // --- 核心逻辑：监听文件系统 ---
             const processedIds = new Set<string>();
             const EDITS_FILE = path.join(EDITS_DIR, "pending-edits.json");

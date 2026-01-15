@@ -14,6 +14,7 @@ import {
   Music,
   Video,
 } from "lucide-react";
+import { generateThumbnail, getVideoInfo } from "@/lib/mediabunny-utils";
 import { useRef, useState, useMemo } from "react";
 import { Sparkles, Video as VideoIcon } from "lucide-react";
 import { GenerateImageDialog } from "../dialogs/generate-image-dialog";
@@ -197,15 +198,75 @@ export function MediaView() {
     setIsProcessing(true);
     setProgress(0);
     try {
-      const processedItems = await processMediaFiles(files, (p) =>
-        setProgress(p)
-      );
-      for (const item of processedItems) {
-        await addMediaFile(activeProject.id, item);
+      const fileArray = Array.from(files);
+      const total = fileArray.length;
+
+      for (let i = 0; i < total; i++) {
+        const file = fileArray[i];
+        console.log(`[Upload] Processing and uploading ${file.name}...`);
+
+        // --- NEW: Check for existing file with same name and cleanup ---
+        const existingAsset = mediaFiles.find(a => a.name === file.name);
+        if (existingAsset) {
+          console.log(`[Upload] File ${file.name} already exists. Cleaning up old version...`);
+          await fetch(`/api/media/delete-local?id=${existingAsset.id}`, { method: 'DELETE' });
+          // Wait a bit for file system to settle
+          await new Promise(r => setTimeout(r, 100));
+        }
+
+        // 1. Generate local metadata first (quick browser native)
+        let thumbnail = "";
+        let width = 0;
+        let height = 0;
+        let duration = 0;
+
+        try {
+          if (file.type.startsWith("video/")) {
+            const info = await getVideoInfo(file);
+            width = info.width;
+            height = info.height;
+            duration = info.duration;
+            thumbnail = await generateThumbnail(file, 0.5);
+          } else if (file.type.startsWith("image/")) {
+            const { getImageDimensions } = await import("@/stores/media-store");
+            const dim = await getImageDimensions(file);
+            width = dim.width;
+            height = dim.height;
+          } else if (file.type.startsWith("audio/")) {
+            const { getMediaDuration } = await import("@/stores/media-store");
+            duration = await getMediaDuration(file);
+          }
+        } catch (e) {
+          console.warn("Failed to extract metadata for upload, continuing anyway", e);
+        }
+
+        // 2. Upload to local server via FormData
+        const formData = new FormData();
+        formData.append("file", file);
+        if (thumbnail) formData.append("thumbnail", thumbnail);
+        formData.append("width", String(width));
+        formData.append("height", String(height));
+        formData.append("duration", String(duration));
+
+        const response = await fetch("/api/media/upload-local", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Upload failed for ${file.name}`);
+        }
+
+        setProgress(Math.round(((i + 1) / total) * 100));
       }
+
+      toast.success("Files uploaded to local materials folder");
+      // Note: We don't call addMediaFile here! 
+      // The AI Sync logic (SSE) will detect the new assets in project-snapshot.json 
+      // and update the MediaStore automatically with the correct local URLs.
     } catch (error) {
-      console.error("Error processing files:", error);
-      toast.error("Failed to process files");
+      console.error("Error uploading files:", error);
+      toast.error("Failed to upload files to local folder");
     } finally {
       setIsProcessing(false);
       setProgress(0);
@@ -232,7 +293,23 @@ export function MediaView() {
       return;
     }
 
-    await removeMediaFile(activeProject.id, id);
+    try {
+      console.log(`[Media View] Deleting asset ${id} and its physical file...`);
+      const response = await fetch(`/api/media/delete-local?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete local file");
+      }
+
+      toast.success("Asset and physical file deleted");
+      // Note: We don't call removeMediaFile manually here!
+      // The SSE snapshot_update will automatically remove it from MediaStore
+    } catch (error) {
+      console.error("Error deleting asset:", error);
+      toast.error("Failed to delete file");
+    }
   };
 
   const formatDuration = (duration: number) => {

@@ -3,15 +3,15 @@
     "id": "demo",
     "name": "AIcut Local Project",
     "thumbnail": null,
-    "createdAt": "2026-01-15T08:43:57.453Z",
-    "updatedAt": "2026-01-15T08:48:29.926Z",
+    "createdAt": "2026-01-15T15:51:12.170Z",
+    "updatedAt": "2026-01-15T15:55:25.003Z",
     "scenes": [
       {
         "id": "scene1",
         "name": "Scene 1",
         "isMain": true,
-        "createdAt": "2026-01-15T08:43:57.453Z",
-        "updatedAt": "2026-01-15T08:43:57.453Z"
+        "createdAt": "2026-01-15T15:51:12.170Z",
+        "updatedAt": "2026-01-15T15:51:12.170Z"
       }
     ],
     "currentSceneId": "scene1",
@@ -28,401 +28,246 @@
   },
   "tracks": [
     {
-      "id": "812fab13-4b4d-49a0-982f-32fd0a1d204e",
+      "id": "track_text",
       "name": "AI 字幕",
       "type": "text",
       "elements": [
         {
+          "id": "el_title",
           "type": "text",
-          "name": "那是一个宁静的午后",
-          "content": "那是午后",
-          "startTime": 5.166666666666667,
-          "duration": 1.7199999999999998,
+          "name": "Title",
+          "content": "AIcut 自动剪辑演示",
+          "startTime": 0,
+          "duration": 4,
           "trimStart": 0,
           "trimEnd": 0,
           "x": 960,
-          "y": 900,
-          "fontSize": 48,
-          "fontFamily": "Arial",
+          "y": 800,
+          "fontSize": 80,
+          "fontFamily": "Microsoft YaHei",
           "color": "#FFFFFF",
-          "backgroundColor": "rgba(0,0,0,0.7)",
+          "backgroundColor": "#000000AA",
           "textAlign": "center",
-          "fontWeight": "normal",
-          "fontStyle": "normal",
-          "textDecoration": "none",
-          "rotation": 0,
           "opacity": 1,
-          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
-          "voiceId": "zh-CN-YunjianNeural"
-        },
-        {
-          "type": "text",
-          "name": "洛阳城外",
-          "content": "洛阳城外",
-          "startTime": 8.22,
-          "duration": 0.7999999999999989,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "x": 960,
-          "y": 900,
-          "fontSize": 48,
-          "fontFamily": "Arial",
-          "color": "#FFFFFF",
-          "backgroundColor": "rgba(0,0,0,0.7)",
-          "textAlign": "center",
-          "fontWeight": "normal",
-          "fontStyle": "normal",
-          "textDecoration": "none",
-          "rotation": 0,
-          "opacity": 1,
-          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d"
-        },
-        {
-          "type": "text",
-          "name": "远道而来的孔秋",
-          "content": "远道而来的孔秋",
-          "startTime": 10,
-          "duration": 2.34,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "x": 960,
-          "y": 900,
-          "fontSize": 48,
-          "fontFamily": "Arial",
-          "color": "#FFFFFF",
-          "backgroundColor": "rgba(0,0,0,0.7)",
-          "textAlign": "center",
-          "fontWeight": "normal",
-          "fontStyle": "normal",
-          "textDecoration": "none",
-          "rotation": 0,
-          "opacity": 1,
-          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926"
+          "rotation": 0
         }
-      ],
-      "muted": false
+      ]
     },
     {
-      "id": "944c7b18-3459-4d70-94c3-dc003124a8a3",
-      "name": "Media Track",
+      "id": "track_main_visual",
+      "name": "AI 画面轨",
       "type": "media",
+      "isMain": true,
       "elements": [
         {
+          "id": "el_cover",
           "type": "media",
-          "mediaId": "24684fd6-1a5b-421a-897c-cfb16c237333",
-          "name": "ai-generated-1768486135630.png",
+          "mediaId": "asset_818283",
+          "name": "封面",
+          "startTime": 0,
           "duration": 5,
-          "startTime": 9.756,
           "trimStart": 0,
           "trimEnd": 0,
-          "id": "d99821e0-1729-4283-a38a-8df062d95e51",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 1,
-          "rotation": 0,
           "opacity": 1,
-          "volume": 1
+          "volume": 1,
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
         },
         {
+          "id": "el_visual_0",
           "type": "media",
-          "mediaId": "c3519f53-edba-41ba-9172-6738bd126207",
-          "name": "grok_video_27146.mp4",
-          "duration": 6.041667,
-          "startTime": 8.881784197001252e-16,
+          "mediaId": "asset_grok_v1",
+          "name": "Grok-赛博视频",
+          "startTime": 5,
+          "duration": 3,
           "trimStart": 0,
           "trimEnd": 0,
-          "id": "88a718c0-4f6d-409a-9d4c-de26a76b4be9",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "volume": 1
-        }
-      ],
-      "muted": false
-    },
-    {
-      "id": "c55c63c3-0c78-466d-a909-9be9f308d6bc",
-      "name": "Media Track",
-      "type": "media",
-      "elements": [
-        {
-          "type": "media",
-          "mediaId": "3938dfa9-3d33-41f8-8546-4c823f63664a",
-          "name": "AI还原纪录片.mp4 (left)",
-          "duration": 107.043991,
-          "startTime": 8.881784197001252e-16,
-          "trimStart": 0,
-          "trimEnd": 104.27732433333334,
-          "id": "3422f190-0958-4e80-a2d6-6652fec54126",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 0.94,
-          "rotation": 0,
           "opacity": 1,
           "volume": 1,
-          "transition": {
-            "out": {
-              "type": "fade",
-              "duration": 0.5
-            }
-          },
-          "keyframes": {
-            "scale": [
-              {
-                "id": "29ddf19d-6049-4d90-8b08-55dbfabaf522",
-                "time": 0,
-                "value": 1,
-                "easing": "linear"
-              },
-              {
-                "id": "3d65297a-0fd0-484b-a785-1beabc13f0b4",
-                "time": 0.06666666666666667,
-                "value": 1,
-                "easing": "linear"
-              },
-              {
-                "id": "ccebc77c-e346-4b60-a0b3-c3c430ce647f",
-                "time": 0.23333333333333334,
-                "value": 0.94,
-                "easing": "linear"
-              },
-              {
-                "id": "0ff75320-41b2-43b0-9895-e89450577869",
-                "time": 1.4666666666666666,
-                "value": 2,
-                "easing": "linear"
-              },
-              {
-                "id": "a97dfe6c-47df-4953-86ee-57e9c0d35c8a",
-                "time": 2.6122000000029777,
-                "value": 1,
-                "easing": "linear"
-              },
-              {
-                "id": "0dbc57fe-797f-4f8b-867a-6a95eeaccc6c",
-                "time": 2.6333333333333324,
-                "value": 2,
-                "easing": "linear"
-              }
-            ]
-          }
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
         },
         {
+          "id": "el_visual_1",
           "type": "media",
-          "mediaId": "3938dfa9-3d33-41f8-8546-4c823f63664a",
-          "name": "AI还原纪录片.mp4 (right)",
-          "duration": 107.043991,
-          "startTime": 2.7666666666666666,
-          "trimStart": 2.7666666666666666,
-          "trimEnd": 97.31065766666667,
-          "id": "21d1f71a-056c-47fc-9816-4d5ea3e6b757",
-          "muted": false,
-          "x": 960,
-          "y": 540,
+          "mediaId": "asset_bf29ea80",
+          "name": "ai_gen_1768486131632.jpg",
+          "startTime": 8,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "opacity": 1,
+          "volume": 0,
+          "x": 0,
+          "y": 0,
           "scale": 1,
-          "rotation": 0,
+          "rotation": 0
+        },
+        {
+          "id": "el_visual_2",
+          "type": "media",
+          "mediaId": "asset_4c7219f3",
+          "name": "grok_video_28340.mp4",
+          "startTime": 11,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
           "opacity": 1,
           "volume": 1,
-          "transition": {
-            "in": {
-              "type": "slide-left",
-              "duration": 0.5
-            }
-          }
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
+        },
+        {
+          "id": "el_visual_3",
+          "type": "media",
+          "mediaId": "asset_bamboo_img",
+          "name": "竹林-背景图",
+          "startTime": 14,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "opacity": 1,
+          "volume": 0,
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
+        },
+        {
+          "id": "el_visual_4",
+          "type": "media",
+          "mediaId": "asset_cyber_img",
+          "name": "赛博-背景图",
+          "startTime": 17,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "opacity": 1,
+          "volume": 0,
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
         }
-      ],
-      "muted": true
+      ]
     },
     {
-      "id": "7c7dd8d0-9c1f-4772-8a3c-1c346d32cd58",
-      "name": "Main Track",
-      "type": "media",
-      "elements": [],
-      "muted": false,
-      "isMain": true
-    },
-    {
-      "id": "0fe7a7fc-004a-4060-ae19-db5010aefca4",
-      "name": "AI 语音轨",
+      "id": "track_bgm",
+      "name": "AI 配音轨",
       "type": "audio",
       "elements": [
         {
+          "id": "el_bgm",
           "type": "media",
-          "mediaId": "f6c4d70e-da9c-48b0-9245-de2369c21209",
-          "name": "TTS: 那是午后1",
-          "startTime": 5.166666666666667,
-          "duration": 1.752,
+          "mediaId": "asset_833183",
+          "name": "解说配音",
+          "startTime": 0,
+          "duration": 106.9975,
           "trimStart": 0,
           "trimEnd": 0,
-          "muted": false,
-          "volume": 1,
-          "x": 0.5,
-          "y": 0.5,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "id": "2905a3b9-172d-453d-b26a-0070c41c69b1"
-        },
-        {
-          "type": "media",
-          "mediaId": "746474a6-10b2-4aa3-b0a3-9a08251ae1ee",
-          "name": "TTS: 洛阳城外",
-          "startTime": 8.22,
-          "duration": 1.536,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "muted": false,
-          "volume": 1,
-          "x": 0.5,
-          "y": 0.5,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "id": "a0d89176-d5be-4f2c-8f8c-70de12a8b160"
-        },
-        {
-          "type": "media",
-          "mediaId": "4fc7c84c-edf4-4ff2-bfc9-064af678f906",
-          "name": "TTS: 远道而来的孔秋",
-          "startTime": 10,
-          "duration": 1.968,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "muted": false,
-          "volume": 1,
-          "x": 0.5,
-          "y": 0.5,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "id": "50a3bfc7-2d21-4dd7-b01a-003dcacb418e"
-        },
-        {
-          "type": "media",
-          "mediaId": "c63a0a96-1fb7-40ab-8ea1-dc787e437a8d",
-          "name": "TTS: 那是午后",
-          "startTime": 5.166666666666667,
-          "duration": 1.488,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "muted": false,
-          "volume": 1,
-          "x": 0.5,
-          "y": 0.5,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "id": "db636fcd-5056-43f4-848a-8e6f68b1161e"
-        },
-        {
-          "type": "media",
-          "mediaId": "e65dfb18-5c11-4e11-89c4-3079e864830c",
-          "name": "TTS: 洛阳城外",
-          "startTime": 8.22,
-          "duration": 1.536,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "muted": false,
-          "volume": 1,
-          "x": 0.5,
-          "y": 0.5,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "id": "7c60f3f5-519c-4bc7-b5b5-e90136be71f6"
-        },
-        {
-          "type": "media",
-          "mediaId": "020a0d11-dcc0-44c1-99a9-cdd390b8508d",
-          "name": "TTS: 远道而来的孔秋",
-          "startTime": 10,
-          "duration": 1.968,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "muted": false,
-          "volume": 1,
-          "x": 0.5,
-          "y": 0.5,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "id": "e7f80dfe-3de1-4274-a43c-a6e46dd10f43"
+          "volume": 0.8,
+          "opacity": 0
         }
-      ],
-      "muted": false
+      ]
     }
   ],
   "assets": [
     {
-      "id": "020a0d11-dcc0-44c1-99a9-cdd390b8508d",
-      "name": "TTS: 远道而来的孔秋",
-      "type": "audio",
-      "duration": 1.968
-    },
-    {
-      "id": "04d9966d-a88f-423e-86ae-affbb09c4b3b",
-      "name": "ai-generated-1768485094383.png",
+      "id": "asset_bf29ea80",
+      "name": "ai_gen_1768486131632.jpg",
       "type": "image",
-      "width": 1024,
-      "height": 576
+      "url": "/materials/ai_gen_1768486131632.jpg",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\ai_gen_1768486131632.jpg",
+      "isLinked": true
     },
     {
-      "id": "3938dfa9-3d33-41f8-8546-4c823f63664a",
-      "name": "AI还原纪录片.mp4",
+      "id": "asset_grok_v1",
+      "name": "Grok-赛博视频",
       "type": "video",
-      "duration": 107.043991,
+      "url": "/materials/grok_video_27146.mp4",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\grok_video_27146.mp4",
+      "isLinked": true
+    },
+    {
+      "id": "asset_4c7219f3",
+      "name": "grok_video_28340.mp4",
+      "type": "video",
+      "url": "/materials/grok_video_28340.mp4",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\grok_video_28340.mp4",
+      "isLinked": true
+    },
+    {
+      "id": "asset_fafeb189",
+      "name": "scene_bamboo.mp3",
+      "type": "audio",
+      "url": "/materials/scene_bamboo.mp3",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_bamboo.mp3",
+      "isLinked": true
+    },
+    {
+      "id": "asset_bamboo_img",
+      "name": "竹林-背景图",
+      "type": "image",
+      "url": "/materials/scene_bamboo.png",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_bamboo.png",
+      "isLinked": true
+    },
+    {
+      "id": "asset_5dea1458",
+      "name": "scene_cyber.mp3",
+      "type": "audio",
+      "url": "/materials/scene_cyber.mp3",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_cyber.mp3",
+      "isLinked": true
+    },
+    {
+      "id": "asset_cyber_img",
+      "name": "赛博-背景图",
+      "type": "image",
+      "url": "/materials/scene_cyber.png",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_cyber.png",
+      "isLinked": true
+    },
+    {
+      "id": "asset_cyber_aud",
+      "name": "语音-赛博街道",
+      "type": "audio",
+      "url": "/materials/v1.mp3",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\v1.mp3",
+      "isLinked": true
+    },
+    {
+      "id": "asset_bamboo_aud",
+      "name": "语音-竹林深处",
+      "type": "audio",
+      "url": "/materials/v2.mp3",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\v2.mp3",
+      "isLinked": true
+    },
+    {
+      "id": "asset_818283",
+      "name": "AI还原纪录片-封面.jpg",
+      "type": "image",
+      "url": "/materials/AI还原纪录片-封面.jpg",
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片-封面.jpg",
       "width": 1950,
-      "height": 1080
+      "height": 1080,
+      "isLinked": true
     },
     {
-      "id": "4fc7c84c-edf4-4ff2-bfc9-064af678f906",
-      "name": "TTS: 远道而来的孔秋",
+      "id": "asset_833183",
+      "name": "AI还原纪录片.MP3",
       "type": "audio",
-      "duration": 1.968
-    },
-    {
-      "id": "746474a6-10b2-4aa3-b0a3-9a08251ae1ee",
-      "name": "TTS: 洛阳城外",
-      "type": "audio",
-      "duration": 1.536
-    },
-    {
-      "id": "c63a0a96-1fb7-40ab-8ea1-dc787e437a8d",
-      "name": "TTS: 那是午后",
-      "type": "audio",
-      "duration": 1.488
-    },
-    {
-      "id": "e65dfb18-5c11-4e11-89c4-3079e864830c",
-      "name": "TTS: 洛阳城外",
-      "type": "audio",
-      "duration": 1.536
-    },
-    {
-      "id": "f6c4d70e-da9c-48b0-9245-de2369c21209",
-      "name": "TTS: 那是午后1",
-      "type": "audio",
-      "duration": 1.752
-    },
-    {
-      "id": "24684fd6-1a5b-421a-897c-cfb16c237333",
-      "name": "ai-generated-1768486135630.png",
-      "type": "image",
-      "width": 1024,
-      "height": 576
-    },
-    {
-      "id": "c3519f53-edba-41ba-9172-6738bd126207",
-      "name": "grok_video_27146.mp4",
-      "type": "video",
-      "duration": 6.041667,
-      "width": 752,
-      "height": 416
+      "url": "/materials/AI还原纪录片.MP3",
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片.MP3",
+      "duration": 106.9975,
+      "isLinked": true
     }
   ]
 }

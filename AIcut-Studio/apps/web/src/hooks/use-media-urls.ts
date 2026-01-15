@@ -12,10 +12,17 @@ export function useMediaUrls(mediaFiles: MediaFile[]) {
         // Create URLs for new files
         mediaFiles.forEach((file) => {
             if (!newUrls[file.id]) {
-                const url = URL.createObjectURL(file.file);
-                newUrls[file.id] = url;
-                createdUrls.push(url);
-                changed = true;
+                if (file.url) {
+                    // Use existing URL (linked asset)
+                    newUrls[file.id] = file.url;
+                    changed = true;
+                } else if (file.file) {
+                    // Create blob URL for uploaded files
+                    const url = URL.createObjectURL(file.file);
+                    newUrls[file.id] = url;
+                    createdUrls.push(url);
+                    changed = true;
+                }
             }
         });
 

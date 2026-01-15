@@ -245,9 +245,25 @@ export async function POST(request: NextRequest) {
             }
 
             case "updateSnapshot": {
-                // Front-end reports its full state
+                // Front-end reports its full state (Smart Merge)
                 try {
-                    fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(data, null, 2));
+                    let currentSnapshot: any = {};
+                    if (fs.existsSync(SNAPSHOT_FILE)) {
+                        try {
+                            currentSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                        } catch (e) { /* ignore corrupt */ }
+                    }
+
+                    // Merge incoming data (Project & Tracks) with existing Assets
+                    const mergedData = {
+                        ...currentSnapshot,
+                        project: data.project || currentSnapshot.project,
+                        tracks: data.tracks || currentSnapshot.tracks,
+                        // CRITICAL: Preserve assets if not provided in the update
+                        assets: data.assets || currentSnapshot.assets || []
+                    };
+
+                    fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(mergedData, null, 2));
                     return NextResponse.json({ success: true });
                 } catch (e) {
                     return NextResponse.json({ success: false, error: "Failed to save snapshot" }, { status: 500 });

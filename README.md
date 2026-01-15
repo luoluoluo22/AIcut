@@ -1,129 +1,127 @@
 # AIcut - 全自动 AI 视频剪辑引擎
 
-[![Remotion](https://img.shields.io/badge/Engine-Remotion-blue.svg)](https://remotion.dev)
+[![Node](https://img.shields.io/badge/Front--end-Next.js-black.svg)](https://nextjs.org)
 [![Python](https://img.shields.io/badge/Logic-Python-green.svg)](https://python.org)
-[![MCP](https://img.shields.io/badge/Protocol-MCP-orange.svg)](https://modelcontextprotocol.io)
+[![Electron](https://img.shields.io/badge/App-Electron-blue.svg)](https://electronjs.org)
 
-<p align="center">
-  <img src="docs/promo_banner.png" alt="AIcut Banner" width="100%">
-</p>
-
-**AIcut** 是一款 **AI 原生** 的全自动视频制作引擎。只需给 AI 一个想法，它就能自动完成：素材搜索、脚本撰写、配音生成、字幕对齐、视频合成。
-
-> 🎬 **告别手动剪辑，让 AI 成为你的私人剪辑师。**
-
-
-## ✨ 核心特性
-
-- 💡 **一句指令，全片生成**：只需告诉 AI 你的想法，脚本、素材、剪辑、音乐全自动搞定。
-- � **海量素材，智能匹配**：自动搜索全球免费商用图库，为每一句文案匹配最合适的画面。
-- 🎙️ **专业配音，字幕同步**：内置高质量 AI 语音，自动生成旁白并精确对齐字幕，告别手动打轴。
-- 🛠️ **拒绝黑盒，完全可控**：生成的不仅仅是视频，更是完整的工程源码。你可以随意修改文案、替换素材或调整细节。
-- 🚀 **极速渲染，批量生产**：本地高效渲染，支持批量生成短视频矩阵，彻底释放你的生产力。
+**AIcut** 是一款 **AI 原生** 的全自动视频制作引擎。它将强大的前端时间轴（Timeline）与后端 Python AI 逻辑结合，实现真正的自动化视频生产。
 
 ---
 
-## 🚀 极速上手
+## 🚀 快速启动
 
-### 1. 安装依赖
-需要 Python 3.10+ 和 Node.js 18+。
+若要在本地启动 AIcut 编辑器，请遵循以下步骤：
 
-```bash
-# 1. 安装 Python 依赖
-pip install -r requirements.txt
+### 1. 环境准备
+- **Node.js**: 18.0+
+- **Python**: 3.10+
 
-# 2. 安装渲染引擎依赖
-cd remotion-studio
-npm install
-```
-
-### 2. 启动预览
-```bash
-npm start
-```
-*浏览器自动打开 `http://localhost:3000`，即可看到生成的演示视频。*
-
-> **提示**：如需使用自动下载素材功能，请参考下方的进阶配置。
-
----
-
-## 🤖 如何让 AI 来剪辑视频？
-
-AIcut 的核心设计理念是 **让 AI 能够直接操控视频制作流程**。以下是与 AI 协作的典型工作流：
-
-### 方式一：通过“上帝视角”实时热重载 (推荐)
-
-AIcut 现在支持 **SSE (Server-Sent Events) 实时同步协议**。AI 助理或外部脚本可以直接通过修改本地 JSON 文件来控制网页端的预览，实现“保存即生效”的极速体验。
-
-1. **项目快照 (Snapshot)**：网页端每 3 秒会自动将当前时间轴状态上报到本地。
-2. **实时同步 (Hot Sync)**：外部脚本修改同步文件后，网页端预览会瞬间重绘。
-
-> 📖 **详细协议说明与 AI 提示词模板**：查看 [AI 同步协议指南 (docs/AI_SYNC_PROTOCOL.md)](docs/AI_SYNC_PROTOCOL.md)
-
-### 方式二：手动运行 Python 脚本
-你可以运行 `tools/` 目录下的脚本，通过 API 接口与 Web 编辑器交互：
-- `demo_full_state.py`: 演示如何通过一个指令完全重构时间轴。
-- `test_global_view.py`: 演示 AI 如何读取网页状态并自动完成排版。
-
+### 2. 安装与启动
+1. **安装 Python 依赖** (根目录):
+   ```bash
+   pip install -e .
+   ```
+2. **安装前端依赖** (`AIcut-Studio/apps/web` 目录):
+   ```bash
+   cd AIcut-Studio/apps/web
+   npm install  # 或使用 bun install
+   ```
+3. **一键启动项目**:
+   ```bash
+   npm run app
+   ```
+   此命令将同时启动 **Next.js 服务** 和 **Electron 应用**。
 
 ---
 
-## 📁 项目结构
+## 🤖 如何让 AI 进行剪辑？
+
+AIcut 的设计思路是：**前端负责渲染与呈现，后端 Python 负责思考与控制**。
+
+### AI 剪辑的工作流
+1. **获取状态**: AI 脚本通过读取 `.aicut/project-snapshot.json` 获取当前视频的时间轴状态。
+2. **生成指令**: AI 根据需求（如“帮我生成旁白”、“自动配图”）生成编辑指令。
+3. **同步执行**: AI 修改 `.aicut/pending-edits.json` 或直接通过 `ai_daemon.py` 发送指令。
+4. **热重载**: 编辑器感知到变化，实时更新时间轴预览。
+
+### 剪辑时应修改哪个文件？
+如果你想自定义 AI 的剪辑逻辑（例如：修改字幕生成方式、调整转场算法），你应该在 **`tools/`** 目录下操作：
+- **`tools/ai_daemon.py`**: 核心守护进程，负责 AI 与前端的通信。
+- **`tools/create_xiuxian_vlog.py`**: 一个具体的 AI 剪辑示例脚本，演示了如何从 0 到 1 生成一个视频。
+- **`tools/aicut_sdk.py`**: 提供给 AI 使用的工具包。
+
+### 素材（Materials）存放在哪里？
+为了让 AI 方便管理及编辑器能够正确引用，请遵循以下规范：
+- **本地素材**: 存放在项目根目录的 **`materials/`** 文件夹中。
+- **系统引用**: 在时间轴 JSON 中，素材应该使用绝对路径或基于根目录的相对路径。AI 生成的配音、处理后的视频片段均会自动存放在该目录下。
+
+---
+
+## 📁 核心项目结构
 
 ```
 AIcut/
-├── remotion-studio/          # Remotion 渲染引擎
-│   ├── src/
-│   │   ├── Composition.tsx   # 核心渲染组件
-│   │   ├── EffectsLibrary.tsx # 特效库
-│   │   └── projects/         # 项目 JSON 定义
-│   └── public/assets/        # 素材存放目录
-├── tools/                    # Python 工具脚本
-│   ├── generate_voiceovers_segments.py
-│   ├── update_project_json.py
-│   ├── free_stock_api.py
-│   └── ...
-├── docs/                     # 文档
-│   └── PROMO_SCRIPT_小白版.md # 宣传片脚本
-└── .agent/workflows/         # AI 工作流定义
-```
-
-### 素材管理规范
-- 所有素材存放在 `remotion-studio/public/assets/projects/[project_name]/` 下
-- 在项目 JSON 中，`path` 字段以 `/assets/projects/` 开头
-- 示例：`"/assets/projects/demo/videos/beach_waves.mp4"`
-
----
-
-## 🎥 渲染导出
-
-```bash
-cd remotion-studio
-
-# 导出为 MP4 (1080p, 30fps)
-npx remotion render src/index.tsx demo out/demo.mp4 --codec=h264
+├── AIcut-Studio/            # 前端编辑器工程
+│   └── apps/web/           # Next.js + Electron 核心源码
+├── tools/                   # AI 逻辑文件夹 (修改剪辑逻辑在此)
+│   ├── ai_daemon.py        # AI 通信后端
+│   └── ...                 # 各种辅助 AI 脚本
+├── materials/               # 素材存放中心 (视频、音频、图片)
+├── .aicut/                  # AI 通信临时数据 (缓存项目快照)
+└── docs/                    # 项目文档与设计方案
 ```
 
 ---
 
-## ⚙️ 进阶配置
+## 🎥 进阶功能
 
-### 配置 API Key (可选)
-如果需要使用 `free_stock_api.py` 自动下载 Pexels/Pixabay 素材：
-
-1. 复制 `.env.example` 为 `.env`：
-   ```bash
-   # Windows PowerShell
-   copy .env.example .env
-   ```
-2. 编辑 `.env` 文件，填入你的 Pexels/Pixabay API Key。
+- **字幕识别**: 右键点击视频片段，选择“识别字幕”。指令将发送给 `tools/subtitle_generator.py` 使用离线模型识别。
+- **TTS 配音**: 右键点击文本片段，选择“生成语音”。逻辑见 `tools/generate_voiceovers.py`。
 
 ---
 
-## 📜 License
+## 🧠 AI Agent 接入与提示词指南
 
-MIT License - 开源免费，欢迎贡献！
+如果你想让 **ChatGPT / Claude / DeepSeek** 等大模型直接控制 AIcut 进行剪辑，请将以下 **System Prompt** 发送给它：
+
+### 📋 System Prompt (复制以下内容)
+
+```markdown
+Role: You are AIcut, an intelligent video editing agent. Your goal is to autonomously edit videos by controlling the AIcut Engine.
+
+**Environment & Constraints:**
+1.  **Canvas Resolution**: 1920x1080 (Landscape).
+2.  **Coordinate System**: The origin (0,0) is TOP-LEFT. The center of the screen is **(960, 540)**. ALWAYS center visual elements at (960, 540) unless specified otherwise.
+3.  **Source of Truth**: The file `.aicut/project-snapshot.json` contains the current state (tracks, assets, project info).
+4.  **Action API**: You execute edits by sending HTTP POST requests to `http://localhost:3000/api/ai-edit`.
+
+**Available Capabilities (API Actions):**
+-   **`setFullState`**: Completely overwrite the timeline tracks. (Preferred for complex edits).
+    -   Payload: `{ "action": "setFullState", "data": { "tracks": [...] } }`
+-   **`addSubtitle`**: Add a single subtitle.
+    -   Payload: `{ "action": "addSubtitle", "data": { "text": "Hello", "startTime": 0, "duration": 3 } }`
+-   **`importAudio`**: Import a local audio file.
+    -   Payload: `{ "action": "importAudio", "data": { "filePath": "...", "startTime": 0 } }`
+
+**Workflow:**
+1.  **Read**: Analyze `.aicut/project-snapshot.json` to see available assets (images/videos/audio in `assets` list).
+2.  **Think**: Plan a timeline structure (Intro -> Main Content -> Outro).
+3.  **Act**: Generate a Python script (using `requests` lib) to construct the JSON structure and POST it to the API.
+
+**Critical Rules:**
+-   **Visuals**: Always set `x: 960, y: 540` for videos/images to center them.
+-   **Audio**: Background music usually goes to a separate track with lower volume (e.g., 0.2).
+-   **Assets**: You can ONLY use assets that already exist in the `snapshot.assets` list. Do not hallucinate file paths.
+```
+
+### 💡 常用指令示例
+
+**1. "帮我把素材库里的所有视频连成一个短片，每段3秒，加个背景音乐"**
+*AI 应该生成类似 `tools/create_demo_timeline.py` 的脚本，遍历 `assets`，计算 `startTime`，并发送 `setFullState` 请求。*
+
+**2. "给当前视频前5秒加上标题‘AIcut Demo’"**
+*AI 应该发送 `addSubtitle` 请求或通过 `setFullState` 添加一个 Text Track。*
 
 ---
 
-⭐ **AIcut**：从想法到成片，只需一句话。让 AI 成为你的全自动剪辑师。
+⭐ **AIcut** 让视频剪辑不再是繁琐的手动劳动。只需修改 Python 脚本，即可规模化复现你的剪辑创意。
