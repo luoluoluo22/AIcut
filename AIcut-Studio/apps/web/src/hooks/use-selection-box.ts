@@ -118,15 +118,30 @@ export function useSelectionBox({
           elementAbsolute.top > normalizedSelection.bottom
         );
 
+        // DEBUG: Debug log for single track selection issue
+        if (Math.random() < 0.05) { // Sample logs to avoid spamming too much but catch some
+          console.log(JSON.stringify({
+            debug_selection: "check_intersection",
+            elementId,
+            trackId,
+            intersects,
+            elementAbs: elementAbsolute,
+            selectionAbs: normalizedSelection
+          }));
+        }
+
         if (intersects && elementId && trackId) {
           selectedElements.push({ trackId, elementId });
         }
       });
 
       // Always call the callback - with elements or empty array to clear selection
-      console.log(
-        JSON.stringify({ selectElementsInBox: selectedElements.length })
-      );
+      // Only log if we found something or if we expected to find something but didn't (empty array)
+      if (selectedElements.length > 0 || Math.random() < 0.1) {
+        console.log(
+          JSON.stringify({ selectElementsInBox: selectedElements.length })
+        );
+      }
       onSelectionComplete(selectedElements);
     },
     [containerRef, onSelectionComplete]
@@ -173,7 +188,7 @@ export function useSelectionBox({
         setTimeout(() => {
           console.log(JSON.stringify({ clearingJustFinishedSelecting: true }));
           setJustFinishedSelecting(false);
-        }, 50);
+        }, 200);
       }
 
       // Don't call selectElementsInBox again - real-time selection already handled it

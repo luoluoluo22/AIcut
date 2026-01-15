@@ -1,15 +1,25 @@
 {
-  "name": "opencut",
+  "name": "aicut-studio",
   "version": "0.1.0",
   "private": true,
+  "description": "AI-Powered Video Editor",
+  "author": "AIcut Team",
+  "license": "MIT",
+  "main": "electron/main.js",
   "packageManager": "bun@1.2.18",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "biome check src/",
     "lint:fix": "biome check src/ --write",
-    "format": "biome format src/ --write"
+    "format": "biome format src/ --write",
+    "electron": "electron .",
+    "electron:dev": "cross-env NODE_ENV=development electron .",
+    "electron:build": "next build && electron-builder",
+    "electron:pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
+    "app": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\""
   },
   "dependencies": {
     "@ffmpeg/core": "^0.12.10",
@@ -72,10 +82,65 @@
     "@types/node": "^24.2.1",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "concurrently": "^9.1.2",
+    "wait-on": "^7.2.0",
     "cross-env": "^7.0.3",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
     "postcss": "^8",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
+  },
+  "build": {
+    "appId": "com.aicut.studio",
+    "productName": "AIcut Studio",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron/**/*",
+      "out/**/*",
+      ".next/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../../../tools",
+        "to": "tools",
+        "filter": [
+          "**/*.py",
+          "**/*.json"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "electron/assets/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "electron/assets/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "electron/assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }

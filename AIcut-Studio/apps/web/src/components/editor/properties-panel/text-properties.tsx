@@ -20,12 +20,29 @@ import {
 } from "./property-item";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { cn, uppercase } from "@/lib/utils";
-import { Grid2x2 } from "lucide-react";
+import { Grid2x2, Mic, Play, Square, Loader2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  TTS_VOICES,
+  DEFAULT_VOICE_ID,
+  getVoicesByLanguage,
+  getVoiceById,
+  LANGUAGE_NAMES,
+} from "@/constants/tts-constants";
 
 export function TextProperties({
   element,
@@ -47,6 +64,11 @@ export function TextProperties({
 
   // Track the last selected color for toggling
   const lastSelectedColor = useRef("#000000");
+
+  // 试听音色相关状态
+  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const parseAndValidateNumber = (
     value: string,
@@ -116,6 +138,117 @@ export function TextProperties({
   const handleTransparentToggle = (isTransparent: boolean) => {
     const newColor = isTransparent ? "transparent" : lastSelectedColor.current;
     updateTextElement(trackId, element.id, { backgroundColor: newColor });
+  };
+
+  // 试听音色
+  const handlePreviewVoice = async () => {
+    const voiceId = element.voiceId || DEFAULT_VOICE_ID;
+    const previewText = "这是一段试听文本。";
+
+    // 1. 如果正在播放，停止
+    if (isPreviewPlaying && previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current.currentTime = 0;
+      setIsPreviewPlaying(false);
+      return;
+    }
+
+    setIsPreviewLoading(true);
+    const previewPath = `/assets/tts/preview_${voiceId.replace(/[^a-zA-Z0-9-]/g, "_")}.mp3`;
+
+    // 2. 辅助函数：播放音频
+    const playAudio = async () => {
+      if (!previewAudioRef.current) {
+        previewAudioRef.current = new Audio();
+        previewAudioRef.current.onended = () => setIsPreviewPlaying(false);
+        previewAudioRef.current.onerror = () => {
+          setIsPreviewPlaying(false);
+          toast.error("播放失败");
+        };
+      }
+      // 添加时间戳防止浏览器强缓存旧内容，但保留一定时间的缓存 (10秒内不强制刷新)
+      const timestamp = Math.floor(Date.now() / 10000) * 10000;
+      previewAudioRef.current.src = previewPath + "?t=" + timestamp;
+
+      try {
+        await previewAudioRef.current.play();
+        setIsPreviewPlaying(true);
+        setIsPreviewLoading(false);
+        return true;
+      } catch (e) {
+        console.error("Play failed:", e);
+        return false;
+      }
+    };
+
+    // 3. 先尝试直接检查文件是否存在 (利用 HEAD 请求)
+    try {
+      const checkResponse = await fetch(previewPath, { method: "HEAD" });
+      if (checkResponse.ok) {
+        const size = checkResponse.headers.get("content-length");
+        if (size && parseInt(size) > 1000) {
+          // 文件存在且大小正常，直接播放
+          if (await playAudio()) return;
+        }
+      }
+    } catch (e) {
+      // 忽略检查错误，继续尝试生成
+    }
+
+    // 4. 请求生成试听音频
+    try {
+      const response = await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "requestTask",
+          data: {
+            taskType: "tts_preview",
+            voiceId,
+            text: previewText
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("请求失败");
+      }
+
+      toast.info(`正在生成 ${getVoiceById(voiceId)?.name || voiceId} 的试听...`);
+
+      // 5. 轮询检查文件是否生成完成
+      let attempts = 0;
+      const maxAttempts = 30; // 增加重试次数
+
+      const checkFile = async () => {
+        try {
+          const checkResponse = await fetch(previewPath + "?t=" + Date.now(), { method: "HEAD" });
+          if (checkResponse.ok) {
+            const size = checkResponse.headers.get("content-length");
+            // 确保文件已写入数据
+            if (size && parseInt(size) > 100) {
+              await playAudio();
+              return;
+            }
+          }
+        } catch { } // 忽略轮询中的错误
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(checkFile, 500);
+        } else {
+          setIsPreviewLoading(false);
+          toast.error("试听生成超时，请重试");
+        }
+      };
+
+      // 稍等一下再开始检查
+      setTimeout(checkFile, 1500);
+
+    } catch (err) {
+      setIsPreviewLoading(false);
+      toast.error("试听请求失败");
+    }
   };
 
   return (
@@ -430,6 +563,77 @@ export function TextProperties({
                       <TooltipContent>Transparent background</TooltipContent>
                     </Tooltip>
                   </div>
+                </PropertyItemValue>
+              </PropertyItem>
+              {/* TTS 音色选择 */}
+              <PropertyItem direction="column">
+                <PropertyItemLabel>
+                  <div className="flex items-center gap-1.5">
+                    <Mic className="h-3.5 w-3.5 text-green-500" />
+                    <span>语音音色</span>
+                  </div>
+                </PropertyItemLabel>
+                <PropertyItemValue>
+                  <Select
+                    value={element.voiceId || DEFAULT_VOICE_ID}
+                    onValueChange={(value) =>
+                      updateTextElement(trackId, element.id, { voiceId: value })
+                    }
+                  >
+                    <SelectTrigger className="w-full bg-panel-accent">
+                      <SelectValue placeholder="选择音色" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(getVoicesByLanguage()).map(([lang, voices]) => (
+                        <SelectGroup key={lang}>
+                          <SelectLabel className="text-xs text-muted-foreground">
+                            {LANGUAGE_NAMES[lang] || lang}
+                          </SelectLabel>
+                          {voices.map((voice) => (
+                            <SelectItem key={voice.id} value={voice.id}>
+                              <div className="flex items-center gap-2">
+                                <span className={cn(
+                                  "text-xs px-1.5 py-0.5 rounded",
+                                  voice.gender === "female"
+                                    ? "bg-pink-500/20 text-pink-500"
+                                    : "bg-blue-500/20 text-blue-500"
+                                )}>
+                                  {voice.gender === "female" ? "女" : "男"}
+                                </span>
+                                <span>{voice.name}</span>
+                                {voice.description && (
+                                  <span className="text-xs text-muted-foreground">
+                                    ({voice.description})
+                                  </span>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-8"
+                      onClick={handlePreviewVoice}
+                      disabled={isPreviewLoading}
+                    >
+                      {isPreviewLoading ? (
+                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                      ) : isPreviewPlaying ? (
+                        <Square className="h-3.5 w-3.5 mr-1.5" />
+                      ) : (
+                        <Play className="h-3.5 w-3.5 mr-1.5" />
+                      )}
+                      {isPreviewLoading ? "生成中..." : isPreviewPlaying ? "停止" : "试听音色"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    右键点击字幕时使用此音色生成语音
+                  </p>
                 </PropertyItemValue>
               </PropertyItem>
             </div>

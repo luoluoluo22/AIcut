@@ -66,6 +66,7 @@ export async function processMediaFiles(
         width,
         height,
         fps,
+        filePath: (file as any).path || undefined,
       });
 
       await new Promise((resolve) => setTimeout(resolve, 0));

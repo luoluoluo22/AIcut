@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   compiler: {
@@ -49,6 +50,21 @@ const nextConfig: NextConfig = {
     "@remotion/renderer",
     "@remotion/cli",
   ],
+  webpack: (config, { dev, isServer }) => {
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: [
+          "**/.git/**",
+          "**/.next/**",
+          "**/node_modules/**",
+          path.resolve(__dirname, "../../.aicut") // Absolute path to ignore
+        ],
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

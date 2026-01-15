@@ -12,6 +12,21 @@ interface BaseTimelineElement {
   trimStart: number;
   trimEnd: number;
   hidden?: boolean;
+  keyframes?: {
+    [key: string]: Array<{
+      id: string;
+      time: number; // Relative time (seconds) from element start
+      value: number;
+      easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
+    }>;
+  };
+}
+
+export interface Keyframe {
+  id: string;
+  time: number;
+  value: number;
+  easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
 }
 
 // Media element that references MediaStore
@@ -25,6 +40,10 @@ export interface MediaElement extends BaseTimelineElement {
   rotation: number; // in degrees
   opacity: number; // 0-1
   volume: number; // 0-1
+  transition?: {
+    in?: { type: string; duration: number };
+    out?: { type: string; duration: number };
+  };
 }
 
 // Text element with embedded text data
@@ -43,6 +62,7 @@ export interface TextElement extends BaseTimelineElement {
   y: number; // Position relative to canvas center
   rotation: number; // in degrees
   opacity: number; // 0-1
+  voiceId?: string; // TTS音色ID
 }
 
 // Typed timeline elements
@@ -84,7 +104,15 @@ export interface TextItemDragData {
   content: string;
 }
 
-export type DragData = MediaItemDragData | TextItemDragData;
+
+export interface TransitionItemDragData {
+  id: string;
+  type: "transition";
+  name: string;
+  transitionType: string;
+}
+
+export type DragData = MediaItemDragData | TextItemDragData | TransitionItemDragData;
 
 export interface TimelineTrack {
   id: string;

@@ -17,6 +17,7 @@ export interface StoredMediaMetadata {
     width?: number;
     height?: number;
     fps?: number;
+    filePath?: string;
     createdAt: string;
 }
 

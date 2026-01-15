@@ -10,6 +10,9 @@ import {
   Eye,
   Volume2,
   VolumeX,
+  Type,
+  Wand2,
+  Mic,
 } from "lucide-react";
 import { useMediaStore } from "@/stores/media-store";
 import { useTimelineStore } from "@/stores/timeline-store";
@@ -154,6 +157,106 @@ export function TimelineElement({
     revealElementInMedia(element.id);
   };
 
+  const handleRecognizeSubtitles = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("[AI Edit] handleRecognizeSubtitles triggered", {
+      elementId: element.id,
+      mediaId: (element as MediaElement).mediaId,
+      mediaName: mediaItem?.name || element.name
+    });
+    toast.info("正在调起 AI 字幕识别服务...");
+
+    try {
+      // 1. 先触发一次快照保存，确保 AI 助手拿到最新状态 (包括 trim)
+      const currentState = useTimelineStore.getState();
+
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "updateSnapshot",
+          data: currentState
+        })
+      });
+
+      // 2. 请求任务
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "requestTask",
+          data: {
+            taskType: "subtitle_generation",
+            elementId: element.id,
+            mediaId: (element as MediaElement).mediaId,
+            mediaName: mediaItem?.name || element.name
+          }
+        })
+      });
+      toast.success("识别请求已发送，请关注后台进度");
+    } catch (err) {
+      toast.error("发送失败，请检查服务连接");
+    }
+  };
+
+  const handleGenerateSpeech = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // 确定要生成语音的文本元素
+    const textElements: Array<{ id: string, content: string, startTime: number, duration: number, voiceId?: string }> = [];
+
+    if (isMultipleSelected && isCurrentElementSelected) {
+      // 多选模式：收集所有选中的文本元素
+      const allTracks = useTimelineStore.getState().tracks;
+      for (const sel of selectedElements) {
+        const t = allTracks.find(tr => tr.id === sel.trackId);
+        const el = t?.elements.find(e => e.id === sel.elementId);
+        if (el && el.type === "text") {
+          textElements.push({
+            id: el.id,
+            content: (el as any).content,
+            startTime: el.startTime,
+            duration: el.duration - el.trimStart - el.trimEnd,
+            voiceId: (el as any).voiceId
+          });
+        }
+      }
+    } else if (element.type === "text") {
+      // 单选模式：只处理当前元素
+      textElements.push({
+        id: element.id,
+        content: (element as any).content,
+        startTime: element.startTime,
+        duration: element.duration - element.trimStart - element.trimEnd,
+        voiceId: (element as any).voiceId
+      });
+    }
+
+    if (textElements.length === 0) {
+      toast.error("没有可生成语音的文本");
+      return;
+    }
+
+    toast.info(`正在为 ${textElements.length} 段文本生成语音...`);
+
+    try {
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "requestTask",
+          data: {
+            taskType: "tts_generation",
+            textElements: textElements
+          }
+        })
+      });
+      toast.success("语音生成请求已发送，请关注后台进度");
+    } catch (err) {
+      toast.error("发送失败，请检查服务连接");
+    }
+  };
+
   const renderElementContent = () => {
     if (element.type === "text") {
       return (
@@ -185,9 +288,8 @@ export function TimelineElement({
       return (
         <div className="w-full h-full flex items-center justify-center">
           <div
-            className={`w-full h-full relative ${
-              isSelected ? "bg-primary" : "bg-transparent"
-            }`}
+            className={`w-full h-full relative ${isSelected ? "bg-primary" : "bg-transparent"
+              }`}
           >
             <div
               className={`absolute top-[0.25rem] bottom-[0.25rem] left-0 right-0`}
@@ -238,9 +340,8 @@ export function TimelineElement({
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <div
-          className={`absolute top-0 h-full select-none timeline-element ${
-            isBeingDragged ? "z-50" : "z-10"
-          }`}
+          className={`absolute top-0 h-full select-none timeline-element ${isBeingDragged ? "z-50" : "z-10"
+            }`}
           style={{
             left: `${elementLeft}px`,
             width: `${elementWidth}px`,
@@ -254,9 +355,8 @@ export function TimelineElement({
           <div
             className={`relative h-full rounded-[0.5rem] cursor-pointer overflow-hidden ${getTrackElementClasses(
               track.type
-            )} ${isSelected ? "" : ""} ${
-              isBeingDragged ? "z-50" : "z-10"
-            } ${element.hidden ? "opacity-50" : ""}`}
+            )} ${isSelected ? "" : ""} ${isBeingDragged ? "z-50" : "z-10"
+              } ${element.hidden ? "opacity-50" : ""}`}
             onClick={(e) => onElementClick && onElementClick(e, element)}
             onMouseDown={handleElementMouseDown}
             onContextMenu={(e) =>
@@ -293,6 +393,23 @@ export function TimelineElement({
                 </div>
               </>
             )}
+
+            {/* Keyframes Indicator */}
+            {element.keyframes && (
+              <div className="absolute bottom-[2px] left-0 right-0 h-2 z-20 pointer-events-none overflow-hidden">
+                {Array.from(new Set(Object.values(element.keyframes).flat().map(k => k.time))).map(time => {
+                  const pct = (time / effectiveDuration) * 100;
+                  if (pct < 0 || pct > 100) return null;
+                  return (
+                    <div
+                      key={`kf-${time}`}
+                      className="absolute bottom-0 w-1.5 h-1.5 bg-yellow-400 rotate-45 transform -translate-x-1/2"
+                      style={{ left: `${pct}%` }}
+                    />
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       </ContextMenuTrigger>
@@ -301,20 +418,36 @@ export function TimelineElement({
           (isMultipleSelected &&
             isCurrentElementSelected &&
             canSplitSelected)) && (
-          <ContextMenuItem onClick={handleElementSplitContext}>
-            <Scissors className="h-4 w-4 mr-2" />
-            {isMultipleSelected && isCurrentElementSelected
-              ? `Split ${selectedElements.length} elements at playhead`
-              : "Split at playhead"}
-          </ContextMenuItem>
-        )}
+            <ContextMenuItem onClick={handleElementSplitContext}>
+              <Scissors className="h-4 w-4 mr-2" />
+              {isMultipleSelected && isCurrentElementSelected
+                ? `分割选中的 ${selectedElements.length} 个素材`
+                : "在播放头处分割"}
+            </ContextMenuItem>
+          )}
 
         <ContextMenuItem onClick={handleElementCopyContext}>
           <Copy className="h-4 w-4 mr-2" />
           {isMultipleSelected && isCurrentElementSelected
-            ? `Copy ${selectedElements.length} elements`
-            : "Copy element"}
+            ? `复制选中的 ${selectedElements.length} 个素材`
+            : "复制素材"}
         </ContextMenuItem>
+
+        {(!isMultipleSelected && hasAudio) && (
+          <ContextMenuItem onClick={handleRecognizeSubtitles} className="text-primary focus:text-primary">
+            <Wand2 className="h-4 w-4 mr-2" />
+            识别字幕 (AI)
+          </ContextMenuItem>
+        )}
+
+        {(element.type === "text") && (
+          <ContextMenuItem onClick={handleGenerateSpeech} className="text-green-500 focus:text-green-500">
+            <Mic className="h-4 w-4 mr-2" />
+            {isMultipleSelected && isCurrentElementSelected
+              ? `生成语音 (${selectedElements.length} 段)`
+              : "生成语音 (AI)"}
+          </ContextMenuItem>
+        )}
 
         <ContextMenuItem onClick={handleToggleElementContext}>
           {isMultipleSelected && isCurrentElementSelected ? (
@@ -337,23 +470,23 @@ export function TimelineElement({
           <span>
             {isMultipleSelected && isCurrentElementSelected
               ? hasAudioElements
-                ? `Toggle mute ${selectedElements.length} elements`
-                : `Toggle visibility ${selectedElements.length} elements`
+                ? `切换静音 (${selectedElements.length} 个素材)`
+                : `切换隐藏 (${selectedElements.length} 个素材)`
               : hasAudio
                 ? isMuted
-                  ? "Unmute"
-                  : "Mute"
+                  ? "取消静音"
+                  : "静音"
                 : element.hidden
-                  ? "Show"
-                  : "Hide"}{" "}
-            {!isMultipleSelected && (element.type === "text" ? "text" : "clip")}
+                  ? "显示"
+                  : "隐藏"}{" "}
+            {!isMultipleSelected && (element.type === "text" ? "文本" : "片段")}
           </span>
         </ContextMenuItem>
 
         {!isMultipleSelected && (
           <ContextMenuItem onClick={handleElementDuplicateContext}>
             <Copy className="h-4 w-4 mr-2" />
-            Duplicate {element.type === "text" ? "text" : "clip"}
+            创建副本 ({element.type === "text" ? "文本" : "片段"})
           </ContextMenuItem>
         )}
 
@@ -361,11 +494,11 @@ export function TimelineElement({
           <>
             <ContextMenuItem onClick={handleRevealInMedia}>
               <Search className="h-4 w-4 mr-2" />
-              Reveal in media
+              在素材库中查找
             </ContextMenuItem>
             <ContextMenuItem onClick={handleReplaceClip}>
               <RefreshCw className="h-4 w-4 mr-2" />
-              Replace clip
+              替换片段
             </ContextMenuItem>
           </>
         )}
@@ -378,8 +511,8 @@ export function TimelineElement({
         >
           <Trash2 className="h-4 w-4 mr-2" />
           {isMultipleSelected && isCurrentElementSelected
-            ? `Delete ${selectedElements.length} elements`
-            : `Delete ${element.type === "text" ? "text" : "clip"}`}
+            ? `删除选中的 ${selectedElements.length} 个素材`
+            : `删除${element.type === "text" ? "文本" : "片段"}`}
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

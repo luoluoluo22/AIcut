@@ -12,8 +12,8 @@ interface MediaStore {
   // Actions
   addMediaFile: (
     projectId: string,
-    file: Omit<MediaFile, "id">
-  ) => Promise<void>;
+    file: Omit<MediaFile, "id"> | MediaFile
+  ) => Promise<MediaFile>;
   removeMediaFile: (projectId: string, id: string) => Promise<void>;
   loadProjectMedia: (projectId: string) => Promise<void>;
   clearProjectMedia: (projectId: string) => Promise<void>;
@@ -159,7 +159,10 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
       set((state) => ({
         mediaFiles: state.mediaFiles.filter((media) => media.id !== newItem.id),
       }));
+      throw error;
     }
+
+    return newItem;
   },
 
   removeMediaFile: async (projectId: string, id: string) => {

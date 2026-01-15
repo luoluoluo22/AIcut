@@ -118,6 +118,7 @@ class StorageService {
       width: mediaItem.width,
       height: mediaItem.height,
       fps: mediaItem.fps,
+      filePath: mediaItem.filePath,
       createdAt: new Date().toISOString(),
     };
     await mediaMetadataAdapter.save(metadata);
@@ -151,6 +152,7 @@ class StorageService {
       width: metadata.width,
       height: metadata.height,
       fps: metadata.fps,
+      filePath: metadata.filePath,
     };
   }
 
@@ -184,6 +186,7 @@ class StorageService {
         width: metadata.width,
         height: metadata.height,
         fps: metadata.fps,
+        filePath: metadata.filePath,
       });
     }
 

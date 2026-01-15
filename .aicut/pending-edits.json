@@ -1,0 +1,433 @@
+[
+  {
+    "id": "edit_1768474010398_i4y2xtlia",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是一个宁静的午后",
+          "startTime": 5.150666666666666,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10.1,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768474010398,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474034428_x6iftl7mu",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_816c74d4-c3e5-4166-82bd-7ebbdba3ce17.mp3",
+      "name": "TTS: 那是一个宁静的午后",
+      "startTime": 5.150666666666666,
+      "duration": null
+    },
+    "timestamp": 1768474034428,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474034490_m3os86nzq",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_9e64b309-1384-4f88-b89a-dd2bb350402d.mp3",
+      "name": "TTS: 洛阳城外",
+      "startTime": 8.22,
+      "duration": null
+    },
+    "timestamp": 1768474034491,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474034677_zzyd9fg4x",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_816c74d4-c3e5-4166-82bd-7ebbdba3ce17.mp3",
+      "name": "TTS: 那是一个宁静的午后",
+      "startTime": 5.150666666666666,
+      "duration": null
+    },
+    "timestamp": 1768474034677,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474034999_kvlffuvro",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_9e64b309-1384-4f88-b89a-dd2bb350402d.mp3",
+      "name": "TTS: 洛阳城外",
+      "startTime": 8.22,
+      "duration": null
+    },
+    "timestamp": 1768474034999,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474035271_n37cwmdqb",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_e0fce853-938b-4e3e-a63a-8c3648fc2926.mp3",
+      "name": "TTS: 远道而来的孔秋",
+      "startTime": 10.1,
+      "duration": null
+    },
+    "timestamp": 1768474035271,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474035707_a9pxnwch7",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_816c74d4-c3e5-4166-82bd-7ebbdba3ce17.mp3",
+      "name": "TTS: 那是一个宁静的午后",
+      "startTime": 5.150666666666666,
+      "duration": null
+    },
+    "timestamp": 1768474035707,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474035765_ywqfmrynp",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_9e64b309-1384-4f88-b89a-dd2bb350402d.mp3",
+      "name": "TTS: 洛阳城外",
+      "startTime": 8.22,
+      "duration": null
+    },
+    "timestamp": 1768474035765,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474036375_g03di4b74",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_9e64b309-1384-4f88-b89a-dd2bb350402d.mp3",
+      "name": "TTS: 洛阳城外",
+      "startTime": 8.22,
+      "duration": null
+    },
+    "timestamp": 1768474036375,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474036412_hid9shydq",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_e0fce853-938b-4e3e-a63a-8c3648fc2926.mp3",
+      "name": "TTS: 远道而来的孔秋",
+      "startTime": 10.1,
+      "duration": null
+    },
+    "timestamp": 1768474036412,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474036451_kzw4x1ai6",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_816c74d4-c3e5-4166-82bd-7ebbdba3ce17.mp3",
+      "name": "TTS: 那是一个宁静的午后",
+      "startTime": 5.150666666666666,
+      "duration": null
+    },
+    "timestamp": 1768474036451,
+    "processed": true
+  },
+  {
+    "id": "edit_1768474038428_5x520colv",
+    "action": "importAudio",
+    "data": {
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\assets\\tts\\tts_e0fce853-938b-4e3e-a63a-8c3648fc2926.mp3",
+      "name": "TTS: 远道而来的孔秋",
+      "startTime": 10.1,
+      "duration": null
+    },
+    "timestamp": 1768474038428,
+    "processed": true
+  },
+  {
+    "id": "edit_1768477142421_q1vvh5q9w",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是一个宁静的午后",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768477142421,
+    "processed": true
+  },
+  {
+    "id": "edit_1768477343153_9uf0m4x4h",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是一个宁静的午后",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768477343153,
+    "processed": true
+  },
+  {
+    "id": "edit_1768478579048_cewf4jyhb",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是一个宁静的午后",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768478579048,
+    "processed": true
+  },
+  {
+    "id": "edit_1768478813289_gj0q2ngug",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是一个宁静的午后",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768478813289,
+    "processed": true
+  },
+  {
+    "id": "edit_1768479036946_0jm20tq3v",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是一个宁静的午后",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768479036946,
+    "processed": true
+  },
+  {
+    "id": "edit_1768481341540_ef7llprwh",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是午后1",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768481341540,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482104976_t0i6v7mzi",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "816c74d4-c3e5-4166-82bd-7ebbdba3ce17",
+          "content": "那是午后",
+          "startTime": 5.166666666666667,
+          "duration": 1.7199999999999998,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        },
+        {
+          "id": "9e64b309-1384-4f88-b89a-dd2bb350402d",
+          "content": "洛阳城外",
+          "startTime": 8.22,
+          "duration": 0.7999999999999989
+        },
+        {
+          "id": "e0fce853-938b-4e3e-a63a-8c3648fc2926",
+          "content": "远道而来的孔秋",
+          "startTime": 10,
+          "duration": 2.34
+        }
+      ]
+    },
+    "timestamp": 1768482104976,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482561708_qlblzipb5",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_preview",
+      "voiceId": "zh-CN-XiaoxiaoNeural",
+      "text": "那是午后"
+    },
+    "timestamp": 1768482561708,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482595343_11hp7zwol",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_preview",
+      "voiceId": "zh-CN-XiaoxiaoNeural",
+      "text": "那是午后"
+    },
+    "timestamp": 1768482595343,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482621789_pf1ywd52j",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_preview",
+      "voiceId": "zh-CN-XiaoxiaoNeural",
+      "text": "那是午后"
+    },
+    "timestamp": 1768482621789,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482663633_ov1knqndz",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_preview",
+      "voiceId": "zh-CN-XiaoxiaoNeural",
+      "text": "那是午后"
+    },
+    "timestamp": 1768482663633,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482667082_99yb77lvz",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_preview",
+      "voiceId": "zh-CN-XiaoxiaoNeural",
+      "text": "那是午后"
+    },
+    "timestamp": 1768482667082,
+    "processed": true
+  },
+  {
+    "id": "edit_1768482685689_y8jpdmxqv",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_preview",
+      "voiceId": "zh-CN-XiaoyiNeural",
+      "text": "那是午后"
+    },
+    "timestamp": 1768482685689,
+    "processed": true
+  }
+]

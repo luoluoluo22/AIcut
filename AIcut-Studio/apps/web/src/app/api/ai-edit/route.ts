@@ -43,7 +43,11 @@ interface PendingEdit {
 function loadPendingEdits(): PendingEdit[] {
     try {
         if (fs.existsSync(EDITS_FILE)) {
-            return JSON.parse(fs.readFileSync(EDITS_FILE, "utf-8"));
+            const data = JSON.parse(fs.readFileSync(EDITS_FILE, "utf-8"));
+            if (Array.isArray(data)) {
+                // Filter out invalid entries to prevent crashes
+                return data.filter(e => e && typeof e === 'object' && e.id);
+            }
         }
     } catch (e) {
         console.error("Failed to load pending edits:", e);
@@ -59,8 +63,13 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get("action");
 
+    // 增加日志记录，方便调试
+    if (action !== "getPendingEdits" && action !== "poll") {
+        console.log(`[API GET] Action: ${action}`);
+    }
+
     try {
-        if (action === "getPendingEdits") {
+        if (action === "getPendingEdits" || action === "poll") {
             // Get unprocessed edits
             const edits = loadPendingEdits();
             const pending = edits.filter(e => !e.processed);
@@ -132,6 +141,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { action, data } = body;
+        console.log(`[API POST] Action: ${action}`, data);
 
         if (!action) {
             return NextResponse.json({
@@ -198,9 +208,23 @@ export async function POST(request: NextRequest) {
                 break;
             }
 
+            case "markProcessed": {
+                const ids = data?.ids || [];
+                const edits = loadPendingEdits();
+                for (const edit of edits) {
+                    if (ids.includes(edit.id)) {
+                        edit.processed = true;
+                    }
+                }
+                savePendingEdits(edits.slice(-100));
+                return NextResponse.json({ success: true });
+            }
+
             case "clearSubtitles":
             case "removeElement":
             case "updateElement":
+            case "requestTask":
+            case "importAudio":
                 // These are fine as-is
                 break;
 

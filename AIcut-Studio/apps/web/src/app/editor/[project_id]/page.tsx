@@ -88,6 +88,11 @@ export default function Editor() {
       try {
         await loadProject(projectId);
 
+        // Record last project ID for persistence
+        if (typeof window !== 'undefined' && (window as any).electronAPI?.setLastProject) {
+          (window as any).electronAPI.setLastProject(projectId);
+        }
+
         // Check if component was unmounted during async operation
         if (isCancelled) {
           return;

@@ -840,6 +840,46 @@ export function TimelineTrackContent({
 
         const dragData: DragData = JSON.parse(mediaItemData);
 
+        if (dragData.type === "transition") {
+          // Find the element under the drop position
+          const targetElement = track.elements.find((el) => {
+            const elStart = el.startTime;
+            const elEnd = el.startTime + (el.duration - el.trimStart - el.trimEnd);
+            return snappedTime >= elStart && snappedTime <= elEnd;
+          });
+
+          if (targetElement && targetElement.type === "media") {
+            const elStart = targetElement.startTime;
+            const elDuration = targetElement.duration - targetElement.trimStart - targetElement.trimEnd;
+            const relativeTime = snappedTime - elStart;
+
+            const { updateMediaElement } = useTimelineStore.getState();
+
+            // If dropped in first half, apply IN transition
+            // If dropped in second half, apply OUT transition
+            if (relativeTime < elDuration / 2) {
+              updateMediaElement(track.id, targetElement.id, {
+                transition: {
+                  ...targetElement.transition,
+                  in: { type: dragData.transitionType, duration: 0.5 }
+                }
+              });
+              toast.success(`已添加入场效果: ${dragData.name}`);
+            } else {
+              updateMediaElement(track.id, targetElement.id, {
+                transition: {
+                  ...targetElement.transition,
+                  out: { type: dragData.transitionType, duration: 0.5 }
+                }
+              });
+              toast.success(`已添加出场效果: ${dragData.name}`);
+            }
+          } else {
+            toast.error("转场效果只能添加到媒体片段上");
+          }
+          return;
+        }
+
         if (dragData.type === "text") {
           let targetTrackId = track.id;
           let targetTrack = track;
@@ -1107,12 +1147,7 @@ export function TimelineTrackContent({
   return (
     <div
       className="w-full h-full hover:bg-muted/20"
-      onClick={(e) => {
-        // If clicking empty area (not on an element), deselect all elements
-        if (!(e.target as HTMLElement).closest(".timeline-element")) {
-          clearSelectedElements();
-        }
-      }}
+
       onDragOver={handleTrackDragOver}
       onDragEnter={handleTrackDragEnter}
       onDragLeave={handleTrackDragLeave}
@@ -1124,13 +1159,12 @@ export function TimelineTrackContent({
       >
         {track.elements.length === 0 ? (
           <div
-            className={`h-full w-full rounded-sm border-2 border-dashed flex items-center justify-center text-xs text-muted-foreground transition-colors ${
-              isDropping
-                ? wouldOverlap
-                  ? "border-red-500 bg-red-500/10 text-red-600"
-                  : "border-blue-500 bg-blue-500/10 text-blue-600"
-                : "border-muted/30"
-            }`}
+            className={`h-full w-full rounded-sm border-2 border-dashed flex items-center justify-center text-xs text-muted-foreground transition-colors ${isDropping
+              ? wouldOverlap
+                ? "border-red-500 bg-red-500/10 text-red-600"
+                : "border-blue-500 bg-blue-500/10 text-blue-600"
+              : "border-muted/30"
+              }`}
           >
             {isDropping
               ? wouldOverlap

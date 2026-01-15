@@ -74,13 +74,64 @@ interface MediaPanelStore {
   highlightMediaId: string | null;
   requestRevealMedia: (mediaId: string) => void;
   clearHighlight: () => void;
+  // 多选相关状态
+  selectedMediaIds: Set<string>;
+  lastSelectedId: string | null;
+  selectMedia: (id: string, options?: { ctrl?: boolean; shift?: boolean; allIds?: string[] }) => void;
+  selectMultiple: (ids: string[]) => void;
+  clearSelection: () => void;
+  isSelected: (id: string) => boolean;
 }
 
-export const useMediaPanelStore = create<MediaPanelStore>((set) => ({
+export const useMediaPanelStore = create<MediaPanelStore>((set, get) => ({
   activeTab: "media",
   setActiveTab: (tab) => set({ activeTab: tab }),
   highlightMediaId: null,
   requestRevealMedia: (mediaId) =>
     set({ activeTab: "media", highlightMediaId: mediaId }),
   clearHighlight: () => set({ highlightMediaId: null }),
+  // 多选相关
+  selectedMediaIds: new Set<string>(),
+  lastSelectedId: null,
+  selectMedia: (id, options = {}) => {
+    const { ctrl, shift, allIds } = options;
+    const current = get().selectedMediaIds;
+    const lastId = get().lastSelectedId;
+
+    if (shift && lastId && allIds) {
+      // Shift + 点击：范围选择
+      const lastIndex = allIds.indexOf(lastId);
+      const currentIndex = allIds.indexOf(id);
+      if (lastIndex !== -1 && currentIndex !== -1) {
+        const start = Math.min(lastIndex, currentIndex);
+        const end = Math.max(lastIndex, currentIndex);
+        const rangeIds = allIds.slice(start, end + 1);
+        const newSelection = new Set(current);
+        rangeIds.forEach((rangeId) => newSelection.add(rangeId));
+        set({ selectedMediaIds: newSelection });
+        return;
+      }
+    }
+
+    if (ctrl) {
+      // Ctrl + 点击：切换选择
+      const newSelection = new Set(current);
+      if (newSelection.has(id)) {
+        newSelection.delete(id);
+      } else {
+        newSelection.add(id);
+      }
+      set({ selectedMediaIds: newSelection, lastSelectedId: id });
+    } else {
+      // 普通点击：单选
+      set({ selectedMediaIds: new Set([id]), lastSelectedId: id });
+    }
+  },
+  selectMultiple: (ids) => {
+    set({ selectedMediaIds: new Set(ids), lastSelectedId: ids[ids.length - 1] || null });
+  },
+  clearSelection: () => {
+    set({ selectedMediaIds: new Set(), lastSelectedId: null });
+  },
+  isSelected: (id) => get().selectedMediaIds.has(id),
 }));

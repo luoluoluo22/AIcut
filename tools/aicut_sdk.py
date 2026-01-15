@@ -111,9 +111,19 @@ class AIcutClient:
             "subtitles": subtitles
         })
     
-    def clear_subtitles(self) -> Dict:
-        """清除所有字幕"""
-        return self._post("clearSubtitles", {})
+    def clear_subtitles(self, start_time: float = None, duration: float = None) -> Dict:
+        """清除指定范围内的字幕
+        
+        Args:
+            start_time: 开始时间（秒），如果不传则清除所有
+            duration: 时长（秒）
+        """
+        payload = {}
+        if start_time is not None:
+            payload["startTime"] = start_time
+        if duration is not None:
+            payload["duration"] = duration
+        return self._post("clearSubtitles", payload)
     
     def remove_element(self, element_id: str) -> Dict:
         """移除指定元素
@@ -135,6 +145,23 @@ class AIcutClient:
         return self._post("updateElement", {
             "elementId": element_id,
             "updates": updates
+        })
+
+    def import_audio(self, file_path: str, name: str = None, start_time: float = 0, duration: float = None) -> Dict:
+        """导入本地音频文件到时间轴
+        
+        Args:
+            file_path: 本地音频文件路径
+            name: 显示名称（可选，默认使用文件名）
+            start_time: 在时间轴上的起始时间（秒）
+            duration: 音频时长（秒，可选）
+        """
+        import os
+        return self._post("importAudio", {
+            "filePath": file_path,
+            "name": name or os.path.basename(file_path),
+            "startTime": start_time,
+            "duration": duration
         })
 
 

@@ -4,7 +4,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import { useTimelineStore } from "@/stores/timeline-store";
-import { useMediaStore } from "@/stores/media-store";
+import { useMediaStore, getMediaDuration } from "@/stores/media-store";
 import { useProjectStore } from "@/stores/project-store";
 import { DEFAULT_TEXT_ELEMENT } from "@/constants/text-constants";
 
@@ -19,6 +19,9 @@ export function useAIEditSync(enabled: boolean = true) {
     const { addElementToTrack, removeElement, updateElement, tracks, addTrack } = useTimelineStore();
     const processedIds = useRef<Set<string>>(new Set());
     const lastPollTime = useRef<number>(0);
+
+
+
 
     const applyEdit = useCallback((edit: PendingEdit) => {
         console.log("[AI Edit] Applying:", edit.action, edit.data);
@@ -68,19 +71,19 @@ export function useAIEditSync(enabled: boolean = true) {
 
             case "addMultipleSubtitles": {
                 const subtitles = edit.data.subtitles || [];
+                if (subtitles.length === 0) break;
 
-                // Find or create text track
-                let textTrack = currentTracks.find(t => t.type === "text");
+                const store = useTimelineStore.getState();
 
-                if (!textTrack) {
-                    useTimelineStore.getState().addTrack("text");
-                    const updatedTracks = useTimelineStore.getState().tracks;
-                    textTrack = updatedTracks.find(t => t.type === "text");
-                }
+                // 1. 总是新建一条轨道
+                const targetTrackId = store.addTrack("text");
+                // 重构轨道名称
+                store.updateTrack(targetTrackId, { name: `AI 字幕` });
 
-                if (textTrack) {
+                if (targetTrackId) {
+                    console.log(`[AI Edit] Syncing ${subtitles.length} subtitles to NEW track ${targetTrackId}`);
                     for (const sub of subtitles) {
-                        useTimelineStore.getState().addElementToTrack(textTrack.id, {
+                        store.addElementToTrack(targetTrackId, {
                             type: "text",
                             name: sub.text.substring(0, 20),
                             content: sub.text,
@@ -107,11 +110,28 @@ export function useAIEditSync(enabled: boolean = true) {
             }
 
             case "clearSubtitles": {
-                // Remove all text elements
-                for (const track of currentTracks) {
-                    if (track.type === "text") {
+                // Remove text elements from "AI 字幕" tracks within range if specified
+                const store = useTimelineStore.getState();
+                const freshTracks = store.tracks;
+                const rangeStart = edit.data.startTime;
+                const rangeDur = edit.data.duration;
+
+                for (const track of freshTracks) {
+                    if (track.type === "text" && (track.name === "AI 字幕" || !rangeStart)) {
                         for (const element of [...track.elements]) {
-                            useTimelineStore.getState().removeElement(element.id);
+                            const elStart = element.startTime;
+                            const elEnd = element.startTime + (element.duration - element.trimStart - element.trimEnd);
+
+                            let shouldRemove = true;
+                            if (rangeStart !== undefined && rangeDur !== undefined) {
+                                const rangeEnd = rangeStart + rangeDur;
+                                // 如果元素与范围有交集，则删除
+                                shouldRemove = !(elEnd <= rangeStart || elStart >= rangeEnd);
+                            }
+
+                            if (shouldRemove) {
+                                store.removeElementFromTrackWithRipple(track.id, element.id, false);
+                            }
                         }
                     }
                 }
@@ -119,8 +139,8 @@ export function useAIEditSync(enabled: boolean = true) {
             }
 
             case "removeElement": {
-                if (edit.data.elementId) {
-                    useTimelineStore.getState().removeElement(edit.data.elementId);
+                if (edit.data.elementId && edit.data.trackId) {
+                    useTimelineStore.getState().removeElementFromTrackWithRipple(edit.data.trackId, edit.data.elementId);
                 }
                 break;
             }
@@ -139,10 +159,194 @@ export function useAIEditSync(enabled: boolean = true) {
                 break;
             }
 
+            case "importAudioBatch": {
+                if (edit.data.items && Array.isArray(edit.data.items)) {
+                    console.log(`[AI Edit] Processing batch audio import: ${edit.data.items.length} items`);
+                    edit.data.items.forEach((item: any) => {
+                        applyEdit({
+                            ...edit,
+                            id: `${edit.id}_${Math.random().toString(36).substr(2, 9)}`, // Unique ID for sub-event
+                            action: "importAudio",
+                            data: item
+                        });
+                    });
+                }
+                break;
+            }
+
+            case "importAudio": {
+                // 从本地路径导入音频并添加到时间轴
+                const { filePath, name, startTime, duration } = edit.data;
+                if (!filePath) break;
+
+                (async () => {
+                    try {
+                        // 调用 API 获取文件内容
+                        const response = await fetch("/api/media/import-local", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ filePath, name, type: "audio", duration, startTime })
+                        });
+
+                        if (!response.ok) {
+                            console.error("[AI Edit] Failed to import audio:", await response.text());
+                            return;
+                        }
+
+                        const result = await response.json();
+                        if (!result.success || !result.media) {
+                            console.error("[AI Edit] Import response error:", result);
+                            return;
+                        }
+
+                        const { media } = result;
+
+                        // 将 base64 转换为 File 对象
+                        const byteCharacters = atob(media.data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], { type: media.mimeType });
+                        const file = new File([blob], media.name, { type: media.mimeType });
+
+                        // Calculate real duration for accurate timeline placement
+                        // Calculate real duration for accurate timeline placement
+                        let realDuration = 0;
+                        try {
+                            realDuration = await getMediaDuration(file);
+                        } catch (err) {
+                            console.warn("[AI Edit] Failed to calculate duration, using fallback:", err);
+                        }
+
+                        // Fallback if calculation failed
+                        if (!realDuration) {
+                            realDuration = Math.max(media.duration || 0, 3);
+                        }
+
+                        // 添加到 MediaStore
+                        const activeProject = useProjectStore.getState().activeProject;
+                        if (!activeProject) {
+                            console.error("[AI Edit] No active project found for import");
+                            return;
+                        }
+
+                        const addedMedia = await useMediaStore.getState().addMediaFile(activeProject.id, {
+                            name: media.name,
+                            type: "audio",
+                            file: file,
+                            url: URL.createObjectURL(file),
+                            duration: realDuration || media.duration || 0,
+                            filePath: filePath, // Electron 用的原始路径
+                        });
+
+                        if (!addedMedia) {
+                            console.error("[AI Edit] Failed to add media to store");
+                            return;
+                        }
+
+                        // 从 SDK 返回的 metadata 中获取 startTime
+                        const start_time = media.metadata?.startTime ?? startTime ?? 0;
+
+                        // 创建或找到音频轨道 (Find or create/reuse track)
+                        const store = useTimelineStore.getState();
+                        let audioTrack = store.tracks.find(t => t.name === "AI 语音轨");
+
+                        if (!audioTrack) {
+                            // Try to find an empty audio track to reuse
+                            audioTrack = store.tracks.find(t => t.type === "audio" && t.elements.length === 0);
+
+                            if (audioTrack) {
+                                store.updateTrack(audioTrack.id, { name: "AI 语音轨" });
+                            } else {
+                                // Create a new one
+                                const newTrackId = store.addTrack("audio");
+                                store.updateTrack(newTrackId, { name: "AI 语音轨" });
+                                // Re-get tracks to ensure we have the latest
+                                audioTrack = useTimelineStore.getState().tracks.find(t => t.id === newTrackId);
+                            }
+                        }
+
+                        if (audioTrack) {
+                            useTimelineStore.getState().addElementToTrack(audioTrack.id, {
+                                type: "media",
+                                mediaId: addedMedia.id,
+                                name: addedMedia.name,
+                                startTime: start_time,
+                                duration: media.duration || addedMedia.duration || 3,
+                                trimStart: 0,
+                                trimEnd: 0,
+                                muted: false,
+                                volume: 1.0,
+                                x: 0.5,
+                                y: 0.5,
+                                scale: 1,
+                                rotation: 0,
+                                opacity: 1,
+                            });
+                            console.log("[AI Edit] Audio imported and added to track successfully:", addedMedia.name);
+                        }
+                    } catch (e) {
+                        console.error("[AI Edit] Import audio error:", e);
+                    }
+                })();
+                break;
+            }
+
             default:
                 console.warn("[AI Edit] Unknown action:", edit.action);
         }
     }, []);
+
+
+    // 监听来自 Electron 主进程的 Python 日志 (IPC Channel)
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.electronAPI) {
+            const handlePythonLog = (text: string) => {
+                // Handle multiple lines in one chunk (fixes JSON parse errors when events are batched)
+                const lines = text.split(/\r?\n/);
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+
+                    // Check for IPC Events from Python
+                    const eventIndex = line.indexOf("::AI_EVENT::");
+                    if (eventIndex !== -1) {
+                        try {
+                            // Extract potential log before the event
+                            if (eventIndex > 0) {
+                                console.log("%c[Python AI]", "color: #3b82f6; font-weight: bold", line.substring(0, eventIndex));
+                            }
+
+                            const jsonStr = line.substring(eventIndex + "::AI_EVENT::".length).trim();
+                            const event = JSON.parse(jsonStr);
+                            console.log("%c[AI IPC]", "color: #10b981; font-weight: bold", "Received Event:", event.action);
+
+                            // Apply the edit directly
+                            if (!processedIds.current.has(event.id)) {
+                                processedIds.current.add(event.id);
+                                applyEdit(event);
+                            }
+                        } catch (err) {
+                            console.error("[AI IPC] Parse error:", err, "Line:", line);
+                            // Fallback: log the original line so we don't lose the info
+                            console.log("%c[Python AI]", "color: #3b82f6; font-weight: bold", line);
+                        }
+                    } else {
+                        // Normal log
+                        console.log("%c[Python AI]", "color: #3b82f6; font-weight: bold", line);
+                    }
+                }
+            };
+            window.electronAPI.on('python-output', handlePythonLog);
+            return () => {
+                if (window.electronAPI) {
+                    window.electronAPI.removeListener('python-output', handlePythonLog);
+                }
+            };
+        }
+    }, [applyEdit]);
 
     // --- Hot Sync via SSE (The Ultimate Solution) ---
     useEffect(() => {
@@ -151,43 +355,83 @@ export function useAIEditSync(enabled: boolean = true) {
         console.log("[AI Sync] Establishing SSE connection for hot-reload...");
         const eventSource = new EventSource("/api/ai-edit/sync");
 
+        // Handle full snapshot updates (from project-snapshot.json)
+        eventSource.addEventListener("snapshot_update", (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log("[AI Sync] Received snapshot update:", data);
+
+                if (data.tracks) {
+                    const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
+                    const newTracksSnapshot = JSON.stringify(data.tracks);
+
+                    // Only update if fundamentally different to avoid loop
+                    if (currentTracksSnapshot !== newTracksSnapshot) {
+                        console.log("[AI Sync] Applying external track snapshot update...");
+                        useTimelineStore.getState().setTracks(data.tracks);
+                    }
+                }
+
+                // Update Project Metadata
+                const projectStore = useProjectStore.getState();
+                const currentProject = projectStore.activeProject;
+
+                if (currentProject) {
+                    const updates: any = {};
+                    // Check common fields
+                    if (data.name && data.name !== currentProject.name) updates.name = data.name;
+                    if (data.fps && data.fps !== currentProject.fps) updates.fps = data.fps;
+                    if (data.width && data.width !== currentProject.width) updates.width = data.width;
+                    if (data.height && data.height !== currentProject.height) updates.height = data.height;
+                    if (data.backgroundColor && data.backgroundColor !== currentProject.backgroundColor) updates.backgroundColor = data.backgroundColor;
+
+                    if (Object.keys(updates).length > 0) {
+                        console.log("[AI Sync] Applying project metadata update:", updates);
+                        projectStore.updateProject(updates);
+                    }
+                }
+
+            } catch (e) {
+                console.error("[AI Sync] Failed to parse snapshot_update data:", e);
+            }
+        });
+
         eventSource.addEventListener("update", (event) => {
             try {
                 const data = JSON.parse(event.data);
                 console.log("[AI Sync] Received hot-update:", data.action);
 
                 if (data.action === "setFullState" && data.tracks) {
-                    // Avoid loops: check if received tracks are effectively different from current
                     const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
                     const newTracksSnapshot = JSON.stringify(data.tracks);
                     if (currentTracksSnapshot !== newTracksSnapshot) {
                         console.log("[AI Sync] Applying external track hot-update...");
                         useTimelineStore.getState().setTracks(data.tracks);
                     }
-
-                    // Also check for project metadata changes (ID, Name, Canvas, FPS)
-                    if (data.project) {
-                        const projectStore = useProjectStore.getState();
-                        const currentProject = projectStore.activeProject;
-
-                        if (currentProject) {
-                            const updates: any = {};
-                            if (data.project.name && data.project.name !== currentProject.name) updates.name = data.project.name;
-                            if (data.project.fps && data.project.fps !== currentProject.fps) updates.fps = data.project.fps;
-                            if (data.project.backgroundColor && data.project.backgroundColor !== currentProject.backgroundColor) updates.backgroundColor = data.project.backgroundColor;
-
-                            if (Object.keys(updates).length > 0) {
-                                console.log("[AI Sync] Applying project metadata update:", updates);
-                                projectStore.updateProject(updates);
-                            }
-                        }
-                    }
                 } else if (data.action === "updateElement" && data.elementId) {
                     useTimelineStore.getState().updateElement(data.elementId, data.updates);
                 }
-                // We can add more specific hot-sync actions here
             } catch (e) {
                 console.error("[AI Sync] Failed to parse SSE data:", e);
+            }
+        });
+
+        // 监听 pending-edits 的实时推送
+        eventSource.addEventListener("edit", (event) => {
+            try {
+                const edit = JSON.parse(event.data);
+
+                // 去重：检查是否已处理过
+                if (processedIds.current.has(edit.id)) {
+                    console.log("[AI Sync] Skipping duplicate edit:", edit.id);
+                    return;
+                }
+
+                console.log("[AI Sync] Received real-time edit:", edit.action);
+                processedIds.current.add(edit.id);
+                applyEdit(edit);
+            } catch (e) {
+                console.error("[AI Sync] Failed to parse edit event:", e);
             }
         });
 
@@ -199,7 +443,7 @@ export function useAIEditSync(enabled: boolean = true) {
             eventSource.close();
             console.log("[AI Sync] SSE Connection closed.");
         };
-    }, [enabled]);
+    }, [enabled, applyEdit]);
 
     // --- Professional Debounced Reporter ---
     const reportTimeout = useRef<NodeJS.Timeout | null>(null);

@@ -1,7 +1,77 @@
 import React from "react";
-import { AbsoluteFill, Sequence, Video, Img, OffthreadVideo, Audio } from "remotion";
+import { AbsoluteFill, Sequence, Video, Img, OffthreadVideo, Audio, useCurrentFrame } from "remotion";
 import { TimelineTrack, TextElement } from "@/types/timeline";
 import { MediaFile } from "@/types/media";
+import { TransitionWrapper } from "./transition-wrapper";
+import { interpolateKeyframes } from "@/lib/animation";
+
+const AnimatedMediaElement: React.FC<{
+    element: any;
+    media: MediaFile;
+    url: string;
+    trackMuted: boolean;
+    trimStartFrame: number;
+    fps: number;
+}> = ({ element, media, url, trackMuted, trimStartFrame, fps }) => {
+    const frame = useCurrentFrame();
+    const time = frame / fps; // Relative time in seconds
+
+    const x = interpolateKeyframes(element.keyframes?.x, time, element.x ?? 960);
+    const y = interpolateKeyframes(element.keyframes?.y, time, element.y ?? 540);
+    const scale = interpolateKeyframes(element.keyframes?.scale, time, element.scale ?? 1);
+    const rotation = interpolateKeyframes(element.keyframes?.rotation, time, element.rotation ?? 0);
+    const opacity = interpolateKeyframes(element.keyframes?.opacity, time, element.opacity ?? 1);
+    const volume = interpolateKeyframes(element.keyframes?.volume, time, element.volume ?? 1);
+
+    return (
+        <AbsoluteFill style={{
+            opacity,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}>
+            <div style={{
+                position: 'absolute',
+                left: x,
+                top: y,
+                width: '100%',
+                height: '100%',
+                transform: `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                {media.type === 'video' ? (
+                    <OffthreadVideo
+                        src={url}
+                        startFrom={trimStartFrame}
+                        volume={trackMuted || element.muted ? 0 : volume}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain'
+                        }}
+                    />
+                ) : media.type === 'image' ? (
+                    <Img
+                        src={url}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain'
+                        }}
+                    />
+                ) : media.type === 'audio' ? (
+                    <Audio
+                        src={url}
+                        startFrom={trimStartFrame}
+                        volume={trackMuted || element.muted ? 0 : volume}
+                    />
+                ) : null}
+            </div>
+        </AbsoluteFill>
+    );
+};
 
 interface MainCompositionProps {
     tracks: TimelineTrack[];
@@ -48,52 +118,38 @@ export const MainComposition: React.FC<MainCompositionProps> = ({
                                 from={startFrame}
                                 durationInFrames={durationFrames}
                             >
-                                <AbsoluteFill style={{
-                                    opacity: element.opacity ?? 1,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <div style={{
-                                        position: 'absolute',
-                                        left: element.x ?? 960,
-                                        top: element.y ?? 540,
-                                        width: '100%',
-                                        height: '100%',
-                                        transform: `translate(-50%, -50%) scale(${element.scale ?? 1}) rotate(${element.rotation ?? 0}deg)`,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        {media.type === 'video' ? (
-                                            <OffthreadVideo
-                                                src={url}
-                                                startFrom={trimStartFrame}
-                                                volume={track.muted || element.muted ? 0 : (element.volume ?? 1)}
-                                                style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'contain'
-                                                }}
+                                <TransitionWrapper
+                                    inConfig={element.transition?.in}
+                                    outConfig={element.transition?.out}
+                                    durationInFrames={durationFrames}
+                                    fps={fps}
+                                >
+                                    {(() => {
+                                        // Use IIFE or useCurrentFrame hook inside a separate component is better,
+                                        // but since we are inside map, hooks might behave weirdly if not careful.
+                                        // HOWEVER, Sequence makes children render.
+                                        // The style prop calculation uses `element` values which are static here.
+                                        // Remotion's Sequence doesn't magically update props frame by frame unless
+                                        // calculate logic is inside a component that uses useCurrentFrame().
+
+                                        // IMPORTANT: MainComposition is a React Component. 
+                                        // The props `tracks` might not update every frame for preview playhead (in dev mode yes, but rendering?).
+                                        // BUT, we need access to `useCurrentFrame()` to interpolate.
+                                        // We can't call useCurrentFrame() here inside .map().
+                                        // So we MUST wrap the content in a component.
+
+                                        return (
+                                            <AnimatedMediaElement
+                                                element={element}
+                                                media={media}
+                                                url={url}
+                                                trackMuted={track.muted ?? false}
+                                                trimStartFrame={trimStartFrame}
+                                                fps={fps}
                                             />
-                                        ) : media.type === 'image' ? (
-                                            <Img
-                                                src={url}
-                                                style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'contain'
-                                                }}
-                                            />
-                                        ) : media.type === 'audio' ? (
-                                            <Audio
-                                                src={url}
-                                                startFrom={trimStartFrame}
-                                                volume={track.muted || element.muted ? 0 : (element.volume ?? 1)}
-                                            />
-                                        ) : null}
-                                    </div>
-                                </AbsoluteFill>
+                                        );
+                                    })()}
+                                </TransitionWrapper>
                             </Sequence>
                         );
                     }

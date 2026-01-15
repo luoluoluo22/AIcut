@@ -18,14 +18,58 @@ import {
   PropertyItemLabel,
   PropertyItemValue
 } from "./property-item";
-import { Video, Image, Volume2, VolumeX, Clock, Scissors, Info, Layout, RotateCcw, Move } from "lucide-react";
+import { usePlaybackStore } from "@/stores/playback-store";
+import { Video, Image, Volume2, VolumeX, Clock, Scissors, Info, Layout, RotateCcw, Move, Diamond } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { MediaType } from "@/types/media";
+import { interpolateKeyframes } from "@/lib/animation";
+
+// Helper component for keyframe control
+function KeyframeButton({
+  element,
+  trackId,
+  property,
+  currentValue
+}: {
+  element: MediaElement;
+  trackId: string;
+  property: string;
+  currentValue: number;
+}) {
+  const { addKeyframe, removeKeyframe } = useTimelineStore();
+  const { currentTime } = usePlaybackStore();
+
+  const relativeTime = currentTime - element.startTime;
+  const isWithinElement = relativeTime >= 0 && relativeTime <= (element.duration - element.trimStart - element.trimEnd);
+
+  if (!isWithinElement) return null;
+
+  const keyframes = element.keyframes?.[property] || [];
+  const existingKeyframe = keyframes.find(kf => Math.abs(kf.time - relativeTime) < 0.05);
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className={cn("size-5 ml-1", existingKeyframe ? "text-primary hover:text-primary/80" : "text-muted-foreground hover:text-white")}
+      onClick={() => {
+        if (existingKeyframe) {
+          removeKeyframe(trackId, element.id, property, existingKeyframe.id);
+        } else {
+          addKeyframe(trackId, element.id, property, relativeTime, currentValue);
+        }
+      }}
+      title={existingKeyframe ? "移除关键帧" : "添加关键帧"}
+    >
+      <Diamond className="size-3" fill={existingKeyframe ? "currentColor" : "none"} />
+    </Button>
+  );
+}
 
 export function MediaProperties({ element }: { element: MediaElement }) {
-  const { tracks, toggleTrackMute, updateMediaElement } = useTimelineStore();
+  const { tracks, toggleTrackMute, updateMediaElement, addKeyframe } = useTimelineStore();
   const { mediaFiles } = useMediaStore();
   const { activeTab, setActiveTab } = useMediaPropertiesStore();
+  const { currentTime } = usePlaybackStore();
 
   // Find the track and asset metadata
   const track = tracks.find(t => t.elements.some(e => e.id === element.id));
@@ -36,6 +80,22 @@ export function MediaProperties({ element }: { element: MediaElement }) {
 
   const duration = (element.duration - element.trimStart - element.trimEnd).toFixed(2);
   const trackId = track?.id || "";
+  const relativeTime = Math.max(0, currentTime - element.startTime);
+
+  // Helper to get current value (interpolated if keyframes exist)
+  const getValue = (property: string, baseValue: number) => {
+    return interpolateKeyframes(element.keyframes?.[property], relativeTime, baseValue);
+  };
+
+  // Helper to handle value change (auto-keyframe if needed)
+  const handleValueChange = (property: string, newValue: number) => {
+    const hasKeyframes = element.keyframes?.[property] && element.keyframes[property].length > 0;
+    if (hasKeyframes) {
+      addKeyframe(trackId, element.id, property, relativeTime, newValue);
+    } else {
+      updateMediaElement(trackId, element.id, { [property]: newValue });
+    }
+  };
 
   // Filter tabs based on media type
   const availableTabs = MEDIA_PROPERTIES_TABS.filter((t) => {
@@ -49,6 +109,13 @@ export function MediaProperties({ element }: { element: MediaElement }) {
   const currentTab = availableTabs.some(t => t.value === activeTab)
     ? activeTab
     : (media.type === "audio" ? "audio" : "visual");
+
+  const currentScale = getValue("scale", element.scale ?? 1);
+  const currentX = getValue("x", element.x ?? 960);
+  const currentY = getValue("y", element.y ?? 540);
+  const currentRotation = getValue("rotation", element.rotation ?? 0);
+  const currentOpacity = getValue("opacity", element.opacity ?? 1);
+  const currentVolume = getValue("volume", element.volume ?? 1);
 
   return (
     <PanelBaseView
@@ -66,7 +133,10 @@ export function MediaProperties({ element }: { element: MediaElement }) {
               {/* Scale Control */}
               <PropertyItem direction="column">
                 <div className="flex justify-between items-center w-full mb-1">
-                  <PropertyItemLabel>缩放</PropertyItemLabel>
+                  <div className="flex items-center">
+                    <PropertyItemLabel>缩放</PropertyItemLabel>
+                    <KeyframeButton element={element} trackId={trackId} property="scale" currentValue={currentScale} />
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -79,21 +149,21 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                 <PropertyItemValue>
                   <div className="flex items-center gap-3">
                     <Slider
-                      value={[(element.scale ?? 1) * 100]}
+                      value={[currentScale * 100]}
                       min={0}
                       max={400}
                       step={1}
                       onValueChange={([value]) => {
-                        updateMediaElement(trackId, element.id, { scale: value / 100 });
+                        handleValueChange("scale", value / 100);
                       }}
                       className="flex-1"
                     />
                     <div className="relative">
                       <Input
                         type="number"
-                        value={Math.round((element.scale ?? 1) * 100)}
+                        value={Math.round(currentScale * 100)}
                         onChange={(e) => {
-                          updateMediaElement(trackId, element.id, { scale: (parseFloat(e.target.value) || 0) / 100 });
+                          handleValueChange("scale", (parseFloat(e.target.value) || 0) / 100);
                         }}
                         className="w-16 px-1 !text-xs h-7 rounded-sm text-right bg-panel-accent border-none pr-5 pr-1.5 focus-visible:ring-1 focus-visible:ring-primary/30"
                       />
@@ -111,10 +181,11 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                     <span className="text-[10px] text-muted-foreground">X</span>
                     <Input
                       type="number"
-                      value={Math.round(element.x ?? 960)}
-                      onChange={(e) => updateMediaElement(trackId, element.id, { x: parseInt(e.target.value) || 0 })}
+                      value={Math.round(currentX)}
+                      onChange={(e) => handleValueChange("x", parseInt(e.target.value) || 0)}
                       className="bg-transparent border-none p-0 h-5 text-right text-xs outline-none shadow-none focus-visible:ring-0"
                     />
+                    <KeyframeButton element={element} trackId={trackId} property="x" currentValue={currentX} />
                   </div>
                   <div className="flex items-center gap-2 bg-panel-accent/50 rounded px-2 py-1">
                     <span className="text-[10px] text-muted-foreground">Y</span>
@@ -124,30 +195,44 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                       onChange={(e) => updateMediaElement(trackId, element.id, { y: parseInt(e.target.value) || 0 })}
                       className="bg-transparent border-none p-0 h-5 text-right text-xs outline-none shadow-none focus-visible:ring-0"
                     />
+                    <KeyframeButton element={element} trackId={trackId} property="x" currentValue={currentX} />
+                  </div>
+                  <div className="flex items-center gap-2 bg-panel-accent/50 rounded px-2 py-1">
+                    <span className="text-[10px] text-muted-foreground">Y</span>
+                    <Input
+                      type="number"
+                      value={Math.round(currentY)}
+                      onChange={(e) => handleValueChange("y", parseInt(e.target.value) || 0)}
+                      className="bg-transparent border-none p-0 h-5 text-right text-xs outline-none shadow-none focus-visible:ring-0"
+                    />
+                    <KeyframeButton element={element} trackId={trackId} property="y" currentValue={currentY} />
                   </div>
                 </div>
               </PropertyItem>
 
               {/* Rotation Control */}
               <PropertyItem direction="column" className="mt-4">
-                <PropertyItemLabel>旋转</PropertyItemLabel>
+                <div className="flex items-center mb-1">
+                  <PropertyItemLabel>旋转</PropertyItemLabel>
+                  <KeyframeButton element={element} trackId={trackId} property="rotation" currentValue={currentRotation} />
+                </div>
                 <PropertyItemValue>
                   <div className="flex items-center gap-3">
                     <Slider
-                      value={[element.rotation ?? 0]}
+                      value={[currentRotation]}
                       min={-180}
                       max={180}
                       step={1}
                       onValueChange={([value]) => {
-                        updateMediaElement(trackId, element.id, { rotation: value });
+                        handleValueChange("rotation", value);
                       }}
                       className="flex-1"
                     />
                     <div className="relative">
                       <Input
                         type="number"
-                        value={Math.round(element.rotation ?? 0)}
-                        onChange={(e) => updateMediaElement(trackId, element.id, { rotation: parseInt(e.target.value) || 0 })}
+                        value={Math.round(currentRotation)}
+                        onChange={(e) => handleValueChange("rotation", parseInt(e.target.value) || 0)}
                         className="w-16 px-1.5 !text-xs h-7 rounded-sm text-right bg-panel-accent border-none focus-visible:ring-1 focus-visible:ring-primary/30"
                       />
                       <span className="absolute right-1 top-1.5 text-[10px] text-muted-foreground">°</span>
@@ -158,24 +243,27 @@ export function MediaProperties({ element }: { element: MediaElement }) {
 
               {/* Opacity Control */}
               <PropertyItem direction="column" className="mt-4">
-                <PropertyItemLabel>不透明度</PropertyItemLabel>
+                <div className="flex items-center mb-1">
+                  <PropertyItemLabel>不透明度</PropertyItemLabel>
+                  <KeyframeButton element={element} trackId={trackId} property="opacity" currentValue={currentOpacity} />
+                </div>
                 <PropertyItemValue>
                   <div className="flex items-center gap-3">
                     <Slider
-                      value={[(element.opacity ?? 1) * 100]}
+                      value={[currentOpacity * 100]}
                       min={0}
                       max={100}
                       step={1}
                       onValueChange={([value]) => {
-                        updateMediaElement(trackId, element.id, { opacity: value / 100 });
+                        handleValueChange("opacity", value / 100);
                       }}
                       className="flex-1"
                     />
                     <div className="relative">
                       <Input
                         type="number"
-                        value={Math.round((element.opacity ?? 1) * 100)}
-                        onChange={(e) => updateMediaElement(trackId, element.id, { opacity: (parseFloat(e.target.value) || 0) / 100 })}
+                        value={Math.round(currentOpacity * 100)}
+                        onChange={(e) => handleValueChange("opacity", (parseFloat(e.target.value) || 0) / 100)}
                         className="w-16 px-1.5 !text-xs h-7 rounded-sm text-right bg-panel-accent border-none focus-visible:ring-1 focus-visible:ring-primary/30"
                       />
                       <span className="absolute right-1 top-1.5 text-[10px] text-muted-foreground">%</span>
@@ -201,24 +289,27 @@ export function MediaProperties({ element }: { element: MediaElement }) {
           <div className="space-y-6">
             <PropertyGroup title="调节">
               <PropertyItem direction="column">
-                <PropertyItemLabel>音量</PropertyItemLabel>
+                <div className="flex items-center mb-1">
+                  <PropertyItemLabel>音量</PropertyItemLabel>
+                  <KeyframeButton element={element} trackId={trackId} property="volume" currentValue={currentVolume} />
+                </div>
                 <PropertyItemValue>
                   <div className="flex items-center gap-3">
                     <Slider
-                      value={[(element.volume ?? 1) * 100]}
+                      value={[currentVolume * 100]}
                       min={0}
                       max={100}
                       step={1}
                       onValueChange={([value]) => {
-                        updateMediaElement(trackId, element.id, { volume: value / 100 });
+                        handleValueChange("volume", value / 100);
                       }}
                       className="flex-1"
                     />
                     <div className="relative">
                       <Input
                         type="number"
-                        value={Math.round((element.volume ?? 1) * 100)}
-                        onChange={(e) => updateMediaElement(trackId, element.id, { volume: (parseFloat(e.target.value) || 0) / 100 })}
+                        value={Math.round(currentVolume * 100)}
+                        onChange={(e) => handleValueChange("volume", (parseFloat(e.target.value) || 0) / 100)}
                         className="w-16 px-1.5 !text-xs h-7 rounded-sm text-right bg-panel-accent border-none focus-visible:ring-1 focus-visible:ring-primary/30"
                       />
                       <span className="absolute right-1 top-1.5 text-[10px] text-muted-foreground">%</span>

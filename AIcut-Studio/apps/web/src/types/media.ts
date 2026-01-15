@@ -12,6 +12,7 @@ export interface MediaFile {
   width?: number; // For video/image width
   height?: number; // For video/image height
   fps?: number; // For video frame rate
+  filePath?: string; // Absolute path on disk (Electron only)
   // Ephemeral items are used by timeline directly and should not appear in the media library or be persisted
   ephemeral?: boolean;
 }

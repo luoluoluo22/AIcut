@@ -23,11 +23,28 @@ export async function GET(req: NextRequest) {
             controller.enqueue(encoder.encode("event: connected\ndata: { \"status\": \"ready\" }\n\n"));
 
             // --- 核心逻辑：监听文件系统 ---
+            const processedIds = new Set<string>();
+            const EDITS_FILE = path.join(EDITS_DIR, "pending-edits.json");
+
+            // Initial load to track what's already there
+            if (fs.existsSync(EDITS_FILE)) {
+                try {
+                    const initialContent = fs.readFileSync(EDITS_FILE, "utf-8");
+                    const initialData = JSON.parse(initialContent);
+                    if (Array.isArray(initialData)) {
+                        initialData.forEach(e => processedIds.add(e.id));
+                    }
+                } catch (e) {
+                    // Ignore parsing error for initial load
+                }
+            }
+
             const watcher = fs.watch(EDITS_DIR, (eventType, filename) => {
                 const isSyncFile = filename === "sync-input.json";
+                const isPendingEdits = filename === "pending-edits.json";
                 const isSnapshotFile = filename === "project-snapshot.json";
 
-                if (isSyncFile || isSnapshotFile) {
+                if (isSyncFile || isPendingEdits || isSnapshotFile) {
                     try {
                         const targetFile = path.join(EDITS_DIR, filename);
                         if (fs.existsSync(targetFile)) {
@@ -36,15 +53,25 @@ export async function GET(req: NextRequest) {
 
                             const data = JSON.parse(content);
 
-                            // 如果是快照文件变了，我们提取里面的 tracks 和 project 并伪装成 setFullState 发给网页
                             if (isSnapshotFile) {
-                                if (data.tracks || data.project) {
-                                    console.log("[SSE] Snapshot file change detected, pushing update to Web...");
-                                    controller.enqueue(encoder.encode(`event: update\ndata: ${JSON.stringify({
-                                        action: "setFullState",
-                                        tracks: data.tracks,
-                                        project: data.project
-                                    })}\n\n`));
+                                // project-snapshot.json changed (external edit)
+                                console.log("[SSE] Project snapshot changed, pushing update to Web...");
+                                controller.enqueue(encoder.encode(`event: snapshot_update\ndata: ${JSON.stringify(data)}\n\n`));
+                            } else if (isPendingEdits && Array.isArray(data)) {
+                                // 如果是 pending-edits.json 变了，检查是否有新增的未处理编辑
+                                for (const edit of data) {
+                                    if (!processedIds.has(edit.id)) {
+                                        processedIds.add(edit.id); // Mark as sent
+
+                                        if (edit.action === "addMultipleSubtitles" ||
+                                            edit.action === "addSubtitle" ||
+                                            edit.action === "clearSubtitles" ||
+                                            edit.action === "importAudio") {
+
+                                            console.log(`[SSE] Pushing new edit to Web: ${edit.action}`);
+                                            controller.enqueue(encoder.encode(`event: edit\ndata: ${JSON.stringify(edit)}\n\n`));
+                                        }
+                                    }
                                 }
                             } else {
                                 // 如果是控制文件变了，直接转发

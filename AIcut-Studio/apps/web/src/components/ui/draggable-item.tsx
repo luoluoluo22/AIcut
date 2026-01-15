@@ -29,6 +29,7 @@ export interface DraggableMediaItemProps {
   variant?: "card" | "compact";
   isDraggable?: boolean;
   isHighlighted?: boolean;
+  isSelected?: boolean;
 }
 
 export function DraggableMediaItem({
@@ -46,6 +47,7 @@ export function DraggableMediaItem({
   variant = "card",
   isDraggable = true,
   isHighlighted = false,
+  isSelected = false,
 }: DraggableMediaItemProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
@@ -103,11 +105,11 @@ export function DraggableMediaItem({
       {variant === "card" ? (
         <div
           ref={dragRef}
-          className={cn("relative group", containerClassName ?? "w-28 h-28")}
+          className={cn("relative group", containerClassName ?? "w-full")}
         >
           <div
             className={cn(
-              "flex flex-col gap-1 p-1 h-auto w-full relative cursor-default",
+              "flex flex-col gap-0.5 h-auto w-full relative cursor-default",
               className,
               isHighlighted && highlightClassName
             )}
@@ -117,7 +119,8 @@ export function DraggableMediaItem({
               className={cn(
                 "bg-panel-accent relative overflow-hidden",
                 rounded && "rounded-md",
-                isDraggable && "[&::-webkit-drag-ghost]:opacity-0" // Webkit-specific ghost hiding
+                isDraggable && "[&::-webkit-drag-ghost]:opacity-0",
+                isSelected && "ring-2 ring-primary ring-offset-1 ring-offset-background"
               )}
               draggable={isDraggable}
               onDragStart={isDraggable ? handleDragStart : undefined}
@@ -162,7 +165,10 @@ export function DraggableMediaItem({
             onDragStart={isDraggable ? handleDragStart : undefined}
             onDragEnd={isDraggable ? handleDragEnd : undefined}
           >
-            <div className="w-6 h-6 flex-shrink-0 rounded-[0.35rem] overflow-hidden">
+            <div className={cn(
+              "w-6 h-6 flex-shrink-0 rounded-[0.35rem] overflow-hidden",
+              isSelected && "ring-2 ring-primary"
+            )}>
               {preview}
             </div>
             <span className="text-sm truncate flex-1 w-full">{name}</span>

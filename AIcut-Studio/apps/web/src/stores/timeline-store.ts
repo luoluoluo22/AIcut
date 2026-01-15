@@ -10,6 +10,7 @@ import {
   sortTracksByOrder,
   ensureMainTrack,
   validateElementTrackCompatibility,
+  Keyframe,
 } from "@/types/timeline";
 import { useMediaStore, getMediaAspectRatio } from "./media-store";
 import { MediaFile, MediaType } from "@/types/media";
@@ -138,6 +139,8 @@ interface TimelineStore {
     splitTime: number
   ) => void;
   separateAudio: (trackId: string, elementId: string) => string | null;
+  updateTrack: (trackId: string, updates: Partial<TimelineTrack>) => void;
+  clearTrackElements: (trackId: string) => void;
 
   // Set all tracks at once (Full JSON override)
   setTracks: (tracks: TimelineTrack[]) => void;
@@ -236,6 +239,7 @@ interface TimelineStore {
         | "y"
         | "rotation"
         | "opacity"
+        | "voiceId"
       >
     >
   ) => void;
@@ -243,9 +247,12 @@ interface TimelineStore {
     trackId: string,
     elementId: string,
     updates: Partial<
-      Pick<MediaElement, "x" | "y" | "scale" | "rotation" | "opacity" | "muted" | "volume">
+      Pick<MediaElement, "x" | "y" | "scale" | "rotation" | "opacity" | "muted" | "volume" | "transition">
     >
   ) => void;
+  addKeyframe: (trackId: string, elementId: string, property: string, time: number, value: number) => void;
+  removeKeyframe: (trackId: string, elementId: string, property: string, keyframeId: string) => void;
+  updateElement: (elementId: string, updates: any) => void;
   checkElementOverlap: (
     trackId: string,
     startTime: number,
@@ -403,7 +410,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
         muted: false,
       };
 
-      updateTracksAndSave([...get()._tracks, newTrack]);
+      updateTracksAndSave([newTrack, ...get()._tracks]);
       return newTrack.id;
     },
 
@@ -431,6 +438,15 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
       newTracks.splice(index, 0, newTrack);
       updateTracksAndSave(newTracks);
       return newTrack.id;
+    },
+
+    clearTrackElements: (trackId) => {
+      get().pushHistory();
+      updateTracksAndSave(
+        get()._tracks.map((track) =>
+          track.id === trackId ? { ...track, elements: [] } : track
+        )
+      );
     },
 
     removeTrack: (trackId) => {
@@ -889,6 +905,13 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
       );
     },
 
+    updateTrack: (trackId, updates) => {
+      const newTracks = get()._tracks.map((t) =>
+        t.id === trackId ? { ...t, ...updates } : t
+      );
+      updateTracksAndSave(newTracks);
+    },
+
     // Set all tracks at once (Full JSON override)
     setTracks: (newTracks: TimelineTrack[]) => {
       get().pushHistory();
@@ -925,6 +948,81 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
           }),
         };
       });
+      updateTracksAndSave(newTracks);
+    },
+
+    addKeyframe: (trackId, elementId, property, time, value) => {
+      get().pushHistory();
+      const newTracks = get()._tracks.map((track) => {
+        if (track.id !== trackId) return track;
+        return {
+          ...track,
+          elements: track.elements.map((element) => {
+            if (element.id !== elementId) return element;
+
+            const currentKeyframes = element.keyframes?.[property] || [];
+            // Remove existing keyframe at same time (within small threshold)
+            const filteredKeyframes = currentKeyframes.filter(
+              (kf) => Math.abs(kf.time - time) > 0.01
+            );
+
+            const newKeyframe: Keyframe = {
+              id: generateUUID(),
+              time,
+              value,
+              easing: "linear",
+            };
+
+            const updatedKeyframes = [...filteredKeyframes, newKeyframe].sort(
+              (a, b) => a.time - b.time
+            );
+
+            return {
+              ...element,
+              keyframes: {
+                ...element.keyframes,
+                [property]: updatedKeyframes,
+              },
+            };
+          }),
+        };
+      });
+      updateTracksAndSave(newTracks);
+    },
+
+    removeKeyframe: (trackId, elementId, property, keyframeId) => {
+      get().pushHistory();
+      const newTracks = get()._tracks.map((track) => {
+        if (track.id !== trackId) return track;
+        return {
+          ...track,
+          elements: track.elements.map((element) => {
+            if (element.id !== elementId) return element;
+            if (!element.keyframes?.[property]) return element;
+
+            return {
+              ...element,
+              keyframes: {
+                ...element.keyframes,
+                [property]: element.keyframes[property].filter(
+                  (kf) => kf.id !== keyframeId
+                ),
+              },
+            };
+          }),
+        };
+      });
+      updateTracksAndSave(newTracks);
+    },
+
+    updateElement: (elementId, updates) => {
+      get().pushHistory();
+      const newTracks = get()._tracks.map((track) => ({
+        ...track,
+        elements: track.elements.map((el) =>
+          el.id === elementId ? { ...el, ...updates } : el
+        ),
+      }));
       updateTracksAndSave(newTracks);
     },
 

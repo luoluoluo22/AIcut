@@ -8,6 +8,7 @@ import { SoundsView } from "./views/sounds";
 import { StickersView } from "./views/stickers";
 import { Separator } from "@/components/ui/separator";
 import { SettingsView } from "./views/settings";
+import { TransitionsView } from "./views/transitions";
 import { Captions } from "./views/captions";
 
 export function MediaPanel() {
@@ -23,11 +24,7 @@ export function MediaPanel() {
         Effects view coming soon...
       </div>
     ),
-    transitions: (
-      <div className="p-4 text-muted-foreground">
-        Transitions view coming soon...
-      </div>
-    ),
+    transitions: <TransitionsView />,
     captions: <Captions />,
     filters: (
       <div className="p-4 text-muted-foreground">

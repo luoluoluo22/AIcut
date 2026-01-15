@@ -24,6 +24,7 @@ import {
   Eye,
   VolumeOff,
   Volume2,
+  Eraser,
 } from "lucide-react";
 import {
   Tooltip,
@@ -378,7 +379,7 @@ export function Timeline() {
         Math.min(
           duration,
           (mouseX + scrollLeft) /
-            (TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel)
+          (TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel)
         )
       );
 
@@ -863,6 +864,7 @@ export function Timeline() {
                               height: `${getTrackHeight(track.type)}px`,
                             }}
                             onClick={(e) => {
+                              if (justFinishedSelecting) return;
                               // If clicking empty area (not on a element), deselect all elements
                               if (
                                 !(e.target as HTMLElement).closest(
@@ -889,11 +891,34 @@ export function Timeline() {
                               toggleTrackMute(track.id);
                             }}
                           >
-                            {track.muted ? "Unmute Track" : "Mute Track"}
+                            <Volume2 className="h-4 w-4 mr-2" />
+                            {track.muted ? "取消静音轨道" : "静音轨道"}
                           </ContextMenuItem>
-                          <ContextMenuItem onClick={(e) => e.stopPropagation()}>
-                            Track settings (soon)
+
+                          <ContextMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              useTimelineStore.getState().clearTrackElements(track.id);
+                              toast.success("轨道已清空");
+                            }}
+                          >
+                            <Eraser className="h-4 w-4 mr-2" />
+                            清空当前轨道
                           </ContextMenuItem>
+
+                          {!track.isMain && (
+                            <ContextMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                useTimelineStore.getState().removeTrack(track.id);
+                                toast.success("轨道已删除");
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              删除轨道
+                            </ContextMenuItem>
+                          )}
                         </ContextMenuContent>
                       </ContextMenu>
                     ))}
@@ -903,8 +928,8 @@ export function Timeline() {
             </ScrollArea>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 
