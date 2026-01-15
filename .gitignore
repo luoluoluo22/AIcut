@@ -81,6 +81,9 @@ Thumbs.db
 chrome_debug_profile/
 
 # Temp
+# Ignore AI-generated materials (they can be large and should not be versioned)
+AIcut-Studio/apps/web/public/materials/ai-generated/
+AIcut-Studio/apps/web/temp/
 tmp/
 .agent/
 !.agent/workflows/

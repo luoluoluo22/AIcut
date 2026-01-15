@@ -15,6 +15,9 @@ import {
   Video,
 } from "lucide-react";
 import { useRef, useState, useMemo } from "react";
+import { Sparkles, Video as VideoIcon } from "lucide-react";
+import { GenerateImageDialog } from "../dialogs/generate-image-dialog";
+import { GenerateVideoDialog } from "../dialogs/generate-video-dialog";
 import { useHighlightScroll } from "@/hooks/use-highlight-scroll";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -84,6 +87,105 @@ export function MediaView() {
     highlightMediaId,
     clearHighlight
   );
+
+  const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
+  const [isVideoGenerateOpen, setIsVideoGenerateOpen] = useState(false);
+
+  const handleGenerateVideo = async (data: { mode: 'text' | 'image', prompt: string, image?: File }) => {
+    if (!activeProject) {
+      toast.error("请先打开一个项目");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('mode', data.mode);
+      formData.append('prompt', data.prompt);
+      if (data.image) formData.append('image', data.image);
+
+      const response = await fetch('/api/generate-video', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || '视频生成请求失败');
+      }
+
+      const result = await response.json();
+
+      // Fetch the generated video as blob
+      const res = await fetch(result.url);
+      const blob = await res.blob();
+      const file = new File([blob], result.name, { type: "video/mp4" });
+
+      setIsProcessing(true);
+      try {
+        const { processMediaFiles } = await import("@/lib/media-processing");
+        const processedFiles = await processMediaFiles([file], (p) => setProgress(p));
+
+        for (const mediaFile of processedFiles) {
+          await addMediaFile(activeProject.id, mediaFile);
+        }
+        toast.success("AI 视频生成成功");
+      } finally {
+        setIsProcessing(false);
+        setProgress(0);
+      }
+
+    } catch (error) {
+      console.error(error);
+      toast.error("视频生成失败: " + (error instanceof Error ? error.message : "未知错误"));
+      throw error;
+    }
+  };
+
+  const handleGenerateImage = async (prompt: string) => {
+    if (!activeProject) {
+      toast.error("请先打开一个项目");
+      return;
+    }
+    try {
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Generation failed');
+      }
+
+      const data = await response.json();
+
+      // Fetch the generated image as blob to create a File object
+      const res = await fetch(data.url);
+      const blob = await res.blob();
+      const file = new File([blob], `ai-generated-${Date.now()}.png`, { type: "image/png" });
+
+      setIsProcessing(true);
+      try {
+        // Dynamically import processMediaFiles to avoid circular dependencies if any
+        const { processMediaFiles } = await import("@/lib/media-processing");
+        // Parameter fixed: processMediaFiles takes (files, onProgress)
+        const processedFiles = await processMediaFiles([file], (p) => setProgress(p));
+
+        for (const mediaFile of processedFiles) {
+          await addMediaFile(activeProject.id, mediaFile);
+        }
+        toast.success("AI 图片生成成功");
+      } finally {
+        setIsProcessing(false);
+        setProgress(0);
+      }
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Generation failed: " + (error instanceof Error ? error.message : "Unknown error"));
+      throw error;
+    }
+  };
 
   const processFiles = async (files: FileList | File[]) => {
     if (!files || files.length === 0) return;
@@ -260,6 +362,11 @@ export function MediaView() {
 
   return (
     <>
+      <GenerateImageDialog
+        open={isGenerateDialogOpen}
+        onOpenChange={setIsGenerateDialogOpen}
+        onGenerate={handleGenerateImage}
+      />
       {/* Hidden file input for uploading media */}
       <input
         ref={fileInputRef}
@@ -277,20 +384,42 @@ export function MediaView() {
         <div className="p-3 pb-2 bg-panel">
           {/* Search and filter controls */}
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleFileSelect}
-              disabled={isProcessing}
-              className="!bg-background px-4 flex-1 justify-center items-center h-9 opacity-100 hover:opacity-75 transition-opacity"
-            >
-              {isProcessing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <CloudUpload className="h-4 w-4" />
-              )}
-              <span>Upload</span>
-            </Button>
+            <div className="flex items-center gap-2 flex-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleFileSelect}
+                disabled={isProcessing}
+                className="!bg-background px-3 justify-center items-center h-9 opacity-100 hover:opacity-75 transition-opacity"
+                title="Upload files"
+              >
+                {isProcessing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CloudUpload className="h-4 w-4" />
+                )}
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={() => setIsGenerateDialogOpen(true)}
+                disabled={isProcessing}
+                className="flex-1 h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 shadow-sm transition-all"
+              >
+                <Sparkles className="h-3.5 w-3.5 mr-2" />
+                AI Image
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={() => setIsVideoGenerateOpen(true)}
+                disabled={isProcessing}
+                className="flex-1 h-9 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 shadow-sm transition-all ml-[-4px]"
+              >
+                <VideoIcon className="h-3.5 w-3.5 mr-2" />
+                AI Video
+              </Button>
+            </div>
             <div className="flex items-center gap-0">
               <TooltipProvider>
                 <Tooltip>
@@ -450,6 +579,18 @@ export function MediaView() {
           </div>
         </div>
       </div>
+
+      <GenerateImageDialog
+        open={isGenerateDialogOpen}
+        onOpenChange={setIsGenerateDialogOpen}
+        onGenerate={handleGenerateImage}
+      />
+
+      <GenerateVideoDialog
+        open={isVideoGenerateOpen}
+        onOpenChange={setIsVideoGenerateOpen}
+        onGenerate={handleGenerateVideo}
+      />
     </>
   );
 }

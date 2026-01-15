@@ -102,9 +102,29 @@ async def grok_text_to_video(prompt, output_dir="remotion-studio/public/assets/p
 
             # 3. 输入 Prompt
             print("⌨️ 正在定位输入框...")
-            editor_selector = 'div.ProseMirror[contenteditable="true"]'
-            editor = page.locator(editor_selector).first
-            await editor.wait_for(state="visible", timeout=30000)
+            selectors = [
+                'textarea[aria-label*="Grok"]',
+                'textarea[aria-label*="问题"]',
+                'textarea[aria-label*="想象"]',
+                'div.ProseMirror[contenteditable="true"]',
+                'textarea',
+                '[role="textbox"]'
+            ]
+            
+            editor = None
+            for sel in selectors:
+                try:
+                    loc = page.locator(sel).first
+                    if await loc.count() > 0:
+                        editor = loc
+                        break
+                except: continue
+            
+            if not editor:
+                print("❌ 无法定位到输入框")
+                return
+
+            await editor.wait_for(state="visible", timeout=15000)
             await editor.click()
             
             print(f"🖋️ 正在输入视频提示词 (直接填充)...")
@@ -139,6 +159,13 @@ async def grok_text_to_video(prompt, output_dir="remotion-studio/public/assets/p
                 # 循环轮询直到数量增加
                 new_video_generated = False
                 for _ in range(150):  # 最多等 5 分钟 (150 * 2秒 = 300秒)
+                    # ⚠️ 处理 A/B 测试反馈弹窗
+                    skip_btn = page.get_by_text("跳过")
+                    if await skip_btn.count() > 0:
+                         print("🛡️ 检测到 A/B 测试，自动点击‘跳过’")
+                         await skip_btn.first.click()
+                         await asyncio.sleep(1)
+
                     current_count = await page.locator(regenerate_btn_selector).count()
                     if current_count > existing_regen_count:
                         new_video_generated = True
