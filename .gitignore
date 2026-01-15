@@ -12,6 +12,11 @@ draft/
 # Node.js
 node_modules/
 remotion-studio/node_modules/
+AIcut-Studio/node_modules/
+AIcut-Studio/apps/web/node_modules/
+AIcut-Studio/apps/web/.next/
+AIcut-Studio/.git_bak/
+AIcut-Studio/.cursor/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

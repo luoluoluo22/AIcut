@@ -1,0 +1,113 @@
+{
+  "project": {
+    "id": "demo",
+    "name": "AIcut Local Project",
+    "thumbnail": null,
+    "createdAt": "2026-01-15T02:21:13.643Z",
+    "updatedAt": "2026-01-15T02:43:59.374Z",
+    "scenes": [
+      {
+        "id": "scene1",
+        "name": "Scene 1",
+        "isMain": true,
+        "createdAt": "2026-01-15T02:21:13.643Z",
+        "updatedAt": "2026-01-15T02:21:13.643Z"
+      }
+    ],
+    "currentSceneId": "scene1",
+    "backgroundColor": "#000000",
+    "backgroundType": "color",
+    "blurIntensity": 0,
+    "bookmarks": [],
+    "fps": 30,
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvasMode": "original"
+  },
+  "tracks": [
+    {
+      "id": "ai_subtitle_track",
+      "name": "AI 风格字幕轨",
+      "type": "text",
+      "elements": [
+        {
+          "id": "global_title",
+          "type": "text",
+          "name": "标题",
+          "content": "AI 全自动合成演示6",
+          "startTime": 0,
+          "duration": 6.041667,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 200,
+          "fontSize": 100,
+          "fontWeight": "bold",
+          "color": "#FFD700",
+          "backgroundColor": "rgba(0,0,0,0.5)",
+          "textAlign": "center",
+          "opacity": 0.8
+        }
+      ]
+    },
+    {
+      "id": "ai_media_track",
+      "name": "AI 自动视频轨",
+      "type": "media",
+      "elements": [
+        {
+          "id": "el_982579f4-451e-4bff-9e7c-fcb96737c95d",
+          "type": "media",
+          "name": "grok-video-922e1f13-65c9-4867-a6b0-471fb5a573a3 (1).mp4",
+          "mediaId": "982579f4-451e-4bff-9e7c-fcb96737c95d",
+          "startTime": 0,
+          "duration": 6.041667,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "scale": 1.01,
+          "rotation": 0
+        }
+      ],
+      "isMain": true,
+      "muted": false
+    },
+    {
+      "id": "b8b44ea4-5049-48d1-8585-9f9adfe3175d",
+      "name": "Audio Track",
+      "type": "audio",
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "fe0d7717-1962-476d-9c1a-1edde6c95660",
+          "name": "1768139711228915414-354659988058177.mp3 (left)",
+          "duration": 27.18,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 21.14666666666667,
+          "muted": false,
+          "id": "4f014aa3-7c9f-4721-93a5-5ea8dcfd3f10",
+          "volume": 0.74
+        }
+      ],
+      "muted": false
+    }
+  ],
+  "assets": [
+    {
+      "id": "982579f4-451e-4bff-9e7c-fcb96737c95d",
+      "name": "grok-video-922e1f13-65c9-4867-a6b0-471fb5a573a3 (1).mp4",
+      "type": "video",
+      "duration": 6.041667,
+      "width": 752,
+      "height": 416
+    },
+    {
+      "id": "fe0d7717-1962-476d-9c1a-1edde6c95660",
+      "name": "1768139711228915414-354659988058177.mp3",
+      "type": "audio",
+      "duration": 27.18
+    }
+  ]
+}

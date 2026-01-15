@@ -51,37 +51,19 @@ npm start
 
 AIcut 的核心设计理念是 **让 AI 能够直接操控视频制作流程**。以下是与 AI 协作的典型工作流：
 
-### 方式一：通过 AI 对话直接剪辑 (推荐)
+### 方式一：通过“上帝视角”实时热重载 (推荐)
 
-1. **准备 AntigravityIDE**：
-   - 下载并安装 [AntigravityIDE](https://antigravity.dev)（AI 原生开发环境）
-   - 登录你的账号
+AIcut 现在支持 **SSE (Server-Sent Events) 实时同步协议**。AI 助理或外部脚本可以直接通过修改本地 JSON 文件来控制网页端的预览，实现“保存即生效”的极速体验。
 
-2. **让 AI 克隆项目**：
-   ```
-   "帮我克隆 https://github.com/luoluoluo22/AIcut 这个项目"
-   ```
+1. **项目快照 (Snapshot)**：网页端每 3 秒会自动将当前时间轴状态上报到本地。
+2. **实时同步 (Hot Sync)**：外部脚本修改同步文件后，网页端预览会瞬间重绘。
 
-3. **让 AI 阅读项目**：
-   ```
-   "阅读一下这个项目的结构和文档，了解它是怎么工作的"
-   ```
+> 📖 **详细协议说明与 AI 提示词模板**：查看 [AI 同步协议指南 (docs/AI_SYNC_PROTOCOL.md)](docs/AI_SYNC_PROTOCOL.md)
 
-4. **告诉 AI 你的需求**：
-   ```
-   "帮我做一个关于'未来城市'的 30 秒宣传片，要有配音和字幕"
-   ```
-
-5. **AI 自动执行**：
-   - 🔍 搜索并下载 Pexels/Pixabay 的免费商用素材
-   - ✍️ 撰写脚本文案
-   - 🎙️ 生成 TTS 配音（Edge TTS 云扬）
-   - 📝 对齐字幕时间轴
-   - 🎬 组装 JSON 配置并渲染预览
-
-6. **预览和微调**：在 Remotion Studio 中预览，AI 可根据你的反馈继续调整。
-
-
+### 方式二：手动运行 Python 脚本
+你可以运行 `tools/` 目录下的脚本，通过 API 接口与 Web 编辑器交互：
+- `demo_full_state.py`: 演示如何通过一个指令完全重构时间轴。
+- `test_global_view.py`: 演示 AI 如何读取网页状态并自动完成排版。
 
 
 ---
