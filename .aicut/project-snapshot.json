@@ -36,7 +36,7 @@
           "id": "el_title",
           "type": "text",
           "name": "Title",
-          "content": "AIcut 自动剪辑演示",
+          "content": "AIcut 自动剪辑演示1",
           "startTime": 0,
           "duration": 4,
           "trimStart": 0,
@@ -70,8 +70,8 @@
           "trimEnd": 0,
           "opacity": 1,
           "volume": 1,
-          "x": 0,
-          "y": 0,
+          "x": 960,
+          "y": 540,
           "scale": 1,
           "rotation": 0
         },
@@ -86,8 +86,8 @@
           "trimEnd": 0,
           "opacity": 1,
           "volume": 1,
-          "x": 0,
-          "y": 0,
+          "x": 960,
+          "y": 540,
           "scale": 1,
           "rotation": 0
         },
@@ -102,8 +102,8 @@
           "trimEnd": 0,
           "opacity": 1,
           "volume": 0,
-          "x": 0,
-          "y": 0,
+          "x": 960,
+          "y": 540,
           "scale": 1,
           "rotation": 0
         },
@@ -118,8 +118,8 @@
           "trimEnd": 0,
           "opacity": 1,
           "volume": 1,
-          "x": 0,
-          "y": 0,
+          "x": 960,
+          "y": 540,
           "scale": 1,
           "rotation": 0
         },
@@ -134,8 +134,8 @@
           "trimEnd": 0,
           "opacity": 1,
           "volume": 0,
-          "x": 0,
-          "y": 0,
+          "x": 960,
+          "y": 540,
           "scale": 1,
           "rotation": 0
         },
@@ -150,8 +150,24 @@
           "trimEnd": 0,
           "opacity": 1,
           "volume": 0,
-          "x": 0,
-          "y": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0
+        },
+        {
+          "id": "el_gen_1768494539",
+          "type": "media",
+          "mediaId": "asset_gen_1768494539",
+          "name": "Generated Image",
+          "startTime": 20,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "opacity": 1,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
           "scale": 1,
           "rotation": 0
         }
@@ -268,6 +284,16 @@
       "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片.MP3",
       "duration": 106.9975,
       "isLinked": true
+    },
+    {
+      "id": "asset_gen_1768494539",
+      "name": "new_generated_scene.png",
+      "type": "image",
+      "url": "/materials/new_generated_scene.png",
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\new_generated_scene.png",
+      "isLinked": true,
+      "width": 1920,
+      "height": 1080
     }
   ]
 }

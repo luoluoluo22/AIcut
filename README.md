@@ -122,6 +122,56 @@ Role: You are AIcut, an intelligent video editing agent. Your goal is to autonom
 **2. "给当前视频前5秒加上标题‘AIcut Demo’"**
 *AI 应该发送 `addSubtitle` 请求或通过 `setFullState` 添加一个 Text Track。*
 
+**3. "生成一张新图片，并追加到视频末尾"**
+*这是高阶操作，需要 AI 自动维护 `assets` 列表和 `tracks` 结构。参考逻辑如下：*
+
+```python
+import time
+import requests
+
+# 示例：注册新素材并追加到时间轴
+def append_new_asset(snapshot, new_file_path):
+    API_URL = "http://localhost:3000/api/ai-edit" # 补全 URL 定义
+    assets = snapshot.get("assets", [])
+    tracks = snapshot.get("tracks", [])
+
+    # 1. 注册素材 (Register)
+    new_asset_id = f"asset_{int(time.time())}"
+    assets.append({
+        "id": new_asset_id,
+        "name": "New Image",
+        "type": "image",
+        "url": "/materials/new_image.png", # Web URL
+        "filePath": new_file_path,         # Absolute Local Path
+        "isLinked": True
+    })
+
+    # 2. 找到主轨道 (Find Track)
+    main_track = next((t for t in tracks if t.get("isMain")), None)
+    
+    # 3. 计算末尾时间 (Calculate End Time)
+    last_end = 0
+    if main_track["elements"]:
+        last = main_track["elements"][-1]
+        last_end = last["startTime"] + last["duration"]
+
+    # 4. 追加片段 (Append Element)
+    main_track["elements"].append({
+        "id": f"el_{int(time.time())}",
+        "type": "media",
+        "mediaId": new_asset_id,
+        "startTime": last_end,
+        "duration": 5,
+        "x": 960, "y": 540 # Important: Center it!
+    })
+
+    # 5. 更新快照 (Commit)
+    requests.post(API_URL, json={
+        "action": "updateSnapshot",
+        "data": { "project": snapshot["project"], "tracks": tracks, "assets": assets }
+    })
+```
+
 ---
 
 ⭐ **AIcut** 让视频剪辑不再是繁琐的手动劳动。只需修改 Python 脚本，即可规模化复现你的剪辑创意。
