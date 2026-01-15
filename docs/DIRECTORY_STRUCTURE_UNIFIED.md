@@ -1,164 +1,51 @@
-# 项目目录结构统一说明
+# AIcut 项目目录结构说明
 
-## ✅ 最终确定的目录结构
+## 核心目录结构 (Electron 架构)
 
-```
-remotion-studio/
-├── src/
-│   └── projects/
-│       ├── promo_video.json           # 项目配置
-│       └── summer_seaside.json        # 项目配置
+```text
+AIcut/
+├── AIcut-Studio/              # Electron 桌面应用
+│   └── apps/
+│       └── web/               # Next.js 前端应用
+│           ├── src/           # 源代码 (React + Remotion)
+│           └── public/        # 运行时静态文件
+│               └── materials/ # 生成的 AI 素材 (图片/视频)
 │
-└── public/
-    └── assets/
-        └── projects/
-            ├── promo_video/           # 项目素材
-            │   ├── videos/
-            │   ├── music/
-            │   ├── audio/
-            │   └── images/
-            └── summer_seaside/
-                └── ...
+├── tools/                     # Python 自动化工具链
+│   ├── grok_adapter.py        # Grok 视频生成核心适配器
+│   ├── flux_api.py            # Flux 图片生成 API
+│   ├── subtitle_generator.py  # 字幕与语音生成
+│   └── ai_daemon.py           # 异步任务守护进程
+│
+├── docs/                      # 项目文档与演示素材
+├── exports/                   # 最终导出的视频文件
+├── chrome_debug_profile/      # 自动化的 Chrome 用户配置
+└── .aicut/                    # 项目持久化备份与快照
 ```
 
-## 📋 设计决策
+## 设计决策
 
-### 为什么选择这个结构?
+### 1. 深度集成 Electron
+项目已完全从独立的 `remotion-studio` 迁移至 `AIcut-Studio`。Remotion 现在作为桌面应用内部的组件运行，利用 Electron 的本地能力驱动 Python 工具链。
 
-**配置与素材分离**:
-1. **配置文件** (`src/projects/*.json`)
-   - 轻量级,只包含结构定义
-   - 便于版本控制 (Git)
-   - 易于编辑和维护
+### 2. 自动化工具链 (Tools)
+所有的 AI 生成能力（Grok, Flux）都通过 Python 脚本实现。前端通过 Node.js 的 `child_process` 调用这些工具，从而绕过复杂的浏览器证书和网络代理问题。
 
-2. **素材文件** (`public/assets/projects/`)
-   - 大文件,不适合频繁提交
-   - 可选择性加入 Git 或使用 Git LFS
-   - 符合 Remotion 的最佳实践
+### 3. 数据持久化
+项目快照存储在 `.aicut/project-snapshot.json` 中，通过 `tools/ai_daemon.py` 与前端实时同步。
 
-### 符合 Remotion 规范
+## 路径引用规范
 
-- ✅ `public/` 目录的文件可直接通过 HTTP 访问
-- ✅ 路径: `/assets/projects/promo_video/videos/xxx.mp4`
-- ✅ 不会被 Webpack 打包,提高性能
-- ✅ 适合大文件 (视频、音频)
+### 素材路径
+生成的所有 AI 素材存放于：
+`AIcut-Studio/apps/web/public/materials/ai-generated/`
 
-## 🔄 迁移记录
+在代码中应始终使用相对于 `public` 的路径进行引用（例如 `/materials/ai-generated/xxx.mp4`）。
 
-**2026-01-10**: 从 `src/projects/{name}/assets/` 迁移到 `public/assets/projects/{name}/`
-
-**原因**:
-1. Remotion 推荐将媒体文件放在 `public/` 目录
-2. 避免大文件被 Webpack 处理
-3. 便于直接 HTTP 访问
-4. 配置与素材分离,更清晰
-
-## 📝 路径引用规范
-
-### 在 JSON 配置中
-
-使用绝对路径(相对于 `public/` 目录):
-
-```json
-{
-  "clips": [
-    {
-      "path": "/assets/projects/promo_video/videos/beach_waves.mp4"
-    }
-  ],
-  "audio": [
-    {
-      "path": "/assets/projects/promo_video/music/energetic/Track_989_989.mp3"
-    }
-  ]
-}
-```
-
-### 在下载工具中
-
-```python
-# 视频下载
-output_dir = Path(f"remotion-studio/public/assets/projects/{project_name}/videos")
-
-# 音乐下载
-output_dir = Path(f"remotion-studio/public/assets/projects/{project_name}/music")
-```
-
-## 🎯 最佳实践
-
-### 1. 版本控制
-
-`.gitignore` 配置:
-```gitignore
-# 排除大文件
-public/assets/projects/**/*.mp4
-public/assets/projects/**/*.mp3
-public/assets/projects/**/*.mov
-
-# 但保留小文件
-!public/assets/projects/**/*.jpg
-!public/assets/projects/**/*.png
-!public/assets/projects/**/*.webp
-```
-
-或使用 Git LFS:
-```bash
-git lfs track "public/assets/projects/**/*.mp4"
-git lfs track "public/assets/projects/**/*.mp3"
-```
-
-### 2. 项目文档
-
-在每个项目配置旁边创建 `README.md`:
-
-```
-src/projects/
-├── promo_video.json
-├── promo_video.README.md      # 项目说明
-├── summer_seaside.json
-└── summer_seaside.README.md
-```
-
-内容示例:
-```markdown
-# Promo Video 项目
-
-## 素材清单
-
-### 视频 (public/assets/projects/promo_video/videos/)
-- beach_waves.mp4 - Pixabay (ID: 12345)
-- office_worker.mp4 - Pexels (ID: 67890)
-
-### 音乐 (public/assets/projects/promo_video/music/)
-- energetic/Track_989_989.mp3 - Mixkit
-
-## 版权说明
-所有素材均为免费商用。
-```
-
-### 3. 命名规范
-
-- **项目名**: 小写+下划线 (`promo_video`, `summer_seaside`)
-- **文件名**: 描述性英文 (`stressed_office_worker.mp4`)
-- **避免**: 中文、空格、特殊字符
-
-## 🛠️ 工具适配
-
-所有下载工具已更新为新结构:
-
-1. **视频下载**: `tools/free_stock_api.py`
-   - 输出: `remotion-studio/public/assets/projects/{project}/videos/`
-
-2. **音乐下载**: `tools/mixkit_music_scraper.py`
-   - 输出: `remotion-studio/public/assets/projects/{project}/music/`
-
-## 📚 相关文档
-
-- `docs/PROJECT_ASSETS_STRUCTURE.md` - 详细结构说明
-- `.agent/workflows/download-free-assets-api.md` - 下载工作流
-- `docs/FREE_ASSETS_SYSTEM_SUMMARY.md` - 系统总结
+### 自动清理
+为了确保仓库不因二进制文件过载，`.gitignore` 已配置为忽略 `materials/` 和 `temp/` 目录。生产素材应通过正式导出的流程存放到 `exports/`。
 
 ---
 
-**最后更新**: 2026-01-10
-**状态**: ✅ 已统一
+**最后更新**: 2026-01-15
+**状态**: ✅ 已全面转向 Electron 架构
