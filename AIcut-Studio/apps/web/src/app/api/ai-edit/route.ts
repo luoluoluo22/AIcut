@@ -158,6 +158,43 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ success: false, error: "No snapshot available" });
         }
 
+        if (action === "listProjects") {
+            // List all projects from projects/ directory
+            try {
+                const projects: any[] = [];
+                if (fs.existsSync(PROJECTS_DIR)) {
+                    const dirs = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true });
+                    for (const dir of dirs) {
+                        if (dir.isDirectory()) {
+                            const snapshotPath = path.join(PROJECTS_DIR, dir.name, "snapshot.json");
+                            if (fs.existsSync(snapshotPath)) {
+                                try {
+                                    const data = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
+                                    if (data.project) {
+                                        projects.push({
+                                            id: data.project.id || dir.name,
+                                            name: data.project.name || dir.name,
+                                            createdAt: data.project.createdAt,
+                                            updatedAt: data.project.updatedAt,
+                                            thumbnail: data.project.thumbnail,
+                                            source: "filesystem"
+                                        });
+                                    }
+                                } catch (e) {
+                                    console.warn(`Failed to parse ${snapshotPath}:`, e);
+                                }
+                            }
+                        }
+                    }
+                }
+                return NextResponse.json({ success: true, projects });
+            } catch (e) {
+                console.error("Failed to list projects:", e);
+                return NextResponse.json({ success: false, error: "Failed to list projects" }, { status: 500 });
+            }
+        }
+
+
         return NextResponse.json({
             success: true,
             message: "AIcut AI Edit API",

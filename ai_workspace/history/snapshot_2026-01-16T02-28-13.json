@@ -1,10 +1,10 @@
 {
   "project": {
     "id": "demo",
-    "name": "AI还原纪录片",
+    "name": "AI 自动视频工作站",
     "thumbnail": null,
     "createdAt": "2026-01-15T15:51:12.170Z",
-    "updatedAt": "2026-01-16T10:25:00.000Z",
+    "updatedAt": "2026-01-15T15:55:25.003Z",
     "scenes": [
       {
         "id": "scene1",
@@ -35,18 +35,5 @@
       "elements": []
     }
   ],
-  "assets": [
-    {
-      "id": "asset_cover",
-      "name": "AI还原纪录片-封面.jpg",
-      "type": "image",
-      "url": "/materials/images/AI还原纪录片-封面.jpg"
-    },
-    {
-      "id": "asset_bgm",
-      "name": "AI还原纪录片.MP3",
-      "type": "audio",
-      "url": "/materials/audio/AI还原纪录片.MP3"
-    }
-  ]
+  "assets": []
 }

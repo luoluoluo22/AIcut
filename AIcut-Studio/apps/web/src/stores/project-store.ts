@@ -347,8 +347,56 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }
 
     try {
-      const projects = await storageService.loadAllProjects();
-      set({ savedProjects: projects });
+      // 1. Load from IndexedDB
+      const indexedDBProjects = await storageService.loadAllProjects();
+
+      // 2. Load from filesystem (projects/ directory)
+      let filesystemProjects: any[] = [];
+      try {
+        const res = await fetch("/api/ai-edit?action=listProjects");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.projects)) {
+          filesystemProjects = data.projects;
+        }
+      } catch (e) {
+        console.warn("[Project Store] Failed to load filesystem projects:", e);
+      }
+
+      // 3. Merge: filesystem projects override IndexedDB names
+      const mergedProjects = indexedDBProjects.map(p => {
+        const fsProject = filesystemProjects.find(fp => fp.id === p.id);
+        if (fsProject) {
+          return {
+            ...p,
+            name: fsProject.name, // Use name from filesystem
+          };
+        }
+        return p;
+      });
+
+      // 4. Add filesystem-only projects (not in IndexedDB)
+      for (const fp of filesystemProjects) {
+        if (!indexedDBProjects.find(p => p.id === fp.id)) {
+          mergedProjects.push({
+            id: fp.id,
+            name: fp.name,
+            thumbnail: fp.thumbnail || null,
+            createdAt: new Date(fp.createdAt || Date.now()),
+            updatedAt: new Date(fp.updatedAt || Date.now()),
+            scenes: [],
+            currentSceneId: "",
+            backgroundColor: "#000000",
+            backgroundType: "color" as const,
+            blurIntensity: 0,
+            bookmarks: [],
+            fps: 30,
+            canvasSize: { width: 1920, height: 1080 },
+            canvasMode: "preset" as const,
+          });
+        }
+      }
+
+      set({ savedProjects: mergedProjects });
     } catch (error) {
       console.error("Failed to load projects:", error);
     } finally {
