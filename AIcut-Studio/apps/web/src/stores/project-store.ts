@@ -202,6 +202,33 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       await storageService.saveProject({ project: newProject });
       // Reload all projects to update the list
       await get().loadAllProjects();
+
+      // Sync new project to file system for AI tools
+      try {
+        // First archive any existing project
+        await fetch("/api/ai-edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "archiveProject" })
+        });
+        // Then update workspace with new project
+        await fetch("/api/ai-edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "updateSnapshot",
+            data: {
+              project: newProject,
+              tracks: [],
+              assets: []
+            }
+          })
+        });
+        console.log(`[Project Store] Created and synced new project ${newProject.id}`);
+      } catch (e) {
+        console.warn("[Project Store] Failed to sync new project:", e);
+      }
+
       return newProject.id;
     } catch (error) {
       toast.error("Failed to save new project");
@@ -256,6 +283,24 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       throw error; // Re-throw so the editor page can handle it
     } finally {
       set({ isLoading: false });
+
+      // Sync to ai_workspace for AI tools
+      const loadedProject = get().activeProject;
+      if (loadedProject) {
+        try {
+          await fetch("/api/ai-edit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "switchProject",
+              data: { projectId: loadedProject.id }
+            })
+          });
+          console.log(`[Project Store] Synced project ${loadedProject.id} to ai_workspace`);
+        } catch (e) {
+          console.warn("[Project Store] Failed to sync to ai_workspace:", e);
+        }
+      }
     }
   },
 
@@ -276,6 +321,21 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         }),
       ]);
       await get().loadAllProjects(); // Refresh the list
+
+      // Archive to projects/ directory for AI tools
+      try {
+        await fetch("/api/ai-edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "archiveProject",
+            data: { projectId: activeProject.id }
+          })
+        });
+        console.log(`[Project Store] Archived project ${activeProject.id} to projects/`);
+      } catch (e) {
+        console.warn("[Project Store] Failed to archive project:", e);
+      }
     } catch (error) {
       console.error("Failed to save project:", error);
     }
