@@ -198,6 +198,47 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ success: false, error: "No snapshot available" });
         }
 
+        if (action === "getProjectThumbnail") {
+            const projectId = searchParams.get("projectId");
+            if (!projectId) {
+                return NextResponse.json({ success: false, error: "Missing projectId" }, { status: 400 });
+            }
+
+            try {
+                const snapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+                if (fs.existsSync(snapshotPath)) {
+                    const data = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
+
+                    // Find first image or video asset with thumbnailUrl
+                    const assets = data.assets || [];
+                    let thumbnailAsset = assets.find((a: any) => a.type === "image");
+                    if (!thumbnailAsset) {
+                        thumbnailAsset = assets.find((a: any) => a.type === "video" && a.thumbnailUrl);
+                    }
+
+                    if (thumbnailAsset) {
+                        // Convert relative URL to absolute file path
+                        let thumbnailFile = thumbnailAsset.thumbnailUrl || thumbnailAsset.url;
+                        if (thumbnailFile?.startsWith("/materials/")) {
+                            thumbnailFile = thumbnailFile.replace("/materials/", "");
+                            const absolutePath = path.join(PROJECTS_DIR, projectId, "assets", thumbnailFile);
+                            if (fs.existsSync(absolutePath)) {
+                                return NextResponse.json({
+                                    success: true,
+                                    thumbnailPath: absolutePath,
+                                    projectId
+                                });
+                            }
+                        }
+                    }
+                }
+                return NextResponse.json({ success: false, error: "No thumbnail found" });
+            } catch (e) {
+                console.error("Failed to get project thumbnail:", e);
+                return NextResponse.json({ success: false, error: "Failed to get thumbnail" }, { status: 500 });
+            }
+        }
+
         if (action === "listProjects") {
             // List all projects from projects/ directory
             try {

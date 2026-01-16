@@ -1356,23 +1356,10 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
           }
         }
 
-        // 2. Fallback: Try to get thumbnail from filesystem (projects/<id>/snapshot.json)
+        // 2. Fallback: Use dedicated project-thumbnail API (doesn't rely on symlink)
         try {
-          const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${projectId}`);
-          const data = await res.json();
-          if (data.success && data.snapshot?.assets?.length > 0) {
-            // Find first image or video asset
-            const firstAsset = data.snapshot.assets.find(
-              (a: any) => a.type === "image" || a.type === "video"
-            );
-            if (firstAsset?.url) {
-              // Handle relative URLs starting with /materials/
-              if (firstAsset.url.startsWith("/materials/")) {
-                return firstAsset.url;
-              }
-              return firstAsset.url;
-            }
-          }
+          // This API directly serves images from projects/<id>/assets/
+          return `/api/project-thumbnail?projectId=${projectId}`;
         } catch (e) {
           // Ignore filesystem fallback errors
         }
