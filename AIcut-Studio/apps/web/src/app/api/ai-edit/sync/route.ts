@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
-const EDITS_DIR = path.resolve(process.cwd(), "../../..", ".aicut");
+const EDITS_DIR = path.resolve(process.cwd(), "../../..", "ai_workspace");
 const SYNC_FILE = path.join(EDITS_DIR, "sync-input.json");
 
 /**

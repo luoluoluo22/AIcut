@@ -7,7 +7,7 @@ import numpy as np
 import hashlib
 
 # Paths
-SNAPSHOT_PATH = r"f:\桌面\开发\AIcut\.aicut\project-snapshot.json"
+SNAPSHOT_PATH = r"f:\桌面\开发\AIcut\ai_workspace\project-snapshot.json"
 BASE_MATERIALS_DIR = r"f:\桌面\开发\AIcut\AIcut-Studio\apps\web\public\materials"
 THUMBNAILS_DIR = os.path.join(BASE_MATERIALS_DIR, "_thumbnails")
 

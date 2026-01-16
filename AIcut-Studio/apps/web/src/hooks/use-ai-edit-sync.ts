@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useTimelineStore } from "@/stores/timeline-store";
 import { useMediaStore, getMediaDuration } from "@/stores/media-store";
 import { useProjectStore } from "@/stores/project-store";
@@ -16,6 +17,7 @@ interface PendingEdit {
 }
 
 export function useAIEditSync(enabled: boolean = true) {
+    const router = useRouter();
     const { tracks } = useTimelineStore();
     const processedIds = useRef<Set<string>>(new Set());
     const lastReportedState = useRef<string>("");
@@ -361,6 +363,13 @@ export function useAIEditSync(enabled: boolean = true) {
         const remoteProject = data.project;
 
         if (currentProject && remoteProject) {
+            // Check for Project Switch
+            if (remoteProject.id && remoteProject.id !== currentProject.id) {
+                console.log(`[AI Sync] <Project> Project ID mismatch (Local: ${currentProject.id}, Remote: ${remoteProject.id}). Redirecting...`);
+                router.push(`/editor/${remoteProject.id}`);
+                return;
+            }
+
             const updates: any = {};
 
             // Sync atomic fields

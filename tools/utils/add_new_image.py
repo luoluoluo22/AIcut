@@ -5,7 +5,7 @@ import time
 
 # 配置
 API_URL = "http://localhost:3000/api/ai-edit"
-SNAPSHOT_PATH = os.path.join(os.path.dirname(__file__), "../.aicut/project-snapshot.json")
+SNAPSHOT_PATH = os.path.join(os.path.dirname(__file__), "../ai_workspace/project-snapshot.json")
 NEW_IMAGE_NAME = "new_generated_scene.png"
 # 注意：这里需要填写真实的绝对路径，或者是相对于前端 public 目录的路径映射
 # 根据之前的 snapshot，filePath 是绝对路径

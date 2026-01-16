@@ -22,9 +22,10 @@ import os from "os";
 // File-based storage for AI edits (cross-process communication)
 // Resolve the edits directory to a folder named '.aicut' at the workspace root
 // Workspace root is 3 levels up from apps/web/src/app/api/ai-edit
-const EDITS_DIR = path.resolve(process.cwd(), "../../..", ".aicut");
-const EDITS_FILE = path.join(EDITS_DIR, "pending-edits.json");
+// --- CONFIG ---
+const EDITS_DIR = path.join(process.cwd(), "../../ai_workspace");
 const SNAPSHOT_FILE = path.join(EDITS_DIR, "project-snapshot.json");
+const PENDING_EDITS_FILE = path.join(EDITS_DIR, "pending-edits.json");
 const SYNC_FILE = path.join(EDITS_DIR, "sync-input.json");
 
 // Ensure directory exists

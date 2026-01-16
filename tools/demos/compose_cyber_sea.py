@@ -76,7 +76,7 @@ def main():
         ]
     }
     
-    with open(".aicut/project-snapshot.json", "w", encoding="utf-8") as f:
+    with open("ai_workspace/project-snapshot.json", "w", encoding="utf-8") as f:
         json.dump(snapshot, f, indent=2, ensure_ascii=False)
     print("🚀 Project Snapshot Updated with AI Assets!")
 

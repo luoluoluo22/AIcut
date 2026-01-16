@@ -61,7 +61,7 @@ class AIDaemon:
         return None
 
     def find_local_file(self, filename, target_duration=None, hint_path=None):
-        skip_dirs = {'.git', 'node_modules', '.next', 'dist-electron', 'dist', 'bin', 'obj', '.aicut'}
+        skip_dirs = {'.git', 'node_modules', '.next', 'dist-electron', 'dist', 'bin', 'obj', 'ai_workspace'}
         target_name = filename.strip()
         
         # 1. 如果有通过媒体信息传来的绝对路径，优先使用
