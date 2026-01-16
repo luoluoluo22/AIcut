@@ -72,6 +72,7 @@ import { Slider } from "@/components/ui/slider";
 import { formatTimeCode } from "@/lib/time";
 import { EditableTimecode } from "@/components/ui/editable-timecode";
 import { TimelineToolbar } from "./timeline-toolbar";
+import { useMediaPanelStore } from "../media-panel/store";
 
 export function Timeline() {
   // Timeline shows all tracks (video, audio, effects) and their elements.
@@ -87,6 +88,7 @@ export function Timeline() {
     toggleTrackMute,
     dragState,
   } = useTimelineStore();
+  const { setPreviewMedia } = useMediaPanelStore();
   const { mediaFiles, addMediaFile } = useMediaStore();
   const { activeProject } = useProjectStore();
   const { currentTime, duration, seek, setDuration } = usePlaybackStore();
@@ -174,6 +176,9 @@ export function Timeline() {
 
   // Track mouse down to distinguish real clicks from drag/resize ends
   const handleTimelineMouseDown = useCallback((e: React.MouseEvent) => {
+    // Clear preview source whenever touching timeline
+    setPreviewMedia(null);
+
     // Only track mouse down on timeline background areas (not elements)
     const target = e.target as HTMLElement;
     console.log(

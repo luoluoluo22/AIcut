@@ -134,4 +134,7 @@ export const useMediaPanelStore = create<MediaPanelStore>((set, get) => ({
     set({ selectedMediaIds: new Set(), lastSelectedId: null });
   },
   isSelected: (id) => get().selectedMediaIds.has(id),
+  // 预览相关
+  previewMedia: null as import("@/types/media").MediaFile | null,
+  setPreviewMedia: (media) => set({ previewMedia: media }),
 }));

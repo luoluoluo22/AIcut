@@ -83,7 +83,13 @@ export function MediaView() {
     "name"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const { highlightMediaId, clearHighlight } = useMediaPanelStore();
+  const {
+    highlightMediaId,
+    clearHighlight,
+    selectMedia,
+    setPreviewMedia,
+    isSelected
+  } = useMediaPanelStore();
   const { highlightedId, registerElement } = useHighlightScroll(
     highlightMediaId,
     clearHighlight
@@ -309,6 +315,22 @@ export function MediaView() {
     } catch (error) {
       console.error("Error deleting asset:", error);
       toast.error("Failed to delete file");
+    }
+  };
+
+  const handleItemClick = (e: React.MouseEvent, item: MediaFile) => {
+    e.stopPropagation();
+
+    // Select the item
+    selectMedia(item.id, {
+      ctrl: e.ctrlKey || e.metaKey,
+      shift: e.shiftKey,
+      allIds: filteredMediaItems.map(m => m.id)
+    });
+
+    // Set as preview (only if not multi-selecting with modifier)
+    if (!(e.ctrlKey || e.metaKey || e.shiftKey)) {
+      setPreviewMedia(item);
     }
   };
 
@@ -643,6 +665,8 @@ export function MediaView() {
                 handleRemove={handleRemove}
                 highlightedId={highlightedId}
                 registerElement={registerElement}
+                onItemClick={handleItemClick}
+                isSelected={isSelected}
               />
             ) : (
               <ListView
@@ -651,6 +675,8 @@ export function MediaView() {
                 handleRemove={handleRemove}
                 highlightedId={highlightedId}
                 registerElement={registerElement}
+                onItemClick={handleItemClick}
+                isSelected={isSelected}
               />
             )}
           </div>
@@ -678,12 +704,16 @@ function GridView({
   handleRemove,
   highlightedId,
   registerElement,
+  onItemClick,
+  isSelected,
 }: {
   filteredMediaItems: MediaFile[];
   renderPreview: (item: MediaFile) => React.ReactNode;
   handleRemove: (e: React.MouseEvent, id: string) => Promise<void>;
   highlightedId: string | null;
   registerElement: (id: string, element: HTMLElement | null) => void;
+  onItemClick: (e: React.MouseEvent, item: MediaFile) => void;
+  isSelected: (id: string) => boolean;
 }) {
   const { addElementAtTime } = useTimelineStore();
 
@@ -712,6 +742,8 @@ function GridView({
               rounded={false}
               variant="card"
               isHighlighted={highlightedId === item.id}
+              isSelected={isSelected(item.id)}
+              onClick={(e) => onItemClick(e, item)}
             />
           </MediaItemWithContextMenu>
         </div>
@@ -726,12 +758,16 @@ function ListView({
   handleRemove,
   highlightedId,
   registerElement,
+  onItemClick,
+  isSelected,
 }: {
   filteredMediaItems: MediaFile[];
   renderPreview: (item: MediaFile) => React.ReactNode;
   handleRemove: (e: React.MouseEvent, id: string) => Promise<void>;
   highlightedId: string | null;
   registerElement: (id: string, element: HTMLElement | null) => void;
+  onItemClick: (e: React.MouseEvent, item: MediaFile) => void;
+  isSelected: (id: string) => boolean;
 }) {
   const { addElementAtTime } = useTimelineStore();
 
@@ -754,6 +790,8 @@ function ListView({
               }
               variant="compact"
               isHighlighted={highlightedId === item.id}
+              isSelected={isSelected(item.id)}
+              onClick={(e) => onItemClick(e, item)}
             />
           </MediaItemWithContextMenu>
         </div>

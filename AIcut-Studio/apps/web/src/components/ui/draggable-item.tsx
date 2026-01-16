@@ -30,6 +30,7 @@ export interface DraggableMediaItemProps {
   isDraggable?: boolean;
   isHighlighted?: boolean;
   isSelected?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 export function DraggableMediaItem({
@@ -48,6 +49,7 @@ export function DraggableMediaItem({
   isDraggable = true,
   isHighlighted = false,
   isSelected = false,
+  onClick,
 }: DraggableMediaItemProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
@@ -106,6 +108,7 @@ export function DraggableMediaItem({
         <div
           ref={dragRef}
           className={cn("relative group", containerClassName ?? "w-full")}
+          onClick={onClick}
         >
           <div
             className={cn(
@@ -154,6 +157,7 @@ export function DraggableMediaItem({
             "relative group w-full",
             isHighlighted && highlightClassName
           )}
+          onClick={onClick}
         >
           <div
             className={cn(
