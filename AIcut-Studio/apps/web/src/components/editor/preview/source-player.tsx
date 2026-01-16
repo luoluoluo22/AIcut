@@ -73,6 +73,7 @@ export const SourcePlayer = () => {
                     background: activeProject?.backgroundColor || "#000"
                 }}>
                 <Player
+                    key={previewMedia.id}
                     ref={playerRef}
                     component={SourcePreviewComposition}
                     inputProps={{ media: previewMedia }}
@@ -88,9 +89,7 @@ export const SourcePlayer = () => {
                     }}
                     controls={false}
                     onFrameUpdate={(frame) => {
-                        if (isPreviewPlayingRef.current) {
-                            setPreviewTime(frame / fps);
-                        }
+                        setPreviewTime(frame / fps);
                     }}
                     loop={false}
                     onEnded={() => {
