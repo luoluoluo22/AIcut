@@ -4,7 +4,7 @@
     "name": "赛博竹林 Vlog",
     "thumbnail": null,
     "createdAt": "2026-01-16T10:25:00.000Z",
-    "updatedAt": "2026-01-16T02:55:43.830Z",
+    "updatedAt": "2026-01-16T03:04:29.255Z",
     "scenes": [
       {
         "id": "scene1",
@@ -28,12 +28,11 @@
   },
   "tracks": [
     {
-      "id": "e0ffbbb1-b25f-4e51-9ac6-31ddb8bc67a2",
-      "name": "Main Track",
+      "id": "track_main",
+      "name": "Video Track",
       "type": "media",
-      "elements": [],
-      "muted": false,
-      "isMain": true
+      "isMain": true,
+      "elements": []
     }
   ],
   "assets": [

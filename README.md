@@ -34,13 +34,13 @@
    
    - **终端 1 (启动 Next.js 服务)**:
      ```bash
-     cd apps/web
+     cd AIcut-Studio/apps/web
      npm run dev
      ```
    
    - **终端 2 (启动 Electron 客户端)**:
      ```bash
-     cd apps/web
+     cd AIcut-Studio/apps/web
      npx electron .
      ```
 
