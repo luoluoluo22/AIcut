@@ -90,8 +90,8 @@ interface PendingEdit {
 
 function loadPendingEdits(): PendingEdit[] {
     try {
-        if (fs.existsSync(EDITS_FILE)) {
-            const data = JSON.parse(fs.readFileSync(EDITS_FILE, "utf-8"));
+        if (fs.existsSync(PENDING_EDITS_FILE)) {
+            const data = JSON.parse(fs.readFileSync(PENDING_EDITS_FILE, "utf-8"));
             if (Array.isArray(data)) {
                 // Filter out invalid entries to prevent crashes
                 return data.filter(e => e && typeof e === 'object' && e.id);
@@ -104,7 +104,7 @@ function loadPendingEdits(): PendingEdit[] {
 }
 
 function savePendingEdits(edits: PendingEdit[]) {
-    fs.writeFileSync(EDITS_FILE, JSON.stringify(edits, null, 2));
+    fs.writeFileSync(PENDING_EDITS_FILE, JSON.stringify(edits, null, 2));
 }
 
 export async function GET(request: NextRequest) {
