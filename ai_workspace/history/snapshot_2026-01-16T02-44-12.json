@@ -28,12 +28,29 @@
   },
   "tracks": [
     {
-      "id": "da952ce6-4028-42ba-8901-40109ea2e9e9",
-      "name": "Main Track",
+      "id": "track_main",
+      "name": "Video Track",
       "type": "media",
-      "elements": [],
-      "muted": false,
-      "isMain": true
+      "isMain": true,
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "asset_grok_v1",
+          "name": "grok_video_27146.mp4",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "id": "d0533173-4a5e-4e99-a656-f895b865c1d2",
+          "muted": false,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        }
+      ]
     }
   ],
   "assets": [
