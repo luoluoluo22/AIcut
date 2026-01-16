@@ -358,13 +358,27 @@ export function useAIEditSync(enabled: boolean = true) {
         // --- Sync Project Metadata ---
         const projectStore = useProjectStore.getState();
         const currentProject = projectStore.activeProject;
-        if (currentProject) {
+        const remoteProject = data.project;
+
+        if (currentProject && remoteProject) {
             const updates: any = {};
-            if (data.name && data.name !== currentProject.name) updates.name = data.name;
-            if (data.fps && data.fps !== currentProject.fps) updates.fps = data.fps;
-            if (data.width && data.width !== currentProject.width) updates.width = data.width;
-            if (data.height && data.height !== currentProject.height) updates.height = data.height;
-            if (data.backgroundColor && data.backgroundColor !== currentProject.backgroundColor) updates.backgroundColor = data.backgroundColor;
+
+            // Sync atomic fields
+            if (remoteProject.name && remoteProject.name !== currentProject.name)
+                updates.name = remoteProject.name;
+            if (remoteProject.fps && remoteProject.fps !== currentProject.fps)
+                updates.fps = remoteProject.fps;
+
+            // Sync nested canvas size
+            if (remoteProject.canvasSize) {
+                if (remoteProject.canvasSize.width !== currentProject.canvasSize?.width)
+                    updates.width = remoteProject.canvasSize.width;
+                if (remoteProject.canvasSize.height !== currentProject.canvasSize?.height)
+                    updates.height = remoteProject.canvasSize.height;
+            }
+
+            if (remoteProject.backgroundColor && remoteProject.backgroundColor !== currentProject.backgroundColor)
+                updates.backgroundColor = remoteProject.backgroundColor;
 
             if (Object.keys(updates).length > 0) {
                 console.log("[AI Sync] <Project> Applying metadata update:", updates);

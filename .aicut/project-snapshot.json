@@ -1,7 +1,7 @@
 {
   "project": {
     "id": "demo",
-    "name": "AIcut Local Project",
+    "name": "AI 自动视频工作站",
     "thumbnail": null,
     "createdAt": "2026-01-15T15:51:12.170Z",
     "updatedAt": "2026-01-15T15:55:25.003Z",
@@ -195,11 +195,29 @@
   ],
   "assets": [
     {
-      "id": "asset_bf29ea80",
-      "name": "ai_gen_1768486131632.jpg",
+      "id": "asset_bamboo_img",
+      "name": "竹林深处-背景图",
       "type": "image",
       "url": "/materials/ai_gen_1768486131632.jpg",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\ai_gen_1768486131632.jpg",
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/asset_bamboo_img.jpg"
+    },
+    {
+      "id": "h_4a7d35e29513",
+      "name": "AI还原纪录片-封面.jpg",
+      "type": "image",
+      "url": "/materials/AI还原纪录片-封面.jpg",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片-封面.jpg",
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/h_4a7d35e29513.jpg"
+    },
+    {
+      "id": "asset_documentary_aud",
+      "name": "还原纪录片音频",
+      "type": "audio",
+      "url": "/materials/AI还原纪录片.MP3",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片.MP3",
       "isLinked": true
     },
     {
@@ -208,47 +226,62 @@
       "type": "video",
       "url": "/materials/grok_video_27146.mp4",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\grok_video_27146.mp4",
-      "isLinked": true
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/asset_grok_v1.jpg",
+      "duration": 6.041666666666667
     },
     {
-      "id": "asset_4c7219f3",
+      "id": "h_12d74f510b42",
       "name": "grok_video_28340.mp4",
       "type": "video",
       "url": "/materials/grok_video_28340.mp4",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\grok_video_28340.mp4",
-      "isLinked": true
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/h_12d74f510b42.jpg",
+      "duration": 6.041666666666667
     },
     {
-      "id": "asset_fafeb189",
-      "name": "scene_bamboo.mp3",
+      "id": "h_ff1f3fd32bab",
+      "name": "new_generated_scene.png",
+      "type": "image",
+      "url": "/materials/new_generated_scene.png",
+      "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\new_generated_scene.png",
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/h_ff1f3fd32bab.jpg"
+    },
+    {
+      "id": "asset_bamboo_bgm",
+      "name": "背景音-竹林",
       "type": "audio",
       "url": "/materials/scene_bamboo.mp3",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_bamboo.mp3",
       "isLinked": true
     },
     {
-      "id": "asset_bamboo_img",
-      "name": "竹林-背景图",
+      "id": "asset_bamboo_raw",
+      "name": "竹林原画",
       "type": "image",
       "url": "/materials/scene_bamboo.png",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_bamboo.png",
-      "isLinked": true
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/asset_bamboo_raw.jpg"
     },
     {
-      "id": "asset_5dea1458",
-      "name": "scene_cyber.mp3",
+      "id": "asset_cyber_bgm",
+      "name": "背景音-赛博",
       "type": "audio",
       "url": "/materials/scene_cyber.mp3",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_cyber.mp3",
       "isLinked": true
     },
     {
-      "id": "asset_cyber_img",
-      "name": "赛博-背景图",
+      "id": "asset_cyber_raw",
+      "name": "赛博原画",
       "type": "image",
       "url": "/materials/scene_cyber.png",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\scene_cyber.png",
-      "isLinked": true
+      "isLinked": true,
+      "thumbnailUrl": "/materials/_thumbnails/asset_cyber_raw.jpg"
     },
     {
       "id": "asset_cyber_aud",
@@ -265,35 +298,6 @@
       "url": "/materials/v2.mp3",
       "filePath": "f:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\v2.mp3",
       "isLinked": true
-    },
-    {
-      "id": "asset_818283",
-      "name": "AI还原纪录片-封面.jpg",
-      "type": "image",
-      "url": "/materials/AI还原纪录片-封面.jpg",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片-封面.jpg",
-      "width": 1950,
-      "height": 1080,
-      "isLinked": true
-    },
-    {
-      "id": "asset_833183",
-      "name": "AI还原纪录片.MP3",
-      "type": "audio",
-      "url": "/materials/AI还原纪录片.MP3",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\AI还原纪录片.MP3",
-      "duration": 106.9975,
-      "isLinked": true
-    },
-    {
-      "id": "asset_gen_1768494539",
-      "name": "new_generated_scene.png",
-      "type": "image",
-      "url": "/materials/new_generated_scene.png",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\new_generated_scene.png",
-      "isLinked": true,
-      "width": 1920,
-      "height": 1080
     }
   ]
 }

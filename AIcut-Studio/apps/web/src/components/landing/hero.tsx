@@ -32,11 +32,10 @@ export function Hero() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="mb-4 flex justify-center"
         >
-          <SponsorButton
-            href="https://vercel.com/home?utm_source=opencut"
-            logo={VercelIcon}
-            companyName="Vercel"
-          />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border text-sm font-medium">
+            <span className="flex h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
+            Empowering AI Video Automation
+          </div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -44,7 +43,7 @@ export function Hero() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="inline-block font-bold tracking-tighter text-4xl md:text-[4rem]"
         >
-          <h1>The Open Source</h1>
+          <h1>The AI Native</h1>
           <Handlebars>Video Editor</Handlebars>
         </motion.div>
 
@@ -54,8 +53,7 @@ export function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.8 }}
         >
-          A simple but powerful video editor that gets the job done. Works on
-          any platform.
+          AI 原生视频剪辑引擎。将强大的 Python AI 逻辑与前端实时时间轴结合，实现真正的全自动视频生产。
         </motion.p>
 
         <motion.div

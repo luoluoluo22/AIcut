@@ -11,13 +11,12 @@ export function Header() {
   const leftContent = (
     <Link href="/" className="flex items-center gap-3">
       <Image
-        src="/logo.svg"
-        alt="OpenCut Logo"
-        className="invert dark:invert-0"
+        src="/logo.png"
+        alt="AIcut Logo"
         width={32}
         height={32}
       />
-      <span className="text-xl font-medium hidden md:block">OpenCut</span>
+      <span className="text-xl font-medium hidden md:block">AIcut</span>
     </Link>
   );
 
