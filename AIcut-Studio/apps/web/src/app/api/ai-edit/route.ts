@@ -23,15 +23,62 @@ import os from "os";
 // Resolve the edits directory to a folder named '.aicut' at the workspace root
 // Workspace root is 3 levels up from apps/web/src/app/api/ai-edit
 // --- CONFIG ---
-const EDITS_DIR = path.join(process.cwd(), "../../ai_workspace");
+const WORKSPACE_ROOT = path.join(process.cwd(), "../../../");
+const EDITS_DIR = path.join(WORKSPACE_ROOT, "ai_workspace");
+const PROJECTS_DIR = path.join(WORKSPACE_ROOT, "projects");
+const HISTORY_DIR = path.join(EDITS_DIR, "history");
 const SNAPSHOT_FILE = path.join(EDITS_DIR, "project-snapshot.json");
 const PENDING_EDITS_FILE = path.join(EDITS_DIR, "pending-edits.json");
 const SYNC_FILE = path.join(EDITS_DIR, "sync-input.json");
+const MAX_HISTORY = 20;
 
-// Ensure directory exists
-if (!fs.existsSync(EDITS_DIR)) {
-    fs.mkdirSync(EDITS_DIR, { recursive: true });
+// Ensure directories exist
+[EDITS_DIR, PROJECTS_DIR, HISTORY_DIR].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
+
+// Helper: Backup current snapshot to history
+function backupSnapshot() {
+    if (!fs.existsSync(SNAPSHOT_FILE)) return;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    const backupPath = path.join(HISTORY_DIR, `snapshot_${timestamp}.json`);
+    fs.copyFileSync(SNAPSHOT_FILE, backupPath);
+    // Cleanup old versions
+    const files = fs.readdirSync(HISTORY_DIR)
+        .filter(f => f.startsWith("snapshot_") && f.endsWith(".json"))
+        .sort().reverse();
+    files.slice(MAX_HISTORY).forEach(f => fs.unlinkSync(path.join(HISTORY_DIR, f)));
 }
+
+// Helper: Archive workspace to project folder
+function archiveToProject(projectId: string) {
+    if (!fs.existsSync(SNAPSHOT_FILE)) return false;
+    const projectDir = path.join(PROJECTS_DIR, projectId);
+    if (!fs.existsSync(projectDir)) {
+        fs.mkdirSync(projectDir, { recursive: true });
+    }
+    fs.copyFileSync(SNAPSHOT_FILE, path.join(projectDir, "snapshot.json"));
+    console.log(`[Archive] Saved workspace to projects/${projectId}/snapshot.json`);
+    return true;
+}
+
+// Helper: Load project snapshot to workspace
+function loadProjectToWorkspace(projectId: string) {
+    const projectSnapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+    if (!fs.existsSync(projectSnapshotPath)) {
+        console.log(`[Load] Project ${projectId} not found in projects/`);
+        return false;
+    }
+    // Backup current workspace first
+    backupSnapshot();
+    // Copy project snapshot to workspace
+    fs.copyFileSync(projectSnapshotPath, SNAPSHOT_FILE);
+    console.log(`[Load] Loaded projects/${projectId}/snapshot.json to workspace`);
+    return true;
+}
+
 
 interface PendingEdit {
     id: string;
@@ -127,7 +174,10 @@ export async function GET(request: NextRequest) {
                 "removeElement - 移除元素",
                 "updateElement - 更新元素",
                 "setFullState - 全量覆盖时间轴 JSON (Remotion 风格)",
-                "updateSnapshot - (前端专用) 更新项目全局快照",
+                "updateSnapshot - 更新项目全局快照 (自动备份历史)",
+                "loadProject - 从 projects/<id>/ 加载到 ai_workspace/",
+                "archiveProject - 从 ai_workspace/ 归档到 projects/<id>/",
+                "switchProject - 归档当前项目并切换到新项目",
             ]
         });
     } catch (error) {
@@ -248,6 +298,9 @@ export async function POST(request: NextRequest) {
             case "updateSnapshot": {
                 // Front-end reports its full state (Smart Merge)
                 try {
+                    // Backup before overwriting
+                    backupSnapshot();
+
                     let currentSnapshot: any = {};
                     if (fs.existsSync(SNAPSHOT_FILE)) {
                         try {
@@ -270,6 +323,64 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({ success: false, error: "Failed to save snapshot" }, { status: 500 });
                 }
             }
+
+            case "loadProject": {
+                // Load a project from projects/ to ai_workspace/
+                const projectId = data?.projectId;
+                if (!projectId) {
+                    return NextResponse.json({ success: false, error: "Missing projectId" }, { status: 400 });
+                }
+                const loaded = loadProjectToWorkspace(projectId);
+                if (loaded) {
+                    return NextResponse.json({ success: true, message: `Loaded project ${projectId} to workspace` });
+                } else {
+                    return NextResponse.json({ success: false, error: `Project ${projectId} not found` }, { status: 404 });
+                }
+            }
+
+            case "archiveProject": {
+                // Archive current workspace to projects/
+                const projectId = data?.projectId;
+                if (!projectId) {
+                    // Try to get projectId from current snapshot
+                    try {
+                        const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                        const id = snapshot?.project?.id;
+                        if (id) {
+                            archiveToProject(id);
+                            return NextResponse.json({ success: true, message: `Archived to projects/${id}` });
+                        }
+                    } catch (e) { }
+                    return NextResponse.json({ success: false, error: "Missing projectId and cannot detect from snapshot" }, { status: 400 });
+                }
+                archiveToProject(projectId);
+                return NextResponse.json({ success: true, message: `Archived to projects/${projectId}` });
+            }
+
+            case "switchProject": {
+                // Archive current, then load new project
+                const newProjectId = data?.projectId;
+                if (!newProjectId) {
+                    return NextResponse.json({ success: false, error: "Missing projectId for switchProject" }, { status: 400 });
+                }
+                // 1. Archive current project (if any)
+                try {
+                    const currentSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                    const currentId = currentSnapshot?.project?.id;
+                    if (currentId && currentId !== newProjectId) {
+                        archiveToProject(currentId);
+                    }
+                } catch (e) { /* No current project to archive */ }
+
+                // 2. Load new project
+                const loaded = loadProjectToWorkspace(newProjectId);
+                if (loaded) {
+                    return NextResponse.json({ success: true, message: `Switched to project ${newProjectId}` });
+                } else {
+                    return NextResponse.json({ success: false, error: `Project ${newProjectId} not found` }, { status: 404 });
+                }
+            }
+
 
             default:
                 return NextResponse.json({
