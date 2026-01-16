@@ -56,7 +56,7 @@ export function KeyboardShortcutsHelp() {
         );
         if (conflict) {
           toast.error(
-            `Key "${keyString}" is already bound to "${conflict.existingAction}"`
+            `按键 "${keyString}" 已绑定到 "${conflict.existingAction}"`
           );
           setRecordingShortcut(null);
           return;
@@ -202,7 +202,7 @@ function ShortcutItem({
               })}
             </div>
             {index < displayKeys.length - 1 && (
-              <span className="text-xs text-muted-foreground">or</span>
+              <span className="text-xs text-muted-foreground">或</span>
             )}
           </div>
         ))}
@@ -234,7 +234,7 @@ function EditableShortcutKey({
         }`}
       onClick={handleClick}
       title={
-        isRecording ? "Press any key combination..." : "Click to edit shortcut"
+        isRecording ? "请按下任意按键组合..." : "点击编辑快捷键"
       }
     >
       {children}

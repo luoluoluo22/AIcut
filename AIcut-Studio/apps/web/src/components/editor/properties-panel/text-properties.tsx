@@ -518,7 +518,7 @@ export function TextProperties({
                 </PropertyItemValue>
               </PropertyItem>
               <PropertyItem direction="column">
-                <PropertyItemLabel>Background</PropertyItemLabel>
+                <PropertyItemLabel>背景</PropertyItemLabel>
                 <PropertyItemValue>
                   <div className="flex items-center gap-2">
                     <ColorPicker
@@ -560,7 +560,9 @@ export function TextProperties({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Transparent background</TooltipContent>
+                      <TooltipContent>
+                        {element.backgroundColor === "transparent" ? "启用背景色" : "禁用背景色"}
+                      </TooltipContent>
                     </Tooltip>
                   </div>
                 </PropertyItemValue>

@@ -40,7 +40,7 @@ function ProjectSettingsTabs() {
       tabs={[
         {
           value: "project-info",
-          label: "Project info",
+          label: "项目信息",
           content: (
             <div className="p-5">
               <ProjectInfoView />
@@ -49,7 +49,7 @@ function ProjectSettingsTabs() {
         },
         {
           value: "background",
-          label: "Background",
+          label: "背景",
           content: (
             <div className="flex flex-col justify-between h-full">
               <div className="flex-1 p-5">
@@ -58,18 +58,10 @@ function ProjectSettingsTabs() {
               <div className="flex flex-col sticky -bottom-0 bg-panel/85 backdrop-blur-lg">
                 <Separator />
                 <Button className="w-fit h-auto p-5 py-4 !bg-transparent shadow-none text-muted-foreground hover:text-foreground/85 text-xs">
-                  Custom background
+                  自定义背景
                   <PlusIcon />
                 </Button>
               </div>
-
-              {/* Another UI, looks so beautiful i don't wanna remove it */}
-              {/* <div className="flex flex-col justify-center items-center pb-5 sticky bottom-0">
-                <Button className="w-fit h-auto gap-1.5 px-3.5 py-1.5 bg-foreground hover:bg-foreground/85 text-background rounded-full">
-                  <span className="text-sm">Custom</span>
-                  <PlusIcon className="" />
-                </Button>
-              </div> */}
             </div>
           ),
         },
@@ -103,21 +95,21 @@ function ProjectInfoView() {
   return (
     <div className="flex flex-col gap-4">
       <PropertyItem direction="column">
-        <PropertyItemLabel>Name</PropertyItemLabel>
+        <PropertyItemLabel>名称</PropertyItemLabel>
         <PropertyItemValue>
-          {activeProject?.name || "Untitled project"}
+          {activeProject?.name || "未命名项目"}
         </PropertyItemValue>
       </PropertyItem>
 
       <PropertyItem direction="column">
-        <PropertyItemLabel>Aspect ratio</PropertyItemLabel>
+        <PropertyItemLabel>宽高比</PropertyItemLabel>
         <PropertyItemValue>
           <Select
             value={getDisplayName()}
             onValueChange={handleAspectRatioChange}
           >
             <SelectTrigger className="bg-panel-accent">
-              <SelectValue placeholder="Select an aspect ratio" />
+              <SelectValue placeholder="选择宽高比" />
             </SelectTrigger>
             <SelectContent>
               {canvasPresets.map((preset) => (
@@ -131,14 +123,14 @@ function ProjectInfoView() {
       </PropertyItem>
 
       <PropertyItem direction="column">
-        <PropertyItemLabel>Frame rate</PropertyItemLabel>
+        <PropertyItemLabel>帧率</PropertyItemLabel>
         <PropertyItemValue>
           <Select
             value={(activeProject?.fps || 30).toString()}
             onValueChange={handleFpsChange}
           >
             <SelectTrigger className="bg-panel-accent">
-              <SelectValue placeholder="Select a frame rate" />
+              <SelectValue placeholder="选择帧率" />
             </SelectTrigger>
             <SelectContent>
               {FPS_PRESETS.map((preset) => (
@@ -246,9 +238,9 @@ function BackgroundView() {
 
   const blurLevels = useMemo<Array<{ label: string; value: BlurIntensity }>>(
     () => [
-      { label: "Light", value: 4 },
-      { label: "Medium", value: 8 },
-      { label: "Heavy", value: 18 },
+      { label: "轻微", value: 4 },
+      { label: "中度", value: 8 },
+      { label: "强力", value: 18 },
     ],
     []
   );
@@ -287,11 +279,11 @@ function BackgroundView() {
 
   return (
     <div className="flex flex-col gap-4 h-full">
-      <PropertyGroup title="Blur" defaultExpanded={false}>
+      <PropertyGroup title="模糊" defaultExpanded={false}>
         <div className="grid grid-cols-4 gap-2 w-full">{blurPreviews}</div>
       </PropertyGroup>
 
-      <PropertyGroup title="Colors" defaultExpanded={false}>
+      <PropertyGroup title="颜色" defaultExpanded={false}>
         <div className="grid grid-cols-4 gap-2 w-full">
           <div className="w-full aspect-square rounded-sm cursor-pointer border border-foreground/15 hover:border-primary flex items-center justify-center">
             <PipetteIcon className="size-4" />
@@ -306,25 +298,35 @@ function BackgroundView() {
         </div>
       </PropertyGroup>
 
-      <PropertyGroup title="Pattern craft" defaultExpanded={false}>
-        <div className="grid grid-cols-4 gap-2 w-full">
-          <BackgroundPreviews
-            backgrounds={patternCraftGradients}
-            currentBackgroundColor={currentBackgroundColor}
-            isColorBackground={isColorBackground}
-            handleColorSelect={handleColorSelect}
-          />
-        </div>
-      </PropertyGroup>
+      <PropertyGroup title="渐变" defaultExpanded={false}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <span className="text-[0.65rem] text-muted-foreground uppercase font-medium">
+              Pattern Craft
+            </span>
+            <div className="grid grid-cols-4 gap-2 w-full">
+              <BackgroundPreviews
+                backgrounds={patternCraftGradients}
+                currentBackgroundColor={currentBackgroundColor}
+                isColorBackground={isColorBackground}
+                handleColorSelect={handleColorSelect}
+              />
+            </div>
+          </div>
 
-      <PropertyGroup title="Syntax UI" defaultExpanded={false}>
-        <div className="grid grid-cols-4 gap-2 w-full">
-          <BackgroundPreviews
-            backgrounds={syntaxUIGradients}
-            currentBackgroundColor={currentBackgroundColor}
-            isColorBackground={isColorBackground}
-            handleColorSelect={handleColorSelect}
-          />
+          <div className="flex flex-col gap-2">
+            <span className="text-[0.65rem] text-muted-foreground uppercase font-medium">
+              Syntax UI
+            </span>
+            <div className="grid grid-cols-4 gap-2 w-full">
+              <BackgroundPreviews
+                backgrounds={syntaxUIGradients}
+                currentBackgroundColor={currentBackgroundColor}
+                isColorBackground={isColorBackground}
+                handleColorSelect={handleColorSelect}
+              />
+            </div>
+          </div>
         </div>
       </PropertyGroup>
     </div>

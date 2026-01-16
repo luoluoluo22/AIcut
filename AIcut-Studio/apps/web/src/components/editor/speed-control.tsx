@@ -15,7 +15,7 @@ export function SpeedControl() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium">Playback Speed</h3>
+      <h3 className="text-sm font-medium">播放速度</h3>
       <div className="space-y-4">
         <div className="flex gap-2">
           {SPEED_PRESETS.map((preset) => (
@@ -30,7 +30,7 @@ export function SpeedControl() {
           ))}
         </div>
         <div className="space-y-1">
-          <Label>Custom ({speed.toFixed(1)}x)</Label>
+          <Label>自定义 ({speed.toFixed(1)}x)</Label>
           <Slider
             value={[speed]}
             min={0.1}

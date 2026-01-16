@@ -472,7 +472,7 @@ export function Timeline() {
             (item: any) => item.id === dragData.id
           );
           if (!mediaItem) {
-            toast.error("Media item not found");
+            toast.error("未找到媒体项目");
             return;
           }
 
@@ -480,12 +480,12 @@ export function Timeline() {
         }
       } catch (error) {
         console.error("Error parsing dropped item data:", error);
-        toast.error("Failed to add item to timeline");
+        toast.error("添加项目到时间轴失败");
       }
     } else if (e.dataTransfer.files?.length > 0) {
       // Handle file drops by creating new tracks
       if (!activeProject) {
-        toast.error("No active project");
+        toast.error("没有活动的项目");
         return;
       }
 
@@ -519,7 +519,7 @@ export function Timeline() {
       } catch (error) {
         // Show error if file processing fails
         console.error("Error processing external files:", error);
-        toast.error("Failed to process dropped files");
+        toast.error("无法处理拖入的文件");
       }
     }
   };

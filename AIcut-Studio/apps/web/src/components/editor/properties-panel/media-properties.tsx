@@ -280,14 +280,14 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                   填充模式
                 </PropertyItemLabel>
                 <PropertyItemValue className="text-right">
-                  <span className="text-xs text-muted-foreground bg-white/5 px-2 py-0.5 rounded">Contain (自适应)</span>
+                  <span className="text-xs text-muted-foreground bg-white/5 px-2 py-0.5 rounded">自适应</span>
                 </PropertyItemValue>
               </PropertyItem>
             </PropertyGroup>
           </div>
         ) : t.value === "audio" ? (
           <div className="space-y-6">
-            <PropertyGroup title="调节">
+            <PropertyGroup title="音频调节">
               <PropertyItem direction="column">
                 <div className="flex items-center mb-1">
                   <PropertyItemLabel>音量</PropertyItemLabel>
@@ -325,7 +325,7 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                   ) : (
                     <Volume2 className="size-3.5 text-green-400" />
                   )}
-                  静音全轨道
+                  轨道静音
                 </PropertyItemLabel>
                 <PropertyItemValue className="flex justify-end">
                   <Switch
@@ -348,7 +348,7 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-medium truncate max-w-[140px]">{media.name}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">{media.type}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">{media.type === 'video' ? '视频' : media.type === 'audio' ? '音频' : '图片'}</p>
                 </div>
               </div>
 

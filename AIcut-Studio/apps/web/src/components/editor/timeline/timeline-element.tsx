@@ -300,7 +300,7 @@ export function TimelineElement({
                 backgroundPosition: "left center",
                 pointerEvents: "none",
               }}
-              aria-label={`Tiled ${mediaItem.type === "image" ? "background" : "thumbnail"} of ${mediaItem.name}`}
+              aria-label={`${mediaItem.type === "image" ? "背景图" : "缩略图"}: ${mediaItem.name}`}
             />
           </div>
         </div>

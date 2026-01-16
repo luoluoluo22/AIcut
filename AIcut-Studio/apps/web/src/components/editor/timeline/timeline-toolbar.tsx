@@ -96,12 +96,12 @@ export function TimelineToolbar({
   };
 
   const handleFreezeSelected = () => {
-    toast.info("Freeze frame functionality coming soon!");
+    toast.info("定格功能即将推出！");
   };
 
   const handleSplitAndKeepLeft = () => {
     if (selectedElements.length !== 1) {
-      toast.error("Select exactly one element");
+      toast.error("请选择一个元素");
       return;
     }
     const { trackId, elementId } = selectedElements[0];
@@ -113,7 +113,7 @@ export function TimelineToolbar({
       element.startTime +
       (element.duration - element.trimStart - element.trimEnd);
     if (currentTime <= effectiveStart || currentTime >= effectiveEnd) {
-      toast.error("Playhead must be within selected element");
+      toast.error("播放指针必须在所选元素范围内");
       return;
     }
     splitAndKeepLeft(trackId, elementId, currentTime);
@@ -121,7 +121,7 @@ export function TimelineToolbar({
 
   const handleSplitAndKeepRight = () => {
     if (selectedElements.length !== 1) {
-      toast.error("Select exactly one element");
+      toast.error("请选择一个元素");
       return;
     }
     const { trackId, elementId } = selectedElements[0];
@@ -133,7 +133,7 @@ export function TimelineToolbar({
       element.startTime +
       (element.duration - element.trimStart - element.trimEnd);
     if (currentTime <= effectiveStart || currentTime >= effectiveEnd) {
-      toast.error("Playhead must be within selected element");
+      toast.error("播放指针必须在所选元素范围内");
       return;
     }
     splitAndKeepRight(trackId, elementId, currentTime);
@@ -141,13 +141,13 @@ export function TimelineToolbar({
 
   const handleSeparateAudio = () => {
     if (selectedElements.length !== 1) {
-      toast.error("Select exactly one media element to separate audio");
+      toast.error("请选择一个媒体元素以分离音频");
       return;
     }
     const { trackId, elementId } = selectedElements[0];
     const track = tracks.find((t) => t.id === trackId);
     if (!track || track.type !== "media") {
-      toast.error("Select a media element to separate audio");
+      toast.error("请选择一个媒体元素以分离音频");
       return;
     }
     separateAudio(trackId, elementId);
@@ -189,7 +189,7 @@ export function TimelineToolbar({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {isPlaying ? "Pause (Space)" : "Play (Space)"}
+              {isPlaying ? "暂停 (空格)" : "播放 (空格)"}
             </TooltipContent>
           </Tooltip>
           <Tooltip>
@@ -198,7 +198,7 @@ export function TimelineToolbar({
                 <SkipBack className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Return to Start (Home / Enter)</TooltipContent>
+            <TooltipContent>返回开头 (Home / Enter)</TooltipContent>
           </Tooltip>
           <div className="w-px h-6 bg-border mx-1" />
           {/* Time Display */}
@@ -231,7 +231,7 @@ export function TimelineToolbar({
                       addElementToTrack(trackId, {
                         type: "media",
                         mediaId: "test",
-                        name: "Test Clip",
+                        name: "测试剪辑",
                         duration: TIMELINE_CONSTANTS.DEFAULT_TEXT_DURATION,
                         startTime: 0,
                         trimStart: 0,
@@ -240,10 +240,10 @@ export function TimelineToolbar({
                     }}
                     className="text-xs"
                   >
-                    Add Test Clip
+                    添加测试剪辑
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Add a test clip to try playback</TooltipContent>
+                <TooltipContent>添加一个测试剪辑以尝试播放</TooltipContent>
               </Tooltip>
             </>
           )}
@@ -254,7 +254,7 @@ export function TimelineToolbar({
                 <Scissors className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Split element (Ctrl+S)</TooltipContent>
+            <TooltipContent>分割元素 (Ctrl+S)</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -266,7 +266,7 @@ export function TimelineToolbar({
                 <ArrowLeftToLine className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Split and keep left (Ctrl+Q)</TooltipContent>
+            <TooltipContent>分割并保留左侧 (Ctrl+Q)</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -278,7 +278,7 @@ export function TimelineToolbar({
                 <ArrowRightToLine className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Split and keep right (Ctrl+W)</TooltipContent>
+            <TooltipContent>分割并保留右侧 (Ctrl+W)</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -286,7 +286,7 @@ export function TimelineToolbar({
                 <SplitSquareHorizontal className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Separate audio (Ctrl+D)</TooltipContent>
+            <TooltipContent>分离音频 (Ctrl+D)</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -298,7 +298,7 @@ export function TimelineToolbar({
                 <Copy className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Duplicate element (Ctrl+D)</TooltipContent>
+            <TooltipContent>复制元素 (Ctrl+D)</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -306,7 +306,7 @@ export function TimelineToolbar({
                 <Snowflake className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Freeze frame (F)</TooltipContent>
+            <TooltipContent>定格 (F)</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -314,7 +314,7 @@ export function TimelineToolbar({
                 <Trash2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete element (Delete)</TooltipContent>
+            <TooltipContent>删除元素 (Delete)</TooltipContent>
           </Tooltip>
           <div className="w-px h-6 bg-border mx-1" />
           <Tooltip>
@@ -326,14 +326,14 @@ export function TimelineToolbar({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {currentBookmarked ? "Remove bookmark" : "Add bookmark"}
+              {currentBookmarked ? "移除书签" : "添加书签"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
       <div>
         <SplitButton className="border border-foreground/10">
-          <SplitButtonLeft>{currentScene?.name || "No Scene"}</SplitButtonLeft>
+          <SplitButtonLeft>{currentScene?.name || "无场景"}</SplitButtonLeft>
           <SplitButtonSeparator />
           <ScenesView>
             <SplitButtonRight disabled={scenes.length === 1} onClick={() => {}}>
@@ -354,7 +354,7 @@ export function TimelineToolbar({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Auto snapping</TooltipContent>
+            <TooltipContent>自动吸附</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -368,8 +368,8 @@ export function TimelineToolbar({
             </TooltipTrigger>
             <TooltipContent>
               {rippleEditingEnabled
-                ? "Disable Ripple Editing"
-                : "Enable Ripple Editing"}
+                ? "禁用波纹编辑"
+                : "启用波纹编辑"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

@@ -7,10 +7,10 @@ export function TextView() {
   return (
     <BaseView>
       <DraggableMediaItem
-        name="Default text"
+        name="默认文本"
         preview={
           <div className="flex items-center justify-center w-full h-full bg-panel-accent rounded">
-            <span className="text-xs select-none">Default text</span>
+            <span className="text-xs select-none">默认文本</span>
           </div>
         }
         dragData={{

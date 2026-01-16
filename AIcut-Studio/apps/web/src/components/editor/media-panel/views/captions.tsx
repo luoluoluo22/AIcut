@@ -19,15 +19,15 @@ import {
 import { TextElement } from "@/types/timeline";
 
 export const languages: Language[] = [
-  { code: "US", name: "English" },
-  { code: "ES", name: "Spanish" },
-  { code: "IT", name: "Italian" },
-  { code: "FR", name: "French" },
-  { code: "DE", name: "German" },
-  { code: "PT", name: "Portuguese" },
-  { code: "RU", name: "Russian" },
-  { code: "JP", name: "Japanese" },
-  { code: "CN", name: "Chinese" },
+  { code: "US", name: "英语" },
+  { code: "ES", name: "西班牙语" },
+  { code: "IT", name: "意大利语" },
+  { code: "FR", name: "法语" },
+  { code: "DE", name: "德语" },
+  { code: "PT", name: "葡萄牙语" },
+  { code: "RU", name: "俄语" },
+  { code: "JP", name: "日语" },
+  { code: "CN", name: "中文" },
 ];
 
 const PRIVACY_DIALOG_KEY = "opencut-transcription-privacy-accepted";
@@ -52,11 +52,11 @@ export function Captions() {
     try {
       setIsProcessing(true);
       setError(null);
-      setProcessingStep("Extracting audio...");
+      setProcessingStep("正在提取音频...");
 
       const audioBlob = await extractTimelineAudio();
 
-      setProcessingStep("Encrypting audio...");
+      setProcessingStep("正在加密音频...");
 
       // Encrypt the audio with a random key (zero-knowledge)
       const audioBuffer = await audioBlob.arrayBuffer();
@@ -65,7 +65,7 @@ export function Captions() {
       // Convert encrypted data to blob for upload
       const encryptedBlob = new Blob([encryptionResult.encryptedData]);
 
-      setProcessingStep("Uploading...");
+      setProcessingStep("正在上传...");
       const uploadResponse = await fetch("/api/get-upload-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,7 +74,7 @@ export function Captions() {
 
       if (!uploadResponse.ok) {
         const error = await uploadResponse.json();
-        throw new Error(error.message || "Failed to get upload URL");
+        throw new Error(error.message || "获取上传链接失败");
       }
 
       const { uploadUrl, fileName } = await uploadResponse.json();
@@ -85,7 +85,7 @@ export function Captions() {
         body: encryptedBlob,
       });
 
-      setProcessingStep("Transcribing...");
+      setProcessingStep("正在转录字幕...");
 
       // Call Modal transcription API with encryption parameters
       const transcriptionResponse = await fetch("/api/transcribe", {
@@ -103,7 +103,7 @@ export function Captions() {
 
       if (!transcriptionResponse.ok) {
         const error = await transcriptionResponse.json();
-        throw new Error(error.message || "Transcription failed");
+        throw new Error(error.message || "字幕转录失败");
       }
 
       const { text, segments } = await transcriptionResponse.json();

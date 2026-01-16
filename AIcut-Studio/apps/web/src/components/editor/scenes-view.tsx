@@ -79,12 +79,12 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
       <SheetContent>
         <SheetHeader>
           <SheetTitle>
-            {isSelectMode ? `Select scenes (${selectedScenes.size})` : "Scenes"}
+            {isSelectMode ? `选择场景 (${selectedScenes.size})` : "场景"}
           </SheetTitle>
           <SheetDescription>
             {isSelectMode
-              ? "Select scenes to delete"
-              : "Switch between scenes in your project"}
+              ? "选择要删除的场景"
+              : "在项目中的场景之间切换"}
           </SheetDescription>
         </SheetHeader>
         <div className="py-4 flex flex-col gap-4">
@@ -96,7 +96,7 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
               onClick={handleSelectMode}
             >
               <ListCheck />
-              {isSelectMode ? "Cancel" : "Select"}
+              {isSelectMode ? "取消" : "选择"}
             </Button>
             {isSelectMode && (
               <DeleteDialog
@@ -108,14 +108,14 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
               >
                 <Button className="rounded-md" variant="destructive" size="sm">
                   <Trash2 />
-                  Delete ({selectedScenes.size})
+                  删除 ({selectedScenes.size})
                 </Button>
               </DeleteDialog>
             )}
           </div>
           {scenes.length === 0 ? (
             <div className="text-sm text-muted-foreground">
-              No scenes available
+              没有可用的场景
             </div>
           ) : (
             <div className="space-y-2">
@@ -174,22 +174,21 @@ function DeleteDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Scenes</DialogTitle>
+          <DialogTitle>删除场景</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete {count} scene
-            {count === 1 ? "" : "s"}? This action cannot be undone.
+            您确定要删除 {count} 个场景吗？此操作无法撤销。
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+            取消
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={disabled}
           >
-            Delete
+            删除
           </Button>
         </DialogFooter>
       </DialogContent>

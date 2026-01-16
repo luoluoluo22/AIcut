@@ -12,17 +12,17 @@ import { ChevronDown, RotateCcw, LayoutPanelTop } from "lucide-react";
 import { usePanelStore, type PanelPreset } from "@/stores/panel-store";
 
 const PRESET_LABELS: Record<PanelPreset, string> = {
-  default: "Default",
-  media: "Media",
-  inspector: "Inspector",
-  "vertical-preview": "Vertical Preview",
+  default: "默认布局",
+  media: "媒体主导",
+  inspector: "检查器主导",
+  "vertical-preview": "竖屏预览",
 };
 
 const PRESET_DESCRIPTIONS: Record<PanelPreset, string> = {
-  default: "Media, preview, and inspector on top row, timeline on bottom",
-  media: "Full height media on left, preview and inspector on top row",
-  inspector: "Full height inspector on right, media and preview on top row",
-  "vertical-preview": "Full height preview on right for vertical videos",
+  default: "经典布局：上方为媒体、预览和检查器，下方为时间轴",
+  media: "专注媒体：左侧全高媒体面板，上方为预览和检查器",
+  inspector: "专注参数：右侧全高检查器，上方为媒体和预览",
+  "vertical-preview": "竖屏模式：右侧全高预览面板，适合移动端视频制作",
 };
 
 export function PanelPresetSelector() {
@@ -44,7 +44,7 @@ export function PanelPresetSelector() {
           variant="secondary"
           size="sm"
           className="h-8 px-2 flex items-center gap-1 text-xs"
-          title="Panel Presets"
+          title="面板布局预设"
         >
           <LayoutPanelTop className="h-4 w-4" />
           <ChevronDown className="h-3 w-3" />
@@ -52,7 +52,7 @@ export function PanelPresetSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         <div className="px-3 py-2 text-xs font-medium text-muted-foreground">
-          Panel Presets
+          面板布局预设
         </div>
         <DropdownMenuSeparator />
         {(Object.keys(PRESET_LABELS) as PanelPreset[]).map((preset) => (
@@ -79,7 +79,7 @@ export function PanelPresetSelector() {
               size="icon"
               className="h-6 w-6 shrink-0 opacity-60 hover:opacity-100"
               onClick={(e) => handleResetPreset(preset, e)}
-              title={`Reset ${PRESET_LABELS[preset]} preset`}
+              title={`重置 ${PRESET_LABELS[preset]} 预设`}
             >
               <RotateCcw className="h-3 w-3" />
             </Button>

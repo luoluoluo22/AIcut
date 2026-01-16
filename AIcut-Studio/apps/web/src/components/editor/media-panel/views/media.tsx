@@ -60,12 +60,12 @@ function MediaItemWithContextMenu({
     <ContextMenu>
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem>Export clips</ContextMenuItem>
+        <ContextMenuItem>导出片段</ContextMenuItem>
         <ContextMenuItem
           variant="destructive"
           onClick={(e) => onRemove(e, item.id)}
         >
-          Delete
+          删除
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
@@ -161,7 +161,7 @@ export function MediaView() {
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.error || 'Generation failed');
+        throw new Error(err.error || '生成失败');
       }
 
       const data = await response.json();
@@ -189,7 +189,7 @@ export function MediaView() {
 
     } catch (error) {
       console.error(error);
-      toast.error("Generation failed: " + (error instanceof Error ? error.message : "Unknown error"));
+      toast.error("生成失败: " + (error instanceof Error ? error.message : "未知错误"));
       throw error;
     }
   };
@@ -197,7 +197,7 @@ export function MediaView() {
   const processFiles = async (files: FileList | File[]) => {
     if (!files || files.length === 0) return;
     if (!activeProject) {
-      toast.error("No active project");
+      toast.error("当前没有正在运行的项目");
       return;
     }
 
@@ -266,13 +266,13 @@ export function MediaView() {
         setProgress(Math.round(((i + 1) / total) * 100));
       }
 
-      toast.success("Files uploaded to local materials folder");
+      toast.success("文件已上传到本地素材库");
       // Note: We don't call addMediaFile here! 
       // The AI Sync logic (SSE) will detect the new assets in project-snapshot.json 
       // and update the MediaStore automatically with the correct local URLs.
     } catch (error) {
       console.error("Error uploading files:", error);
-      toast.error("Failed to upload files to local folder");
+      toast.error("文件上传失败");
     } finally {
       setIsProcessing(false);
       setProgress(0);
@@ -295,7 +295,7 @@ export function MediaView() {
     e.stopPropagation();
 
     if (!activeProject) {
-      toast.error("No active project");
+      toast.error("当前没有正在运行的项目");
       return;
     }
 
@@ -306,15 +306,15 @@ export function MediaView() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete local file");
+        throw new Error("删除文件失败");
       }
 
-      toast.success("Asset and physical file deleted");
+      toast.success("素材已成功删除");
       // Note: We don't call removeMediaFile manually here!
       // The SSE snapshot_update will automatically remove it from MediaStore
     } catch (error) {
       console.error("Error deleting asset:", error);
-      toast.error("Failed to delete file");
+      toast.error("删除文件失败");
     }
   };
 
@@ -419,7 +419,7 @@ export function MediaView() {
           preview = (
             <div className="w-full h-full bg-muted/30 flex flex-col items-center justify-center text-muted-foreground rounded">
               <Video className="h-6 w-6 mb-1" />
-              <span className="text-xs">Video</span>
+              <span className="text-xs">视频</span>
               {item.duration && (
                 <span className="text-xs opacity-70">
                   {formatDuration(item.duration)}
@@ -432,7 +432,7 @@ export function MediaView() {
         preview = (
           <div className="w-full h-full bg-linear-to-br from-green-500/20 to-emerald-500/20 flex flex-col items-center justify-center text-muted-foreground rounded border border-green-500/20">
             <Music className="h-6 w-6 mb-1" />
-            <span className="text-xs">Audio</span>
+            <span className="text-xs">音频</span>
             {item.duration && (
               <span className="text-xs opacity-70">
                 {formatDuration(item.duration)}
@@ -444,7 +444,7 @@ export function MediaView() {
         preview = (
           <div className="w-full h-full bg-muted/30 flex flex-col items-center justify-center text-muted-foreground rounded">
             <Image className="h-6 w-6" />
-            <span className="text-xs mt-1">Unknown</span>
+            <span className="text-xs mt-1">未知</span>
           </div>
         );
       }
@@ -480,45 +480,63 @@ export function MediaView() {
       >
         <div className="p-3 pb-2 bg-panel">
           {/* Search and filter controls */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 flex-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleFileSelect}
-                disabled={isProcessing}
-                className="!bg-background px-3 justify-center items-center h-9 opacity-100 hover:opacity-75 transition-opacity"
-                title="Upload files"
-              >
-                {isProcessing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CloudUpload className="h-4 w-4" />
-                )}
-              </Button>
+          <TooltipProvider delayDuration={300}>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 flex-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleFileSelect}
+                      disabled={isProcessing}
+                      className="!bg-background size-8.5 justify-center items-center opacity-100 hover:opacity-75 transition-opacity"
+                    >
+                      {isProcessing ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <CloudUpload className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>上传文件</p>
+                  </TooltipContent>
+                </Tooltip>
 
-              <Button
-                size="sm"
-                onClick={() => setIsGenerateDialogOpen(true)}
-                disabled={isProcessing}
-                className="flex-1 h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 shadow-sm transition-all"
-              >
-                <Sparkles className="h-3.5 w-3.5 mr-2" />
-                AI Image
-              </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      onClick={() => setIsGenerateDialogOpen(true)}
+                      disabled={isProcessing}
+                      className="size-8.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 shadow-sm transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>AI 生成图片</p>
+                  </TooltipContent>
+                </Tooltip>
 
-              <Button
-                size="sm"
-                onClick={() => setIsVideoGenerateOpen(true)}
-                disabled={isProcessing}
-                className="flex-1 h-9 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 shadow-sm transition-all ml-[-4px]"
-              >
-                <VideoIcon className="h-3.5 w-3.5 mr-2" />
-                AI Video
-              </Button>
-            </div>
-            <div className="flex items-center gap-0">
-              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      onClick={() => setIsVideoGenerateOpen(true)}
+                      disabled={isProcessing}
+                      className="size-8.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 shadow-sm transition-all"
+                    >
+                      <VideoIcon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>AI 生成视频</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex items-center gap-0">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -545,105 +563,111 @@ export function MediaView() {
                   <TooltipContent>
                     <p>
                       {mediaViewMode === "grid"
-                        ? "Switch to list view"
-                        : "Switch to grid view"}
+                        ? "切换到列表视图"
+                        : "切换到网格视图"}
                     </p>
                   </TooltipContent>
-                  <Tooltip>
-                    <DropdownMenu>
-                      <TooltipTrigger asChild>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="text"
-                            disabled={isProcessing}
-                            className="justify-center items-center"
-                          >
-                            <ArrowDown01
-                              strokeWidth={1.5}
-                              className="!size-[1.05rem]"
-                            />
-                          </Button>
-                        </DropdownMenuTrigger>
-                      </TooltipTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (sortBy === "name") {
-                              setSortOrder(
-                                sortOrder === "asc" ? "desc" : "asc"
-                              );
-                            } else {
-                              setSortBy("name");
-                              setSortOrder("asc");
-                            }
-                          }}
-                        >
-                          Name{" "}
-                          {sortBy === "name" &&
-                            (sortOrder === "asc" ? "↑" : "↓")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (sortBy === "type") {
-                              setSortOrder(
-                                sortOrder === "asc" ? "desc" : "asc"
-                              );
-                            } else {
-                              setSortBy("type");
-                              setSortOrder("asc");
-                            }
-                          }}
-                        >
-                          Type{" "}
-                          {sortBy === "type" &&
-                            (sortOrder === "asc" ? "↑" : "↓")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (sortBy === "duration") {
-                              setSortOrder(
-                                sortOrder === "asc" ? "desc" : "asc"
-                              );
-                            } else {
-                              setSortBy("duration");
-                              setSortOrder("asc");
-                            }
-                          }}
-                        >
-                          Duration{" "}
-                          {sortBy === "duration" &&
-                            (sortOrder === "asc" ? "↑" : "↓")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (sortBy === "size") {
-                              setSortOrder(
-                                sortOrder === "asc" ? "desc" : "asc"
-                              );
-                            } else {
-                              setSortBy("size");
-                              setSortOrder("asc");
-                            }
-                          }}
-                        >
-                          File Size{" "}
-                          {sortBy === "size" &&
-                            (sortOrder === "asc" ? "↑" : "↓")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <TooltipContent>
-                      <p>
-                        Sort by {sortBy} (
-                        {sortOrder === "asc" ? "ascending" : "descending"})
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
                 </Tooltip>
-              </TooltipProvider>
+
+                <Tooltip>
+                  <DropdownMenu>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="text"
+                          disabled={isProcessing}
+                          className="justify-center items-center"
+                        >
+                          <ArrowDown01
+                            strokeWidth={1.5}
+                            className="!size-[1.05rem]"
+                          />
+                        </Button>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (sortBy === "name") {
+                            setSortOrder(
+                              sortOrder === "asc" ? "desc" : "asc"
+                            );
+                          } else {
+                            setSortBy("name");
+                            setSortOrder("asc");
+                          }
+                        }}
+                      >
+                        名称{" "}
+                        {sortBy === "name" &&
+                          (sortOrder === "asc" ? "↑" : "↓")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (sortBy === "type") {
+                            setSortOrder(
+                              sortOrder === "asc" ? "desc" : "asc"
+                            );
+                          } else {
+                            setSortBy("type");
+                            setSortOrder("asc");
+                          }
+                        }}
+                      >
+                        类型{" "}
+                        {sortBy === "type" &&
+                          (sortOrder === "asc" ? "↑" : "↓")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (sortBy === "duration") {
+                            setSortOrder(
+                              sortOrder === "asc" ? "desc" : "asc"
+                            );
+                          } else {
+                            setSortBy("duration");
+                            setSortOrder("asc");
+                          }
+                        }}
+                      >
+                        时长{" "}
+                        {sortBy === "duration" &&
+                          (sortOrder === "asc" ? "↑" : "↓")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (sortBy === "size") {
+                            setSortOrder(
+                              sortOrder === "asc" ? "desc" : "asc"
+                            );
+                          } else {
+                            setSortBy("size");
+                            setSortOrder("asc");
+                          }
+                        }}
+                      >
+                        文件大小{" "}
+                        {sortBy === "size" &&
+                          (sortOrder === "asc" ? "↑" : "↓")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <TooltipContent>
+                    <p>
+                      排序方式: {
+                        sortBy === "name" ? "名称" :
+                        sortBy === "type" ? "类型" :
+                        sortBy === "duration" ? "时长" :
+                        sortBy === "size" ? "文件大小" : sortBy
+                      } (
+                      {sortOrder === "asc" ? "升序" : "降序"})
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
-          </div>
+          </TooltipProvider>
         </div>
 
         <div className="h-full w-full overflow-y-auto scrollbar-thin pt-1">

@@ -57,25 +57,25 @@ export function StickersView() {
       tabs={[
         {
           value: "all",
-          label: "All",
+          label: "全部",
           icon: <Grid3X3 className="h-3 w-3" />,
           content: <StickersContentView category="all" />,
         },
         {
           value: "general",
-          label: "Icons",
+          label: "图标",
           icon: <Sparkles className="h-3 w-3" />,
           content: <StickersContentView category="general" />,
         },
         {
           value: "brands",
-          label: "Brands",
+          label: "品牌",
           icon: <Hash className="h-3 w-3" />,
           content: <StickersContentView category="brands" />,
         },
         {
           value: "emoji",
-          label: "Emoji",
+          label: "表情",
           icon: <Smile className="h-3 w-3" />,
           content: <StickersContentView category="emoji" />,
         },
@@ -138,7 +138,7 @@ function CollectionGrid({
         <CollectionItem
           key={collection.prefix}
           title={collection.name}
-          subtitle={`${collection.total.toLocaleString()} icons${collection.category ? ` • ${collection.category}` : ""}`}
+          subtitle={`${collection.total.toLocaleString()} 个图标${collection.category ? ` • ${collection.category}` : ""}`}
           onClick={() => onSelectCollection(collection.prefix)}
         />
       ))}
@@ -154,7 +154,7 @@ function EmptyView({ message }: { message: string }) {
         strokeWidth={1.5}
       />
       <div className="flex flex-col gap-2 text-center">
-        <p className="text-lg font-medium">No stickers found</p>
+        <p className="text-lg font-medium">未找到贴纸</p>
         <p className="text-sm text-muted-foreground text-balance">{message}</p>
       </div>
     </div>
@@ -254,7 +254,7 @@ function StickersContentView({ category }: { category: StickerCategory }) {
       await addStickerToTimeline(iconName);
     } catch (error) {
       console.error("Failed to add sticker:", error);
-      toast.error("Failed to add sticker to timeline");
+      toast.error("添加到时间轴失败");
     }
   };
 
@@ -314,12 +314,12 @@ function StickersContentView({ category }: { category: StickerCategory }) {
           }}
           placeholder={
             category === "all"
-              ? "Search all stickers"
+              ? "搜索所有贴纸"
               : category === "general"
-                ? "Search icons"
+                ? "搜索图标"
                 : category === "brands"
-                  ? "Search brands"
-                  : "Search Emojis"
+                  ? "搜索品牌"
+                  : "搜索表情"
           }
           value={localSearchQuery}
           onChange={setLocalSearchQuery}
@@ -338,7 +338,7 @@ function StickersContentView({ category }: { category: StickerCategory }) {
               <div className="h-full">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Recent</span>
+                  <span className="text-sm font-medium">最近使用</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -350,7 +350,7 @@ function StickersContentView({ category }: { category: StickerCategory }) {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Clear recent stickers</p>
+                        <p>清空最近使用的贴纸</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -394,7 +394,7 @@ function StickersContentView({ category }: { category: StickerCategory }) {
                   <>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm text-muted-foreground">
-                        {searchResults.total} results
+                        {searchResults.total} 条结果
                       </span>
                     </div>
                     <StickerGrid
@@ -407,7 +407,7 @@ function StickersContentView({ category }: { category: StickerCategory }) {
                 ) : searchQuery ? (
                   <div className="flex flex-col items-center justify-center py-8 gap-3">
                     <EmptyView
-                      message={`No stickers found for "${searchQuery}"`}
+                      message={`未找到关于 "${searchQuery}" 的贴纸`}
                     />
                     {category !== "all" && (
                       <Button
@@ -423,7 +423,7 @@ function StickersContentView({ category }: { category: StickerCategory }) {
                           }
                         }}
                       >
-                        Search in all icons
+                        在所有图标中搜索
                       </Button>
                     )}
                   </div>
@@ -442,12 +442,12 @@ function StickersContentView({ category }: { category: StickerCategory }) {
                     {category !== "all" && (
                       <div className="h-full">
                         <h3 className="text-sm font-medium mb-2">
-                          Popular{" "}
+                          热门{" "}
                           {category === "general"
-                            ? "Icon Sets"
+                            ? "图标集"
                             : category === "brands"
-                              ? "Brand Icons"
-                              : "Emoji Sets"}
+                              ? "品牌图标"
+                              : "表情集"}
                         </h3>
                         <CollectionGrid
                           collections={filteredCollections}

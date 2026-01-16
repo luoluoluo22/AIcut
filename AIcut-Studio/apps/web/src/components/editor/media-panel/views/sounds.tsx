@@ -40,9 +40,9 @@ export function SoundsView() {
       <Tabs defaultValue="sound-effects" className="flex flex-col h-full">
         <div className="px-3 pt-4 pb-0">
           <TabsList>
-            <TabsTrigger value="sound-effects">Sound effects</TabsTrigger>
-            <TabsTrigger value="songs">Songs</TabsTrigger>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
+            <TabsTrigger value="sound-effects">音效</TabsTrigger>
+            <TabsTrigger value="songs">音乐</TabsTrigger>
+            <TabsTrigger value="saved">已保存</TabsTrigger>
           </TabsList>
         </div>
         <Separator className="my-4" />
@@ -232,7 +232,7 @@ function SoundEffectsView() {
     <div className="flex flex-col gap-5 mt-1 h-full">
       <div className="flex items-center gap-3">
         <Input
-          placeholder="Search sound effects"
+          placeholder="搜索音效"
           className="bg-panel-accent w-full"
           containerClassName="w-full"
           value={searchQuery}
@@ -255,12 +255,12 @@ function SoundEffectsView() {
               checked={showCommercialOnly}
               onCheckedChange={toggleCommercialFilter}
             >
-              Show only commercially licensed
+              仅显示商业许可
             </DropdownMenuCheckboxItem>
             <div className="px-2 py-1.5 text-xs text-muted-foreground">
               {showCommercialOnly
-                ? "Only showing sounds licensed for commercial use"
-                : "Showing all sounds regardless of license"}
+                ? "仅显示授权商业用途的音效"
+                : "显示所有音效，无论其许可如何"}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -275,11 +275,11 @@ function SoundEffectsView() {
           <div className="flex flex-col gap-4">
             {isLoading && !searchQuery && (
               <div className="text-muted-foreground text-sm">
-                Loading sounds...
+                正在加载音效...
               </div>
             )}
             {isSearching && searchQuery && (
-              <div className="text-muted-foreground text-sm">Searching...</div>
+              <div className="text-muted-foreground text-sm">正在搜索...</div>
             )}
             {displayedSounds.map((sound) => (
               <AudioItem
@@ -293,12 +293,12 @@ function SoundEffectsView() {
             ))}
             {!isLoading && !isSearching && displayedSounds.length === 0 && (
               <div className="text-muted-foreground text-sm">
-                {searchQuery ? "No sounds found" : "No sounds available"}
+                {searchQuery ? "未找到音效" : "暂无可用音效"}
               </div>
             )}
             {isLoadingMore && (
               <div className="text-muted-foreground text-sm text-center py-4">
-                Loading more sounds...
+                正在加载更多音效...
               </div>
             )}
           </div>
@@ -388,7 +388,7 @@ function SavedSoundsView() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-muted-foreground text-sm">
-          Loading saved sounds...
+          正在加载已保存音效...
         </div>
       </div>
     );
@@ -397,58 +397,48 @@ function SavedSoundsView() {
   if (savedSoundsError) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-destructive text-sm">
-          Error: {savedSoundsError}
-        </div>
+        <div className="text-destructive text-sm">{savedSoundsError}</div>
       </div>
     );
   }
 
   if (savedSounds.length === 0) {
     return (
-      <div className="bg-panel h-full p-4 flex flex-col items-center justify-center gap-3">
-        <HeartIcon
-          className="w-10 h-10 text-muted-foreground"
-          strokeWidth={1.5}
-        />
-        <div className="flex flex-col gap-2 text-center">
-          <p className="text-lg font-medium">No saved sounds</p>
-          <p className="text-sm text-muted-foreground text-balance">
-            Click the heart icon on any sound to save it here
-          </p>
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
+        <HeartIcon className="w-10 h-10 text-muted-foreground/30" />
+        <div className="text-muted-foreground text-sm">暂无已保存音效</div>
+        <div className="text-muted-foreground/60 text-xs px-10">
+          点击音效旁的图标将其保存到此处，以便快速访问
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5 mt-1 h-full">
+    <div className="flex flex-col h-full gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {savedSounds.length} saved{" "}
-          {savedSounds.length === 1 ? "sound" : "sounds"}
-        </p>
+        <div className="text-xs text-muted-foreground">
+          {savedSounds.length} 个已保存音效
+        </div>
         <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
           <DialogTrigger asChild>
-            <Button
-              variant="text"
-              size="sm"
-              className="h-auto text-muted-foreground hover:text-destructive !opacity-100"
-            >
-              Clear all
+            <Button variant="text" size="sm" className="h-7 text-xs">
+              清空全部
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Clear all saved sounds?</DialogTitle>
+              <DialogTitle>清空所有已保存音效？</DialogTitle>
               <DialogDescription>
-                This will permanently remove all {savedSounds.length} saved
-                sounds from your collection. This action cannot be undone.
+                此操作无法撤销。所有已保存的音效都将被移除。
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="text" onClick={() => setShowClearDialog(false)}>
-                Cancel
+              <Button
+                variant="outline"
+                onClick={() => setShowClearDialog(false)}
+              >
+                取消
               </Button>
               <Button
                 variant="destructive"
@@ -457,7 +447,7 @@ function SavedSoundsView() {
                   setShowClearDialog(false);
                 }}
               >
-                Clear all sounds
+                清空全部
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -487,7 +477,7 @@ function SavedSoundsView() {
 }
 
 function SongsView() {
-  return <div>Songs</div>;
+  return <div className="text-muted-foreground text-sm">音乐库即将上线</div>;
 }
 
 interface AudioItemProps {
@@ -548,7 +538,7 @@ function AudioItem({
           size="icon"
           className="text-muted-foreground hover:text-foreground !opacity-100 w-auto"
           onClick={handleAddToTimeline}
-          title="Add to timeline"
+          title="添加到时间轴"
         >
           <PlusIcon className="w-4 h-4" />
         </Button>
@@ -560,7 +550,7 @@ function AudioItem({
               : "text-muted-foreground"
             }`}
           onClick={handleSaveClick}
-          title={isSaved ? "Remove from saved" : "Save sound"}
+          title={isSaved ? "从已保存中移除" : "保存音效"}
         >
           <HeartIcon className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
         </Button>

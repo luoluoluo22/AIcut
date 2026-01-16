@@ -136,7 +136,7 @@ function ExportPopover({
       <>
         {exportResult && !exportResult.success ? (
           <ExportError
-            error={exportResult.error || "Unknown error occurred"}
+            error={exportResult.error || "发生未知错误"}
             onRetry={handleExport}
           />
         ) : (
@@ -286,7 +286,7 @@ function ExportError({
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-1.5">
-        <p className="text-sm font-medium text-red-400">Export failed</p>
+        <p className="text-sm font-medium text-red-400">导出失败</p>
         <p className="text-xs text-muted-foreground">
           {error}
         </p>
