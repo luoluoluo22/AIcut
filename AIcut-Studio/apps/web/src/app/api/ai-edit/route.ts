@@ -147,9 +147,15 @@ export async function GET(request: NextRequest) {
         }
 
         if (action === "getSnapshot") {
+            const projectId = searchParams.get("projectId");
             try {
-                if (fs.existsSync(SNAPSHOT_FILE)) {
-                    const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                let snapshotPath = SNAPSHOT_FILE;
+                // If projectId is provided, load from projects/<id>/snapshot.json
+                if (projectId) {
+                    snapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+                }
+                if (fs.existsSync(snapshotPath)) {
+                    const snapshot = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
                     return NextResponse.json({ success: true, snapshot });
                 }
             } catch (e) {

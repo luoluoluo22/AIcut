@@ -1313,12 +1313,11 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     getProjectThumbnail: async (projectId) => {
       try {
         const project = await storageService.loadProject({ id: projectId });
-        if (!project) return null;
 
         // For scene-based projects, use main scene timeline
         // For legacy projects, use legacy timeline format
         let sceneId: string | undefined;
-        if (project.scenes && project.scenes.length > 0) {
+        if (project?.scenes && project.scenes.length > 0) {
           const mainScene = project.scenes.find((s) => s.isMain);
           sceneId = mainScene?.id;
         }
@@ -1331,29 +1330,56 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
           projectId,
         });
 
-        if (!tracks || !mediaItems.length) return null;
+        // 1. Try to get thumbnail from timeline first element
+        if (tracks && mediaItems.length) {
+          const firstMediaElement = tracks
+            .flatMap((track) => track.elements)
+            .filter((element) => element.type === "media")
+            .sort((a, b) => a.startTime - b.startTime)[0];
 
-        const firstMediaElement = tracks
-          .flatMap((track) => track.elements)
-          .filter((element) => element.type === "media")
-          .sort((a, b) => a.startTime - b.startTime)[0];
-
-        if (!firstMediaElement) return null;
-
-        const mediaFile = mediaItems.find(
-          (item) => item.id === firstMediaElement.mediaId
-        );
-        if (!mediaFile) return null;
-
-        if (mediaFile.type === "video" && mediaFile.file) {
-          const { generateVideoThumbnail } = await import(
-            "@/stores/media-store"
-          );
-          const { thumbnailUrl } = await generateVideoThumbnail(mediaFile.file);
-          return thumbnailUrl;
+          if (firstMediaElement) {
+            const mediaFile = mediaItems.find(
+              (item) => item.id === firstMediaElement.mediaId
+            );
+            if (mediaFile) {
+              if (mediaFile.type === "video" && mediaFile.file) {
+                const { generateVideoThumbnail } = await import(
+                  "@/stores/media-store"
+                );
+                const { thumbnailUrl } = await generateVideoThumbnail(mediaFile.file);
+                return thumbnailUrl;
+              }
+              if (mediaFile.type === "image" && mediaFile.url) {
+                return mediaFile.url;
+              }
+            }
+          }
         }
-        if (mediaFile.type === "image" && mediaFile.url) {
-          return mediaFile.url;
+
+        // 2. Fallback: Try to get thumbnail from filesystem (projects/<id>/snapshot.json)
+        try {
+          const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${projectId}`);
+          const data = await res.json();
+          if (data.success && data.snapshot?.assets?.length > 0) {
+            // Find first image or video asset
+            const firstAsset = data.snapshot.assets.find(
+              (a: any) => a.type === "image" || a.type === "video"
+            );
+            if (firstAsset?.url) {
+              // Handle relative URLs starting with /materials/
+              if (firstAsset.url.startsWith("/materials/")) {
+                return firstAsset.url;
+              }
+              return firstAsset.url;
+            }
+          }
+        } catch (e) {
+          // Ignore filesystem fallback errors
+        }
+
+        // 3. Fallback: Use project thumbnail if set
+        if (project?.thumbnail) {
+          return project.thumbnail;
         }
 
         return null;
