@@ -1,17 +1,17 @@
 {
   "project": {
     "id": "demo",
-    "name": "AI还原纪录片",
+    "name": "AIcut Demo Project",
     "thumbnail": null,
-    "createdAt": "2026-01-15T15:51:12.170Z",
-    "updatedAt": "2026-01-16T10:25:00.000Z",
+    "createdAt": "2026-01-16T09:44:18.173Z",
+    "updatedAt": "2026-01-16T10:22:57.740Z",
     "scenes": [
       {
         "id": "scene1",
         "name": "Scene 1",
         "isMain": true,
-        "createdAt": "2026-01-15T15:51:12.170Z",
-        "updatedAt": "2026-01-15T15:51:12.170Z"
+        "createdAt": "2026-01-16T09:44:18.173Z",
+        "updatedAt": "2026-01-16T09:44:18.173Z"
       }
     ],
     "currentSceneId": "scene1",
@@ -24,29 +24,83 @@
       "width": 1920,
       "height": 1080
     },
-    "canvasMode": "original"
+    "canvasMode": "original",
+    "markers": []
   },
   "tracks": [
     {
-      "id": "track_1",
+      "id": "track_main",
       "name": "Video Track",
       "type": "media",
       "isMain": true,
-      "elements": []
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "asset_975280",
+          "name": "AIcut Local Project (2).mp4",
+          "duration": 3.221333,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "id": "355887d7-9465-403c-826e-0456a944565b",
+          "muted": false,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        },
+        {
+          "type": "media",
+          "mediaId": "asset_008973",
+          "name": "AIcut.mp4",
+          "duration": 6.122667,
+          "startTime": 4.466666666666667,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "id": "df570d75-7ee3-4a53-92d1-d27ab59697d3",
+          "muted": false,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        }
+      ]
     }
   ],
   "assets": [
     {
-      "id": "asset_cover",
+      "id": "asset_918155",
       "name": "AI还原纪录片-封面.jpg",
       "type": "image",
-      "url": "/materials/images/AI还原纪录片-封面.jpg"
+      "url": "/materials/images/AI还原纪录片-封面.jpg",
+      "width": 1950,
+      "height": 1080
     },
     {
-      "id": "asset_bgm",
-      "name": "AI还原纪录片.MP3",
-      "type": "audio",
-      "url": "/materials/audio/AI还原纪录片.MP3"
+      "id": "asset_975280",
+      "name": "AIcut Local Project (2).mp4",
+      "type": "video",
+      "url": "/api/media/serve?path=F%3A%5CBackup%5CDownloads%5CAIcut%20Local%20Project%20(2).mp4",
+      "filePath": "F:\\Backup\\Downloads\\AIcut Local Project (2).mp4",
+      "thumbnailUrl": "/materials/_thumbnails/AIcut Local Project (2).jpg",
+      "width": 1920,
+      "height": 1080,
+      "duration": 3.221333
+    },
+    {
+      "id": "asset_008973",
+      "name": "AIcut.mp4",
+      "type": "video",
+      "url": "/api/media/serve?path=F%3A%5CBackup%5CDownloads%5CAIcut.mp4",
+      "filePath": "F:\\Backup\\Downloads\\AIcut.mp4",
+      "thumbnailUrl": "/materials/_thumbnails/AIcut.jpg",
+      "width": 1920,
+      "height": 1080,
+      "duration": 6.122667
     }
   ]
 }

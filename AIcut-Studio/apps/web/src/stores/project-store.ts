@@ -237,6 +237,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   loadProject: async (id: string) => {
+    console.log(`[Project Store] ========== loadProject("${id}") START ==========`);
+
     if (!get().isInitialized) {
       set({ isLoading: true });
     }
@@ -246,18 +248,29 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     const timelineStore = useTimelineStore.getState();
     const sceneStore = useSceneStore.getState();
 
+    // Also import and clear media panel state dynamically to avoid circular deps
+    const { useMediaPanelStore } = await import("@/components/editor/media-panel/store");
+    const mediaPanelStore = useMediaPanelStore.getState();
+
+    console.log(`[Project Store] Clearing stores...`);
     mediaStore.clearAllMedia();
     timelineStore.clearTimeline();
     sceneStore.clearScenes();
+    mediaPanelStore.clearSelection();
+    mediaPanelStore.setPreviewMedia(null);
 
     try {
+      console.log(`[Project Store] Loading from IndexedDB...`);
       let project = await storageService.loadProject({ id });
+      console.log(`[Project Store] IndexedDB result:`, project ? `Found "${project.name}"` : "Not found");
 
       // If not found in IndexedDB, try loading from filesystem
       if (!project) {
+        console.log(`[Project Store] Trying filesystem via API...`);
         try {
           const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${id}`);
           const data = await res.json();
+          console.log(`[Project Store] Filesystem API result:`, data.success ? `Found project` : data.error);
           if (data.success && data.snapshot?.project) {
             // Create project from filesystem snapshot
             const fsProject = data.snapshot.project;
@@ -287,6 +300,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       }
 
       if (project) {
+        console.log(`[Project Store] Setting activeProject to: ${project.id} ("${project.name}")`);
         set({ activeProject: project });
 
         let currentScene = null;
@@ -302,6 +316,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
             project.scenes[0];
         }
 
+        console.log(`[Project Store] Loading media and timeline from IndexedDB...`);
         await Promise.all([
           mediaStore.loadProjectMedia(id),
           timelineStore.loadProjectTimeline({
@@ -309,19 +324,22 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
             sceneId: currentScene?.id,
           }),
         ]);
+        console.log(`[Project Store] Media loaded: ${mediaStore.mediaFiles.length} files, Tracks: ${timelineStore.tracks.length}`);
       } else {
         throw new Error(`Project with id ${id} not found`);
       }
     } catch (error) {
-      console.error("Failed to load project:", error);
+      console.error("[Project Store] Failed to load project:", error);
       throw error; // Re-throw so the editor page can handle it
     } finally {
       set({ isLoading: false });
 
       // Sync to ai_workspace for AI tools
       const loadedProject = get().activeProject;
+      console.log(`[Project Store] In finally block, activeProject: ${loadedProject?.id || "null"}`);
       if (loadedProject) {
         try {
+          console.log(`[Project Store] Calling switchProject API for: ${loadedProject.id}`);
           await fetch("/api/ai-edit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -330,7 +348,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
               data: { projectId: loadedProject.id }
             })
           });
-          console.log(`[Project Store] Synced project ${loadedProject.id} to ai_workspace`);
+          console.log(`[Project Store] ========== loadProject("${loadedProject.id}") COMPLETE ==========`);
         } catch (e) {
           console.warn("[Project Store] Failed to sync to ai_workspace:", e);
         }

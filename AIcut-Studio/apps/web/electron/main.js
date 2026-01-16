@@ -202,9 +202,8 @@ app.whenReady().then(() => {
             )
             const editorUrl = isDev
               ? `http://localhost:3000/editor/${appState.lastProjectId}`
-              : `file://${path.join(__dirname, '../out/index.html')}#/editor/${
-                  appState.lastProjectId
-                }`
+              : `file://${path.join(__dirname, '../out/index.html')}#/editor/${appState.lastProjectId
+              }`
             // 注意：Next.js client-side navigation 可能更好，但这里直接注入新 URL
             mainWindow.loadURL(editorUrl)
           }
@@ -247,9 +246,21 @@ ipcMain.handle('write-file', async (event, filePath, data) => {
   }
 })
 
-// 选择本地文件
+// 选择本地文件 (legacy)
 ipcMain.handle('select-file', async (event, options) => {
   const result = await dialog.showOpenDialog(mainWindow, options)
+  return result
+})
+
+// 打开文件对话框 (for media import with absolute paths)
+ipcMain.handle('open-file-dialog', async (event, options) => {
+  const result = await dialog.showOpenDialog(mainWindow, options)
+  return result
+})
+
+// 保存文件对话框
+ipcMain.handle('save-file-dialog', async (event, options) => {
+  const result = await dialog.showSaveDialog(mainWindow, options)
   return result
 })
 

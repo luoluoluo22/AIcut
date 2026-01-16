@@ -25,6 +25,15 @@ import {
 import { DEFAULT_FPS, useProjectStore } from "@/stores/project-store";
 import { useTimelineSnapping, SnapPoint } from "@/hooks/use-timeline-snapping";
 import { useEdgeAutoScroll } from "@/hooks/use-edge-auto-scroll";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { TimelineUserMarker } from "./timeline-user-marker";
+import { Plus, Volume2, VolumeX, Trash2, Eraser } from "lucide-react";
+import { ContextMenuSeparator } from "@/components/ui/context-menu";
 
 export function TimelineTrackContent({
   track,
@@ -57,6 +66,15 @@ export function TimelineTrackContent({
     insertTrackAt,
     snappingEnabled,
     rippleEditingEnabled,
+    // Marker actions
+    addMarker,
+    updateMarkerTime,
+    markerDragState,
+    setMarkerDragState,
+    // Track actions
+    toggleTrackMute,
+    clearTrackElements,
+    removeTrack,
   } = useTimelineStore();
 
   const { currentTime, duration } = usePlaybackStore();
@@ -408,7 +426,61 @@ export function TimelineTrackContent({
     selectedElements,
     selectElement,
     onSnapPointChange,
+    onSnapPointChange,
   ]);
+
+  // Marker Drag Handling
+  useEffect(() => {
+    if (!markerDragState.isDragging || markerDragState.trackId !== track.id) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!timelineRef.current) return;
+
+      const timelineRect = timelineRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - timelineRect.left;
+
+      // Calculate new time
+      const newTime = Math.max(
+        0,
+        mouseX / (TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel)
+      );
+
+      // We can also add snapping logic here if needed, but for markers maybe free movement is better or reuse snap utils
+
+      updateMarkerTime(track.id, markerDragState.markerId!, newTime);
+    };
+
+    const handleMouseUp = () => {
+      setMarkerDragState({ isDragging: false, markerId: null, trackId: null });
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [
+    markerDragState.isDragging,
+    markerDragState.trackId,
+    markerDragState.markerId,
+    track.id,
+    zoomLevel,
+    updateMarkerTime,
+    setMarkerDragState
+  ]);
+
+  const contextMenuPositionRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleAddMarker = () => {
+    if (!contextMenuPositionRef.current || !timelineRef.current) return;
+    const rect = timelineRef.current.getBoundingClientRect();
+    const relativeX = contextMenuPositionRef.current.x - rect.left;
+    const time = Math.max(0, relativeX / (TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel));
+
+    addMarker(track.id, time);
+  };
 
   useEdgeAutoScroll({
     isActive: dragState.isDragging,
@@ -1145,89 +1217,105 @@ export function TimelineTrackContent({
   };
 
   return (
-    <div
-      className="w-full h-full hover:bg-muted/20"
-
-      onDragOver={handleTrackDragOver}
-      onDragEnter={handleTrackDragEnter}
-      onDragLeave={handleTrackDragLeave}
-      onDrop={handleTrackDrop}
-    >
-      <div
-        ref={timelineRef}
-        className="h-full relative track-elements-container min-w-full"
-      >
-        {track.elements.length === 0 ? (
+    <div className="w-full h-full hover:bg-muted/20">
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
           <div
-            className={`h-full w-full rounded-sm border-2 border-dashed flex items-center justify-center text-xs text-muted-foreground transition-colors ${isDropping
-              ? wouldOverlap
-                ? "border-red-500 bg-red-500/10 text-red-600"
-                : "border-blue-500 bg-blue-500/10 text-blue-600"
-              : "border-muted/30"
-              }`}
+            className="w-full h-full relative group"
+            onDragOver={handleTrackDragOver}
+            onDragEnter={handleTrackDragEnter}
+            onDragLeave={handleTrackDragLeave}
+            onDrop={handleTrackDrop}
+            onContextMenu={(e) => {
+              contextMenuPositionRef.current = { x: e.clientX, y: e.clientY };
+            }}
           >
-            {isDropping
-              ? wouldOverlap
-                ? "Cannot drop - would overlap"
-                : "Drop element here"
-              : ""}
+            {/* Markers Layer - Rendered above elements */}
+            {track.markers?.map((marker) => (
+              <TimelineUserMarker
+                key={marker.id}
+                marker={marker}
+                trackId={track.id}
+                zoomLevel={zoomLevel}
+              />
+            ))}
+
+            <div
+              ref={timelineRef}
+              className="h-full relative track-elements-container min-w-full"
+            >
+              {track.elements.length === 0 ? (
+                <div
+                  className={`h-full w-full rounded-sm border-2 border-dashed flex items-center justify-center text-xs text-muted-foreground transition-colors ${isDropping
+                    ? wouldOverlap
+                      ? "border-red-500 bg-red-500/10 text-red-600"
+                      : "border-blue-500 bg-blue-500/10 text-blue-600"
+                    : "border-muted/30"
+                    }`}
+                >
+                  {isDropping
+                    ? wouldOverlap
+                      ? "Cannot drop - would overlap"
+                      : "Drop element here"
+                    : ""}
+                </div>
+              ) : (
+                <>
+                  {track.elements.map((element) => {
+                    const isSelected = selectedElements.some(
+                      (c) => c.trackId === track.id && c.elementId === element.id
+                    );
+
+                    return (
+                      <TimelineElement
+                        key={element.id}
+                        element={element}
+                        track={track}
+                        zoomLevel={zoomLevel}
+                        isSelected={isSelected}
+                        onElementMouseDown={handleElementMouseDown}
+                        onElementClick={handleElementClick}
+                      />
+                    );
+                  })}
+                </>
+              )}
+            </div>
           </div>
-        ) : (
-          <>
-            {track.elements.map((element) => {
-              const isSelected = selectedElements.some(
-                (c) => c.trackId === track.id && c.elementId === element.id
-              );
-
-              const handleElementSplit = () => {
-                const { currentTime } = usePlaybackStore();
-                const { splitSelected } = useTimelineStore();
-                const splitTime = currentTime;
-                const effectiveStart = element.startTime;
-                const effectiveEnd =
-                  element.startTime +
-                  (element.duration - element.trimStart - element.trimEnd);
-
-                if (splitTime > effectiveStart && splitTime < effectiveEnd) {
-                  splitSelected(splitTime, track.id, element.id);
-                } else {
-                  toast.error("Playhead must be within element to split");
-                }
-              };
-
-              const handleElementDuplicate = () => {
-                const { addElementToTrack } = useTimelineStore.getState();
-                const { id, ...elementWithoutId } = element;
-                addElementToTrack(track.id, {
-                  ...elementWithoutId,
-                  name: element.name + " (copy)",
-                  startTime:
-                    element.startTime +
-                    (element.duration - element.trimStart - element.trimEnd) +
-                    0.1,
-                });
-              };
-
-              const handleElementDelete = () => {
-                const { deleteSelected } = useTimelineStore.getState();
-                deleteSelected(track.id, element.id);
-              };
-
-              return (
-                <TimelineElement
-                  key={element.id}
-                  element={element}
-                  track={track}
-                  zoomLevel={zoomLevel}
-                  isSelected={isSelected}
-                  onElementMouseDown={handleElementMouseDown}
-                  onElementClick={handleElementClick}
-                />
-              );
-            })}
-          </>
-        )}
-      </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onClick={handleAddMarker}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Marker
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={() => toggleTrackMute(track.id)}>
+            {track.muted ? (
+              <>
+                <Volume2 className="w-4 h-4 mr-2" />
+                Unmute Track
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-4 h-4 mr-2" />
+                Mute Track
+              </>
+            )}
+          </ContextMenuItem>
+          <ContextMenuItem onClick={() => clearTrackElements(track.id)}>
+            <Eraser className="w-4 h-4 mr-2" />
+            Clear Content
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem
+            onClick={() => removeTrack(track.id)}
+            className="text-red-500 focus:text-red-500"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Track
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
   );
 }

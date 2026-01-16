@@ -4,7 +4,7 @@
     "name": "赛博竹林 Vlog",
     "thumbnail": null,
     "createdAt": "2026-01-16T10:25:00.000Z",
-    "updatedAt": "2026-01-16T02:55:43.830Z",
+    "updatedAt": "2026-01-16T08:36:15.680Z",
     "scenes": [
       {
         "id": "scene1",
@@ -24,7 +24,15 @@
       "width": 1920,
       "height": 1080
     },
-    "canvasMode": "original"
+    "canvasMode": "original",
+    "markers": [
+      {
+        "id": "a1c0cb7c-efcc-4fe9-9629-d61d0b72a6e9",
+        "time": 1.8,
+        "label": "Marker",
+        "color": "#3b82f6"
+      }
+    ]
   },
   "tracks": [
     {
@@ -32,7 +40,26 @@
       "name": "Video Track",
       "type": "media",
       "isMain": true,
-      "elements": []
+      "elements": [
+        {
+          "id": "el_panda_1768554094",
+          "type": "media",
+          "mediaId": "asset_bamboo",
+          "name": "scene_bamboo.png",
+          "url": "/materials/images/scene_bamboo.png",
+          "startTime": 3.3666666666666667,
+          "duration": 2.74,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1
+        }
+      ]
     }
   ],
   "assets": [
@@ -75,6 +102,13 @@
       "name": "scene_cyber.mp3",
       "type": "audio",
       "url": "/materials/audio/scene_cyber.mp3"
+    },
+    {
+      "id": "asset_panda_bamboo",
+      "name": "panda_bamboo.png",
+      "type": "image",
+      "url": "/materials/images/panda_bamboo.png",
+      "duration": 2.74
     }
   ]
 }

@@ -59,13 +59,22 @@ const nextConfig: NextConfig = {
           "**/.git/**",
           "**/.next/**",
           "**/node_modules/**",
-          path.resolve(__dirname, "../../.aicut"), // Absolute path to ignore
+          path.resolve(__dirname, "../../.aicut"),
+          path.resolve(__dirname, "../../ai_workspace"), // Ignore workspace changes
           path.resolve(__dirname, "../../tools"),
           path.resolve(__dirname, "public/materials"),
         ],
       };
     }
     return config;
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/materials/:path*",
+        destination: "/api/materials/:path*",
+      },
+    ];
   },
 };
 

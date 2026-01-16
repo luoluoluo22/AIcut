@@ -54,9 +54,9 @@ AIcut 的设计思路是：**前端负责渲染与呈现，后端 Python 负责�
 
 ### AI 剪辑的工作流
 1. **获取状态**: AI 脚本通过读取 `ai_workspace/project-snapshot.json` 获取当前视频的时间轴状态。
-2. **生成指令**: AI 根据需求（如“帮我生成旁白”、“自动配图”）生成编辑指令。
-3. **同步执行**: AI 修改 `ai_workspace/pending-edits.json` 或直接通过 `tools/core/ai_daemon.py` 发送指令。
-4. **热重载**: 编辑器感知到变化，实时更新时间轴预览。
+2. **生成指令**: AI 根据需求（如“帮我生成旁白”、“自动配图”）计算出新的时间轴结构。
+3. **写入状态**: AI 直接修改并保存 `ai_workspace/project-snapshot.json` 文件。
+4. **热重载**: 编辑器通过 SSE 监听文件变化，实时更新时间轴预览。
 
 ### 剪辑时应修改哪个文件？
 如果你想自定义 AI 的剪辑逻辑（例如：修改字幕生成方式、调整转场算法），你应该在 **`tools/`** 目录下操作：
@@ -121,84 +121,76 @@ Role: You are AIcut, an intelligent video editing agent. Your goal is to autonom
 **Environment & Constraints:**
 1.  **Canvas Resolution**: 1920x1080 (Landscape).
 2.  **Coordinate System**: The origin (0,0) is TOP-LEFT. The center of the screen is **(960, 540)**. ALWAYS center visual elements at (960, 540) unless specified otherwise.
-3.  **Source of Truth**: The file `ai_workspace/project-snapshot.json` contains the current state (tracks, assets, project info).
-4.  **Action API**: You execute edits by sending HTTP POST requests to `http://localhost:3000/api/ai-edit`.
-
-**Available Capabilities (API Actions):**
--   **`setFullState`**: Completely overwrite the timeline tracks. (Preferred for complex edits).
-    -   Payload: `{ "action": "setFullState", "data": { "tracks": [...] } }`
--   **`addSubtitle`**: Add a single subtitle.
-    -   Payload: `{ "action": "addSubtitle", "data": { "text": "Hello", "startTime": 0, "duration": 3 } }`
--   **`importAudio`**: Import a local audio file.
-    -   Payload: `{ "action": "importAudio", "data": { "filePath": "...", "startTime": 0 } }`
+3.  **Source of Truth & Action Interface**: The file `ai_workspace/project-snapshot.json` is BOTH the current state and the control interface.
+4.  **Action Mechanism**: You execute edits by **modifying and saving `ai_workspace/project-snapshot.json`**. The system watches this file and hot-reloads instantly.
 
 **Workflow:**
-1.  **Read**: Analyze `ai_workspace/project-snapshot.json` to see available assets (images/videos/audio in `assets` list).
-2.  **Think**: Plan a timeline structure (Intro -> Main Content -> Outro).
-3.  **Act**: Generate a Python script (using `requests` lib) to construct the JSON structure and POST it to the API.
+1.  **Read**: Load `ai_workspace/project-snapshot.json` using Python's `json` module.
+2.  **Think**: Plan changes to `tracks` (adding clips to `elements`) or `assets` (registering new files).
+3.  **Act**: Write the modified JSON data back to `ai_workspace/project-snapshot.json`.
 
 **Critical Rules:**
 -   **Visuals**: Always set `x: 960, y: 540` for videos/images to center them.
--   **Audio**: Background music usually goes to a separate track with lower volume (e.g., 0.2).
--   **Assets**: You can ONLY use assets that already exist in the `snapshot.assets` list. Do not hallucinate file paths.
+-   **Structure**: Respect the JSON schema. `tracks` contain `elements`. `assets` contain resource metadata.
+-   **Atomic**: Read -> Modify -> Write. Ensure your write is atomic if possible (or just write w/ indentation).
 ```
 
 ### 💡 常用指令示例
 
-**1. "帮我把素材库里的所有视频连成一个短片，每段3秒，加个背景音乐"**
-*AI 应该生成类似 `tools/create_demo_timeline.py` 的脚本，遍历 `assets`，计算 `startTime`，并发送 `setFullState` 请求。*
+**1. "帮我把素材库里的所有视频连成一个短片，每段3秒"**
+*AI 应该编写 Python 脚本：读取 snapshot -> 遍历 `assets` -> 清空 `tracks` -> 依次生成 `elements` 加入轨道 -> 保存 snapshot。*
 
-**2. "给当前视频前5秒加上标题‘AIcut Demo’"**
-*AI 应该发送 `addSubtitle` 请求或通过 `setFullState` 添加一个 Text Track。*
-
-**3. "生成一张新图片，并追加到视频末尾"**
-*这是高阶操作，需要 AI 自动维护 `assets` 列表和 `tracks` 结构。参考逻辑如下：*
+**2. "生成一张新图片，并追加到视频末尾"**
+*这是一个标准的文件驱动流程：*
 
 ```python
+import json
 import time
-import requests
 
-# 示例：注册新素材并追加到时间轴
-def append_new_asset(snapshot, new_file_path):
-    API_URL = "http://localhost:3000/api/ai-edit" # 补全 URL 定义
+SNAPSHOT_PATH = "ai_workspace/project-snapshot.json"
+
+def append_new_asset(new_file_path):
+    # 1. Read
+    with open(SNAPSHOT_PATH, "r", encoding="utf-8") as f:
+        snapshot = json.load(f)
+
     assets = snapshot.get("assets", [])
     tracks = snapshot.get("tracks", [])
 
-    # 1. 注册素材 (Register)
+    # 2. Register Asset
     new_asset_id = f"asset_{int(time.time())}"
     assets.append({
         "id": new_asset_id,
         "name": "New Image",
         "type": "image",
-        "url": "/materials/new_image.png", # Web URL
-        "filePath": new_file_path,         # Absolute Local Path
-        "isLinked": True
+        "url": "/materials/new_image.png", # Web URL (mapped from symlink)
+        "filePath": new_file_path,         # Absolute Local Path for Electron/Server
+        "duration": 5
     })
 
-    # 2. 找到主轨道 (Find Track)
+    # 3. Find Main Track
     main_track = next((t for t in tracks if t.get("isMain")), None)
     
-    # 3. 计算末尾时间 (Calculate End Time)
+    # 4. Calculate End Time
     last_end = 0
     if main_track["elements"]:
         last = main_track["elements"][-1]
         last_end = last["startTime"] + last["duration"]
 
-    # 4. 追加片段 (Append Element)
+    # 5. Append Element
     main_track["elements"].append({
         "id": f"el_{int(time.time())}",
         "type": "media",
         "mediaId": new_asset_id,
         "startTime": last_end,
         "duration": 5,
-        "x": 960, "y": 540 # Important: Center it!
+        "x": 960, "y": 540, # Center it
+        "scale": 1, "opacity": 1, "rotation": 0
     })
 
-    # 5. 更新快照 (Commit)
-    requests.post(API_URL, json={
-        "action": "updateSnapshot",
-        "data": { "project": snapshot["project"], "tracks": tracks, "assets": assets }
-    })
+    # 6. Save (Trigger Hot-Reload)
+    with open(SNAPSHOT_PATH, "w", encoding="utf-8") as f:
+        json.dump(snapshot, f, indent=2, ensure_ascii=False)
 ```
 
 ---

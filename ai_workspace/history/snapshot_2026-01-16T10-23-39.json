@@ -50,23 +50,6 @@
           "rotation": 0,
           "opacity": 1,
           "volume": 1
-        },
-        {
-          "type": "media",
-          "mediaId": "asset_008973",
-          "name": "AIcut.mp4",
-          "duration": 6.122667,
-          "startTime": 4.466666666666667,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "id": "df570d75-7ee3-4a53-92d1-d27ab59697d3",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "volume": 1
         }
       ]
     }

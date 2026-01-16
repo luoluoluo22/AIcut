@@ -394,6 +394,9 @@ export async function POST(request: NextRequest) {
             case "updateElement":
             case "requestTask":
             case "importAudio":
+            case "importMedia":
+            case "importImage":
+            case "importVideo":
                 // These are fine as-is
                 break;
 
@@ -429,7 +432,12 @@ export async function POST(request: NextRequest) {
                     // Merge incoming data (Project & Tracks) with existing Assets
                     const mergedData = {
                         ...currentSnapshot,
-                        project: data.project || currentSnapshot.project,
+                        project: {
+                            ...(currentSnapshot.project || {}),
+                            ...(data.project || {}),
+                            // Preserve sensitive fields if missing in update
+                            markers: data.project?.markers || currentSnapshot.project?.markers || []
+                        },
                         tracks: data.tracks || currentSnapshot.tracks,
                         // CRITICAL: Preserve assets if not provided in the update
                         assets: data.assets || currentSnapshot.assets || []
@@ -493,24 +501,16 @@ export async function POST(request: NextRequest) {
                 // 2. Load new project
                 const loaded = loadProjectToWorkspace(newProjectId);
 
-                // 3. Switch materials symlink
-                const linkResult = switchMaterialsLink(newProjectId);
-                if (!linkResult.success) {
-                    console.warn(`[Switch] Failed to switch materials link: ${linkResult.error}`);
-                }
-
                 if (loaded) {
                     return NextResponse.json({
                         success: true,
                         message: `Switched to project ${newProjectId}`,
-                        materialsLinked: linkResult.success
+                        // materialsLinked: true // No longer needing symlink
                     });
                 } else {
-                    // Even if snapshot not found, we may have created the assets dir
                     return NextResponse.json({
                         success: false,
                         error: `Project ${newProjectId} not found`,
-                        materialsLinked: linkResult.success
                     }, { status: 404 });
                 }
             }

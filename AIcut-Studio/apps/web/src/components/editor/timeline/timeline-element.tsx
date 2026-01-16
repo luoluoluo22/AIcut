@@ -282,8 +282,14 @@ export function TimelineElement({
       const trackHeight = getTrackHeight(track.type);
       const tileWidth = trackHeight * (16 / 9);
 
-      const imageUrl =
+      const rawImageUrl =
         mediaItem.type === "image" ? mediaItem.url : mediaItem.thumbnailUrl;
+
+      // Encode URL for CSS background-image (handle spaces, parentheses, and special chars)
+      // encodeURI handles spaces but not parentheses, so we need additional handling
+      const imageUrl = rawImageUrl
+        ? encodeURI(rawImageUrl).replace(/\(/g, '%28').replace(/\)/g, '%29')
+        : null;
 
       return (
         <div className="w-full h-full flex items-center justify-center">
@@ -294,7 +300,7 @@ export function TimelineElement({
             <div
               className={`absolute top-[0.25rem] bottom-[0.25rem] left-0 right-0`}
               style={{
-                backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
+                backgroundImage: imageUrl ? `url("${imageUrl}")` : "none",
                 backgroundRepeat: "repeat-x",
                 backgroundSize: `${tileWidth}px ${trackHeight}px`,
                 backgroundPosition: "left center",
@@ -431,6 +437,30 @@ export function TimelineElement({
           {isMultipleSelected && isCurrentElementSelected
             ? `复制选中的 ${selectedElements.length} 个素材`
             : "复制素材"}
+        </ContextMenuItem>
+
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            const info = isMultipleSelected && isCurrentElementSelected
+              ? selectedElements.map(el => ({
+                id: el.elementId,
+                trackId: el.trackId
+              }))
+              : {
+                id: element.id,
+                trackId: track.id,
+                name: element.name,
+                startTime: element.startTime,
+                duration: element.duration
+              };
+
+            navigator.clipboard.writeText(JSON.stringify(info, null, 2));
+            toast.success("素材信息已复制到剪贴板");
+          }}
+        >
+          <Type className="h-4 w-4 mr-2" />
+          复制信息 (For AI)
         </ContextMenuItem>
 
         {(!isMultipleSelected && hasAudio) && (

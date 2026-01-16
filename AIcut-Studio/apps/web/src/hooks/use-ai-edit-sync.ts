@@ -175,10 +175,27 @@ export function useAIEditSync(enabled: boolean = true) {
                 break;
             }
 
+            case "importMedia":
+            case "importImage":
+            case "importVideo":
             case "importAudio": {
-                // 从本地路径导入音频并添加到时间轴
-                const { filePath, name, startTime, duration } = edit.data;
+                // 通用媒体导入逻辑
+                const { filePath, name, startTime, duration, trackId: preferredTrackId } = edit.data;
                 if (!filePath) break;
+
+                // 确定媒体类型
+                let mediaType = "video"; // default
+                if (edit.action === "importImage") mediaType = "image";
+                else if (edit.action === "importAudio") mediaType = "audio";
+                else if (edit.action === "importVideo") mediaType = "video";
+                else if (edit.data.type) mediaType = edit.data.type;
+
+                // 简单的扩展名检查容错
+                if (filePath.endsWith(".png") || filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith(".webp")) {
+                    mediaType = "image";
+                } else if (filePath.endsWith(".mp3") || filePath.endsWith(".wav") || filePath.endsWith(".aac")) {
+                    mediaType = "audio";
+                }
 
                 (async () => {
                     try {
@@ -186,11 +203,11 @@ export function useAIEditSync(enabled: boolean = true) {
                         const response = await fetch("/api/media/import-local", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ filePath, name, type: "audio", duration, startTime })
+                            body: JSON.stringify({ filePath, name, type: mediaType, duration, startTime })
                         });
 
                         if (!response.ok) {
-                            console.error("[AI Edit] Failed to import audio:", await response.text());
+                            console.error("[AI Edit] Failed to import media:", await response.text());
                             return;
                         }
 
@@ -215,14 +232,21 @@ export function useAIEditSync(enabled: boolean = true) {
                         // Calculate real duration for accurate timeline placement
                         let realDuration = 0;
                         try {
-                            realDuration = await getMediaDuration(file);
+                            // Only needed for video/audio usually, images rely on provided duration or default
+                            if (mediaType !== "image") {
+                                realDuration = await getMediaDuration(file);
+                            }
                         } catch (err) {
                             console.warn("[AI Edit] Failed to calculate duration, using fallback:", err);
                         }
 
                         // Fallback if calculation failed
                         if (!realDuration) {
-                            realDuration = Math.max(media.duration || 0, 3);
+                            realDuration = Math.max(media.duration || 0, (mediaType === "image" ? (duration || 5) : 3));
+                        }
+                        // Use provided duration for images if explicit
+                        if (mediaType === "image" && duration) {
+                            realDuration = duration;
                         }
 
                         // 添加到 MediaStore
@@ -234,10 +258,10 @@ export function useAIEditSync(enabled: boolean = true) {
 
                         const addedMedia = await useMediaStore.getState().addMediaFile(activeProject.id, {
                             name: media.name,
-                            type: "audio",
+                            type: mediaType as any,
                             file: file,
                             url: URL.createObjectURL(file),
-                            duration: realDuration || media.duration || 0,
+                            duration: realDuration,
                             filePath: filePath, // Electron 用的原始路径
                         });
 
@@ -249,46 +273,70 @@ export function useAIEditSync(enabled: boolean = true) {
                         // 从 SDK 返回的 metadata 中获取 startTime
                         const start_time = media.metadata?.startTime ?? startTime ?? 0;
 
-                        // 创建或找到音频轨道 (Find or create/reuse track)
+                        // 创建或找到目标轨道
                         const store = useTimelineStore.getState();
-                        let audioTrack = store.tracks.find(t => t.name === "AI 语音轨");
+                        let targetTrack = null;
 
-                        if (!audioTrack) {
-                            // Try to find an empty audio track to reuse
-                            audioTrack = store.tracks.find(t => t.type === "audio" && t.elements.length === 0);
+                        // 1. 如果指定了 trackId，优先使用
+                        if (preferredTrackId) {
+                            targetTrack = store.tracks.find(t => t.id === preferredTrackId);
+                        }
 
-                            if (audioTrack) {
-                                store.updateTrack(audioTrack.id, { name: "AI 语音轨" });
-                            } else {
-                                // Create a new one
-                                const newTrackId = store.addTrack("audio");
-                                store.updateTrack(newTrackId, { name: "AI 语音轨" });
-                                // Re-get tracks to ensure we have the latest
-                                audioTrack = useTimelineStore.getState().tracks.find(t => t.id === newTrackId);
+                        // 2. 如果没找到，根据类型查找合适的轨道
+                        if (!targetTrack) {
+                            const targetTrackType = mediaType === "audio" ? "audio" : "media";
+
+                            // 尝试找一个有空位的或者同类型的
+                            // 优先找命名符合意图的
+                            if (mediaType === "audio") {
+                                targetTrack = store.tracks.find(t => t.name === "AI 语音轨");
+                            }
+
+                            if (!targetTrack) {
+                                // 找任意同类型轨道
+                                targetTrack = store.tracks.find(t => t.type === targetTrackType && !t.isMain); // Try non-main first
+                            }
+
+                            // 如果还是没有，或者是 Main track (Video Track) 且允许
+                            if (!targetTrack) {
+                                targetTrack = store.tracks.find(t => t.type === targetTrackType);
+                            }
+
+                            // 最后还没找到，新建一个
+                            if (!targetTrack) {
+                                const newTrackId = store.addTrack(targetTrackType);
+                                if (mediaType === "audio") {
+                                    store.updateTrack(newTrackId, { name: "AI 语音轨" });
+                                }
+                                // Re-get tracks
+                                targetTrack = useTimelineStore.getState().tracks.find(t => t.id === newTrackId);
                             }
                         }
 
-                        if (audioTrack) {
-                            useTimelineStore.getState().addElementToTrack(audioTrack.id, {
+                        if (targetTrack) {
+                            // 检查重叠并尝试寻找空位 (简单处理: 暂时直接添加，TimelineStore 会处理重叠或者允许重叠)
+                            // TODO: checkElementOverlap
+
+                            useTimelineStore.getState().addElementToTrack(targetTrack.id, {
                                 type: "media",
                                 mediaId: addedMedia.id,
                                 name: addedMedia.name,
                                 startTime: start_time,
-                                duration: media.duration || addedMedia.duration || 3,
+                                duration: realDuration,
                                 trimStart: 0,
                                 trimEnd: 0,
                                 muted: false,
                                 volume: 1.0,
-                                x: 0.5,
-                                y: 0.5,
+                                x: 960,
+                                y: 540,
                                 scale: 1,
                                 rotation: 0,
                                 opacity: 1,
                             });
-                            console.log("[AI Edit] Audio imported and added to track successfully:", addedMedia.name);
+                            console.log(`[AI Edit] ${mediaType} imported and added to track successfully:`, addedMedia.name);
                         }
                     } catch (e) {
-                        console.error("[AI Edit] Import audio error:", e);
+                        console.error("[AI Edit] Import media error:", e);
                     }
                 })();
                 break;
@@ -302,6 +350,18 @@ export function useAIEditSync(enabled: boolean = true) {
     // Helper to handle snapshot data
     const handleSnapshotData = useCallback((data: any) => {
         if (!data) return;
+
+        // --- Project ID Validation (MUST be first) ---
+        // Skip ALL processing if the snapshot is for a different project.
+        // This prevents syncing wrong data into the current project view.
+        const projectStore = useProjectStore.getState();
+        const currentProject = projectStore.activeProject;
+        const remoteProject = data.project;
+
+        if (currentProject && remoteProject && remoteProject.id !== currentProject.id) {
+            console.log(`[AI Sync] <Handle> Skipping snapshot - project ID mismatch (Current: ${currentProject.id}, Remote: ${remoteProject.id})`);
+            return;
+        }
 
         // --- Sync Tracks ---
         if (data.tracks) {
@@ -317,59 +377,92 @@ export function useAIEditSync(enabled: boolean = true) {
         }
 
         // --- Sync Assets (Media Library) ---
-        if (data.assets && Array.isArray(data.assets)) {
-            const mediaStore = useMediaStore.getState();
-            const currentAssets = mediaStore.mediaFiles;
-            console.log(`[AI Sync] <Handle> Processing ${data.assets.length} assets. Current store has ${currentAssets.length} assets.`);
+        const mediaStore = useMediaStore.getState();
+        const currentAssets = mediaStore.mediaFiles;
+        const remoteAssets = data.assets && Array.isArray(data.assets) ? data.assets : [];
 
-            for (const remoteAsset of data.assets) {
-                const exists = currentAssets.find(a =>
-                    a.id === remoteAsset.id || (remoteAsset.url && a.url === remoteAsset.url)
-                );
+        console.log(`[AI Sync] <Handle> Processing ${remoteAssets.length} assets. Current store has ${currentAssets.length} assets.`);
 
-                if (exists) {
-                    console.log(`[AI Sync] <Asset> Skipping existing asset: ${remoteAsset.name} (ID: ${remoteAsset.id})`);
-                    continue;
+        // 1. Remove assets that are no longer in the snapshot
+        const projectId = data.project?.id || "demo";
+        for (const localAsset of currentAssets) {
+            const stillExists = remoteAssets.find((a: any) =>
+                a.id === localAsset.id || (a.url && a.url === localAsset.url)
+            );
+            if (!stillExists) {
+                console.log(`[AI Sync] <Asset> Removing deleted asset: ${localAsset.name} (ID: ${localAsset.id})`);
+                try {
+                    // Use simplified removal - just update state, don't touch IndexedDB for linked assets
+                    // This prevents errors when the asset was never in IndexedDB
+                    const currentMediaFiles = useMediaStore.getState().mediaFiles;
+                    useMediaStore.setState({
+                        mediaFiles: currentMediaFiles.filter(m => m.id !== localAsset.id)
+                    });
+                } catch (e) {
+                    console.warn(`[AI Sync] Failed to remove asset ${localAsset.id}:`, e);
                 }
-
-                if (!remoteAsset.url) {
-                    console.warn(`[AI Sync] <Asset> Missing URL for asset: ${remoteAsset.name}, cannot link.`);
-                    continue;
-                }
-
-                console.log(`[AI Sync] <Asset> Linking local asset: ${remoteAsset.name} -> ${remoteAsset.url}`);
-                mediaStore.addMediaFile(data.project?.id || "demo", {
-                    id: remoteAsset.id,
-                    name: remoteAsset.name,
-                    type: remoteAsset.type || "video",
-                    url: remoteAsset.url,
-                    filePath: remoteAsset.filePath,
-                    thumbnailUrl: remoteAsset.thumbnailUrl,
-                    duration: remoteAsset.duration || 0,
-                    width: remoteAsset.width,
-                    height: remoteAsset.height,
-                    isLinked: true
-                } as any);
             }
-            console.log("[AI Sync] <Handle> Asset synchronization complete.");
-            hasSynced.current = true;
-        } else {
-            console.log("[AI Sync] <Handle> No assets found in snapshot or invalid assets format");
         }
 
-        // --- Sync Project Metadata ---
-        const projectStore = useProjectStore.getState();
-        const currentProject = projectStore.activeProject;
-        const remoteProject = data.project;
+        // 2. Add new assets from snapshot
+        for (const remoteAsset of remoteAssets) {
+            // Re-fetch current assets after potential removals
+            const freshAssets = useMediaStore.getState().mediaFiles;
+            const existingAsset = freshAssets.find(a =>
+                a.id === remoteAsset.id || (remoteAsset.url && a.url === remoteAsset.url)
+            );
 
-        if (currentProject && remoteProject) {
-            // Check for Project Switch
-            if (remoteProject.id && remoteProject.id !== currentProject.id) {
-                console.log(`[AI Sync] <Project> Project ID mismatch (Local: ${currentProject.id}, Remote: ${remoteProject.id}). Redirecting...`);
-                router.push(`/editor/${remoteProject.id}`);
-                return;
+            if (!remoteAsset.url) {
+                console.warn(`[AI Sync] <Asset> Missing URL for asset: ${remoteAsset.name}, cannot link.`);
+                continue;
             }
 
+            if (existingAsset) {
+                // Asset exists - check if we need to update properties (like thumbnailUrl)
+                const needsUpdate =
+                    (remoteAsset.thumbnailUrl && existingAsset.thumbnailUrl !== remoteAsset.thumbnailUrl) ||
+                    (remoteAsset.duration && existingAsset.duration !== remoteAsset.duration) ||
+                    (remoteAsset.width && existingAsset.width !== remoteAsset.width) ||
+                    (remoteAsset.height && existingAsset.height !== remoteAsset.height);
+
+                if (needsUpdate) {
+                    console.log(`[AI Sync] <Asset> Updating existing asset: ${remoteAsset.name}`);
+                    // Update in-place by modifying the store
+                    useMediaStore.setState(state => ({
+                        mediaFiles: state.mediaFiles.map(a =>
+                            a.id === existingAsset.id ? {
+                                ...a,
+                                thumbnailUrl: remoteAsset.thumbnailUrl || a.thumbnailUrl,
+                                duration: remoteAsset.duration || a.duration,
+                                width: remoteAsset.width || a.width,
+                                height: remoteAsset.height || a.height,
+                            } : a
+                        )
+                    }));
+                }
+                continue;
+            }
+
+            console.log(`[AI Sync] <Asset> Linking local asset: ${remoteAsset.name} -> ${remoteAsset.url}`);
+            mediaStore.addMediaFile(data.project?.id || "demo", {
+                id: remoteAsset.id,
+                name: remoteAsset.name,
+                type: remoteAsset.type || "video",
+                url: remoteAsset.url,
+                filePath: remoteAsset.filePath,
+                thumbnailUrl: remoteAsset.thumbnailUrl,
+                duration: remoteAsset.duration || 0,
+                width: remoteAsset.width,
+                height: remoteAsset.height,
+                isLinked: true
+            } as any);
+        }
+
+        console.log("[AI Sync] <Handle> Asset synchronization complete.");
+        hasSynced.current = true;
+
+        // --- Sync Project Metadata (only if IDs match, which is guaranteed here) ---
+        if (currentProject && remoteProject) {
             const updates: any = {};
 
             // Sync atomic fields
@@ -513,6 +606,17 @@ export function useAIEditSync(enabled: boolean = true) {
                 })
             });
             lastReportedState.current = stateSummary;
+
+            // Also archive to project directory for persistence
+            console.log("[AI Sync] Archiving to project directory...");
+            await fetch("/api/ai-edit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "archiveProject",
+                    data: { projectId: activeProject.id }
+                })
+            });
         } catch (e) {
             console.error("[AI Sync] Report failed:", e);
         }

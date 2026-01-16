@@ -114,6 +114,11 @@ export interface TransitionItemDragData {
 
 export type DragData = MediaItemDragData | TextItemDragData | TransitionItemDragData;
 
+export interface TimelineMarker {
+  id: string;
+  time: number;
+}
+
 export interface TimelineTrack {
   id: string;
   name: string;
@@ -121,6 +126,7 @@ export interface TimelineTrack {
   elements: TimelineElement[];
   muted?: boolean;
   isMain?: boolean;
+  markers?: TimelineMarker[];
 }
 
 export function sortTracksByOrder(tracks: TimelineTrack[]): TimelineTrack[] {

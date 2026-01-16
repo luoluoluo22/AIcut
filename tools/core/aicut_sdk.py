@@ -164,6 +164,35 @@ class AIcutClient:
             "duration": duration
         })
 
+    def import_media(self, file_path: str, media_type: str = "video", name: str = None, start_time: float = 0, duration: float = None, track_id: str = None) -> Dict:
+        """导入媒体文件 (通用)
+        
+        Args:
+            file_path: 文件路径
+            media_type: 媒体类型 ("video", "audio", "image")
+            name: 名称
+            start_time: 开始时间
+            duration: 持续时间
+            track_id: 指定轨道ID (可选)
+        """
+        import os
+        return self._post("importMedia", {
+            "filePath": file_path,
+            "type": media_type,
+            "name": name or os.path.basename(file_path),
+            "startTime": start_time,
+            "duration": duration,
+            "trackId": track_id
+        })
+
+    def import_video(self, file_path: str, name: str = None, start_time: float = 0, track_id: str = None) -> Dict:
+        """导入视频"""
+        return self.import_media(file_path, "video", name, start_time, track_id=track_id)
+
+    def import_image(self, file_path: str, duration: float = 5, name: str = None, start_time: float = 0, track_id: str = None) -> Dict:
+        """导入图片"""
+        return self.import_media(file_path, "image", name, start_time, duration, track_id=track_id)
+
 
 def demo():
     """演示 AIcut SDK 用法"""

@@ -265,6 +265,24 @@ interface TimelineStore {
     currentTime?: number
   ) => boolean;
   addElementToNewTrack: (item: MediaFile | TextElement | DragData) => boolean;
+
+  // Markers
+  selectedMarkers: { trackId: string; markerId: string }[];
+  selectMarker: (trackId: string, markerId: string, multi?: boolean) => void;
+  deselectMarker: (trackId: string, markerId: string) => void;
+  clearSelectedMarkers: () => void;
+  addMarker: (trackId: string, time: number) => void;
+  removeMarker: (trackId: string, markerId: string) => void;
+  updateMarkerTime: (trackId: string, markerId: string, time: number) => void;
+
+  markerDragState: {
+    isDragging: boolean;
+    markerId: string | null;
+    trackId: string | null;
+    startMouseX: number;
+    startMarkerTime: number;
+  };
+  setMarkerDragState: (state: Partial<TimelineStore["markerDragState"]>) => void;
 }
 
 export const useTimelineStore = create<TimelineStore>((set, get) => {
@@ -324,6 +342,16 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     selectedElements: [],
     rippleEditingEnabled: false,
     clipboard: null,
+
+    // Markers
+    selectedMarkers: [],
+    markerDragState: {
+      isDragging: false,
+      markerId: null,
+      trackId: null,
+      startMouseX: 0,
+      startMarkerTime: 0,
+    },
 
     // Snapping settings defaults
     snappingEnabled: true,
@@ -794,6 +822,117 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
             : track
         )
       );
+    },
+
+    // Marker Actions
+    addMarker: (trackId, time) => {
+      get().pushHistory();
+      const newMarker = {
+        id: generateUUID(),
+        time,
+      };
+      updateTracksAndSave(
+        get()._tracks.map((track) => {
+          if (track.id === trackId) {
+            return {
+              ...track,
+              markers: [...(track.markers || []), newMarker],
+            };
+          }
+          return track;
+        })
+      );
+    },
+
+    removeMarker: (trackId, markerId) => {
+      get().pushHistory();
+      updateTracksAndSave(
+        get()._tracks.map((track) => {
+          if (track.id === trackId) {
+            return {
+              ...track,
+              markers: (track.markers || []).filter((m) => m.id !== markerId),
+            };
+          }
+          return track;
+        })
+      );
+    },
+
+    updateMarkerTime: (trackId, markerId, time) => {
+      // Don't push history for every drag move, handled by caller or we can debouce logic there
+      // But for simple "update", it might be fine directly if it's the final update.
+      // Usually real-time drag updates shouldn't push history, only DragEnd.
+      // Assuming this is used for rapid updates during dragManager
+      set((state) => ({
+        _tracks: state._tracks.map((track) => {
+          if (track.id === trackId) {
+            return {
+              ...track,
+              markers: (track.markers || []).map((m) =>
+                m.id === markerId ? { ...m, time } : m
+              ),
+            };
+          }
+          return track;
+        }),
+        tracks: sortTracksByOrder(
+          ensureMainTrack(
+            state._tracks.map((track) => {
+              if (track.id === trackId) {
+                return {
+                  ...track,
+                  markers: (track.markers || []).map((m) =>
+                    m.id === markerId ? { ...m, time } : m
+                  ),
+                };
+              }
+              return track;
+            })
+          )
+        )
+      }));
+    },
+
+    selectMarker: (trackId, markerId, multi = false) => {
+      set((state) => {
+        const exists = state.selectedMarkers.some(
+          (m) => m.trackId === trackId && m.markerId === markerId
+        );
+        if (multi) {
+          return exists
+            ? {
+              selectedMarkers: state.selectedMarkers.filter(
+                (m) => !(m.trackId === trackId && m.markerId === markerId)
+              ),
+            }
+            : {
+              selectedMarkers: [
+                ...state.selectedMarkers,
+                { trackId, markerId },
+              ],
+            };
+        }
+        return { selectedMarkers: [{ trackId, markerId }] };
+      });
+    },
+
+    deselectMarker: (trackId, markerId) => {
+      set((state) => ({
+        selectedMarkers: state.selectedMarkers.filter(
+          (m) => !(m.trackId === trackId && m.markerId === markerId)
+        ),
+      }));
+    },
+
+    clearSelectedMarkers: () => {
+      set({ selectedMarkers: [] });
+    },
+
+    setMarkerDragState: (state) => {
+      set((prev) => ({
+        markerDragState: { ...prev.markerDragState, ...state },
+      }));
     },
 
     updateElementStartTime: (

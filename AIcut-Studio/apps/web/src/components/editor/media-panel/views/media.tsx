@@ -246,13 +246,21 @@ export function MediaView() {
           console.warn("Failed to extract metadata for upload, continuing anyway", e);
         }
 
-        // 2. Upload to local server via FormData
+        // 2. Upload metadata to local server via FormData (file is linked, not copied)
         const formData = new FormData();
         formData.append("file", file);
         if (thumbnail) formData.append("thumbnail", thumbnail);
         formData.append("width", String(width));
         formData.append("height", String(height));
         formData.append("duration", String(duration));
+
+        // In Electron, files have a `path` property with the absolute path
+        // This enables "linked" files that are not copied to the project directory
+        const filePath = (file as any).path;
+        if (filePath) {
+          formData.append("originalPath", filePath);
+          console.log(`[Upload] Linking file from: ${filePath}`);
+        }
 
         const response = await fetch("/api/media/upload-local", {
           method: "POST",
@@ -284,7 +292,129 @@ export function MediaView() {
     onDrop: processFiles,
   });
 
-  const handleFileSelect = () => fileInputRef.current?.click(); // Open file picker
+  // Process files with known absolute paths (from Electron dialog)
+  const processLinkedFiles = async (filePaths: string[]) => {
+    if (!filePaths || filePaths.length === 0) return;
+    if (!activeProject) {
+      toast.error("当前没有正在运行的项目");
+      return;
+    }
+
+    setIsProcessing(true);
+    setProgress(0);
+
+    try {
+      const total = filePaths.length;
+
+      for (let i = 0; i < total; i++) {
+        const filePath = filePaths[i];
+        const fileName = filePath.split(/[\\/]/).pop() || "unknown";
+        console.log(`[Upload] Linking file: ${filePath}`);
+
+        // Check for existing file with same name
+        const existingAsset = mediaFiles.find(a => a.name === fileName);
+        if (existingAsset) {
+          console.log(`[Upload] File ${fileName} already exists. Cleaning up old version...`);
+          await fetch(`/api/media/delete-local?id=${existingAsset.id}`, { method: 'DELETE' });
+          await new Promise(r => setTimeout(r, 100));
+        }
+
+        // Determine file type from extension
+        const ext = fileName.toLowerCase().split('.').pop() || '';
+        const isVideo = ['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(ext);
+        const isAudio = ['mp3', 'wav', 'aac', 'ogg', 'flac', 'm4a'].includes(ext);
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext);
+
+        let thumbnail = "";
+        let width = 0;
+        let height = 0;
+        let duration = 0;
+
+        // For videos, we need to generate thumbnail - fetch file temporarily
+        if (isVideo) {
+          try {
+            // Fetch file via serve API to get blob for thumbnail generation
+            const response = await fetch(`/api/media/serve?path=${encodeURIComponent(filePath)}`);
+            if (response.ok) {
+              const blob = await response.blob();
+              const file = new File([blob], fileName, { type: `video/${ext}` });
+              const info = await getVideoInfo(file);
+              width = info.width;
+              height = info.height;
+              duration = info.duration;
+              thumbnail = await generateThumbnail(file, 0.5);
+            }
+          } catch (e) {
+            console.warn("Failed to extract video metadata:", e);
+          }
+        }
+
+        // Send link request to API
+        const formData = new FormData();
+        // Create a minimal File object just for the API (won't be saved)
+        const mimeType = isVideo ? `video/${ext}` : isAudio ? `audio/${ext}` : `image/${ext}`;
+        formData.append("file", new Blob([]), fileName); // Empty blob, just for metadata
+        formData.append("originalPath", filePath);
+        if (thumbnail) formData.append("thumbnail", thumbnail);
+        formData.append("width", String(width));
+        formData.append("height", String(height));
+        formData.append("duration", String(duration));
+
+        const response = await fetch("/api/media/upload-local", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Link failed for ${fileName}`);
+        }
+
+        setProgress(Math.round(((i + 1) / total) * 100));
+      }
+
+      toast.success("文件已链接到素材库");
+    } catch (error) {
+      console.error("Error linking files:", error);
+      toast.error("文件链接失败");
+    } finally {
+      setIsProcessing(false);
+      setProgress(0);
+    }
+  };
+
+  // Open file picker - use Electron native dialog if available
+  const handleFileSelect = async () => {
+    // Check if running in Electron
+    const electronAPI = (window as any).electronAPI;
+
+    if (electronAPI?.openFileDialog) {
+      // Use Electron native dialog to get file paths
+      try {
+        const result = await electronAPI.openFileDialog({
+          properties: ['openFile', 'multiSelections'],
+          filters: [
+            { name: 'Media Files', extensions: ['mp4', 'webm', 'mov', 'avi', 'mkv', 'mp3', 'wav', 'aac', 'ogg', 'jpg', 'jpeg', 'png', 'gif', 'webp'] },
+            { name: 'Videos', extensions: ['mp4', 'webm', 'mov', 'avi', 'mkv'] },
+            { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'] },
+            { name: 'Audio', extensions: ['mp3', 'wav', 'aac', 'ogg', 'flac', 'm4a'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+        });
+
+        if (result && result.filePaths && result.filePaths.length > 0) {
+          console.log('[Upload] Selected files via Electron:', result.filePaths);
+          await processLinkedFiles(result.filePaths);
+        }
+      } catch (e) {
+        console.error('[Upload] Electron dialog error:', e);
+        // Fallback to HTML file input
+        fileInputRef.current?.click();
+      }
+    } else {
+      // Browser fallback - use HTML file input
+      fileInputRef.current?.click();
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) processFiles(e.target.files);
@@ -657,9 +787,9 @@ export function MediaView() {
                     <p>
                       排序方式: {
                         sortBy === "name" ? "名称" :
-                        sortBy === "type" ? "类型" :
-                        sortBy === "duration" ? "时长" :
-                        sortBy === "size" ? "文件大小" : sortBy
+                          sortBy === "type" ? "类型" :
+                            sortBy === "duration" ? "时长" :
+                              sortBy === "size" ? "文件大小" : sortBy
                       } (
                       {sortOrder === "asc" ? "升序" : "降序"})
                     </p>

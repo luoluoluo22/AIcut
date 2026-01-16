@@ -46,8 +46,8 @@ export function TimelineMarker({
               return `${hours}:${minutes
                 .toString()
                 .padStart(2, "0")}:${Math.floor(secs)
-                .toString()
-                .padStart(2, "0")}`;
+                  .toString()
+                  .padStart(2, "0")}`;
             }
             if (minutes > 0) {
               return `${minutes}:${Math.floor(secs)
