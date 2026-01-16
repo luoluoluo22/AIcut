@@ -31,6 +31,11 @@ export const SourcePlayer = () => {
     const duration = previewMedia.duration || 5;
     const durationInFrames = Math.max(1, Math.ceil(duration * fps));
 
+    const isPreviewPlayingRef = useRef(isPreviewPlaying);
+    useEffect(() => {
+        isPreviewPlayingRef.current = isPreviewPlaying;
+    }, [isPreviewPlaying]);
+
     // Sync Store -> Player
     useEffect(() => {
         if (playerRef.current) {
@@ -83,7 +88,7 @@ export const SourcePlayer = () => {
                     }}
                     controls={false}
                     onFrameUpdate={(frame) => {
-                        if (isPreviewPlaying) {
+                        if (isPreviewPlayingRef.current) {
                             setPreviewTime(frame / fps);
                         }
                     }}

@@ -53,12 +53,29 @@
       "muted": false
     },
     {
-      "id": "3432d4d1-a2cb-4765-90bb-e1ad4f994569",
-      "name": "Main Track",
+      "id": "track_main",
+      "name": "Video Track",
       "type": "media",
-      "elements": [],
-      "muted": false,
-      "isMain": true
+      "isMain": true,
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "asset_bamboo_audio",
+          "name": "scene_bamboo.mp3",
+          "duration": 5,
+          "startTime": 0.6333333333333333,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "id": "0312a0e2-4aa9-4871-9f8e-e5e6046e9bbd",
+          "muted": false,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        }
+      ]
     }
   ],
   "assets": [

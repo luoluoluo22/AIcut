@@ -4,7 +4,7 @@
     "name": "赛博竹林 Vlog",
     "thumbnail": null,
     "createdAt": "2026-01-16T10:25:00.000Z",
-    "updatedAt": "2026-01-16T02:43:56.662Z",
+    "updatedAt": "2026-01-16T03:04:29.255Z",
     "scenes": [
       {
         "id": "scene1",
@@ -27,6 +27,31 @@
     "canvasMode": "original"
   },
   "tracks": [
+    {
+      "id": "d5928a06-6d97-4140-a59c-2cd0ae0dad6b",
+      "name": "Media Track",
+      "type": "media",
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "asset_grok_v1",
+          "name": "grok_video_27146.mp4",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "id": "00a4af4a-67a3-435f-bba7-2f54cd113bd1",
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        }
+      ],
+      "muted": false
+    },
     {
       "id": "track_main",
       "name": "Video Track",
