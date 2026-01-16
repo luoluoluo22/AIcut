@@ -39,10 +39,13 @@ interface ActiveElement {
 }
 
 import { RemotionPlayerWrapper } from "./preview/remotion/player-wrapper";
+import { SourcePlayer } from "./preview/source-player";
+import { useMediaPanelStore } from "./media-panel/store";
 
 export function PreviewPanel() {
   const { tracks, getTotalDuration, updateTextElement } = useTimelineStore();
   const { mediaFiles } = useMediaStore();
+  const { previewMedia } = useMediaPanelStore();
   const { currentTime, toggle, setCurrentTime } = usePlaybackStore();
   const { isPlaying, volume, muted } = usePlaybackStore();
   const { activeProject } = useProjectStore();
@@ -531,36 +534,44 @@ export function PreviewPanel() {
           ref={containerRef}
           className="flex-1 flex flex-col items-center justify-center min-h-0 min-w-0"
         >
-          <div className="flex-1" />
-          {shouldRenderPreview ? (
-            <div
-              ref={previewRef}
-              className="relative overflow-hidden border"
-              style={{
-                width: previewDimensions.width,
-                height: previewDimensions.height,
-                background:
-                  activeProject?.backgroundType === "blur"
-                    ? "transparent"
-                    : activeProject?.backgroundColor || "#000000",
-              }}
-            >
-              <RemotionPlayerWrapper />
-              <LayoutGuideOverlay />
+          {previewMedia ? (
+            <div className="w-full h-full p-2 flex flex-col min-h-0">
+              <SourcePlayer />
             </div>
-          ) : null}
+          ) : (
+            <>
+              <div className="flex-1" />
+              {shouldRenderPreview ? (
+                <div
+                  ref={previewRef}
+                  className="relative overflow-hidden border"
+                  style={{
+                    width: previewDimensions.width,
+                    height: previewDimensions.height,
+                    background:
+                      activeProject?.backgroundType === "blur"
+                        ? "transparent"
+                        : activeProject?.backgroundColor || "#000000",
+                  }}
+                >
+                  <RemotionPlayerWrapper />
+                  <LayoutGuideOverlay />
+                </div>
+              ) : null}
 
-          <div className="flex-1" />
+              <div className="flex-1" />
 
-          <PreviewToolbar
-            hasAnyElements={hasAnyElements}
-            onToggleExpanded={toggleExpanded}
-            isExpanded={isExpanded}
-            currentTime={currentTime}
-            setCurrentTime={setCurrentTime}
-            toggle={toggle}
-            getTotalDuration={getTotalDuration}
-          />
+              <PreviewToolbar
+                hasAnyElements={hasAnyElements}
+                onToggleExpanded={toggleExpanded}
+                isExpanded={isExpanded}
+                currentTime={currentTime}
+                setCurrentTime={setCurrentTime}
+                toggle={toggle}
+                getTotalDuration={getTotalDuration}
+              />
+            </>
+          )}
         </div>
       </div>
 

@@ -7,8 +7,6 @@ import { useTimelineStore } from "@/stores/timeline-store";
 import { useMediaStore } from "@/stores/media-store";
 import { usePlaybackStore } from "@/stores/playback-store";
 import { useProjectStore, DEFAULT_FPS, DEFAULT_CANVAS_SIZE } from "@/stores/project-store";
-import { useMediaPanelStore } from "@/components/editor/media-panel/store";
-import { SourcePreviewComposition } from "./source-preview";
 import { useMediaUrls } from "@/hooks/use-media-urls";
 
 export const RemotionPlayerWrapper = () => {
@@ -67,47 +65,6 @@ export const RemotionPlayerWrapper = () => {
             }
         }
     }, [currentTime, fps, isPlaying]);
-
-    const { previewMedia } = useMediaPanelStore();
-
-    // Reset time when starting/stopping preview
-    useEffect(() => {
-        setCurrentTime(0);
-        if (previewMedia) {
-            usePlaybackStore.getState().pause();
-        }
-    }, [previewMedia, setCurrentTime]);
-
-    if (previewMedia) {
-        const previewDuration = previewMedia.duration || 5;
-        const previewFrames = Math.ceil(previewDuration * fps);
-
-        return (
-            <div className="w-full h-full flex items-center justify-center bg-transparent">
-                <Player
-                    ref={playerRef}
-                    component={SourcePreviewComposition}
-                    inputProps={{ media: previewMedia }}
-                    durationInFrames={previewFrames}
-                    compositionWidth={canvasSize.width}
-                    compositionHeight={canvasSize.height}
-                    fps={fps}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                    }}
-                    controls={false}
-                    onFrameUpdate={(frame) => {
-                        if (isPlaying) {
-                            setCurrentTime(frame / fps);
-                        }
-                    }}
-                />
-            </div>
-        );
-    }
 
     return (
         <div className="w-full h-full flex items-center justify-center bg-transparent">

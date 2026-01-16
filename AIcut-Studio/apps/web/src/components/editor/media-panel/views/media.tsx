@@ -328,10 +328,8 @@ export function MediaView() {
       allIds: filteredMediaItems.map(m => m.id)
     });
 
-    // Set as preview (only if not multi-selecting with modifier)
-    if (!(e.ctrlKey || e.metaKey || e.shiftKey)) {
-      setPreviewMedia(item);
-    }
+    // Always set as preview when clicked
+    setPreviewMedia(item);
   };
 
   const formatDuration = (duration: number) => {
