@@ -17,20 +17,34 @@
 - **Python**: 3.10+
 
 ### 2. 安装与启动
+
 1. **安装 Python 依赖** (根目录):
    ```bash
    pip install -e .
    ```
-2. **安装前端依赖** (`AIcut-Studio/apps/web` 目录):
+
+2. **安装前端依赖** (进入 `AIcut-Studio` 目录):
    ```bash
-   cd AIcut-Studio/apps/web
-   npm install  # 或使用 bun install
+   cd AIcut-Studio
+   npm install
    ```
-3. **一键启动项目**:
-   ```bash
-   npm run app
-   ```
-   此命令将同时启动 **Next.js 服务** 和 **Electron 应用**。
+
+3. **启动项目**:
+   建议开两个终端分别运行（在 `AIcut-Studio/apps/web` 目录下）：
+   
+   - **终端 1 (启动 Next.js 服务)**:
+     ```bash
+     cd apps/web
+     npm run dev
+     ```
+   
+   - **终端 2 (启动 Electron 客户端)**:
+     ```bash
+     cd apps/web
+     npx electron .
+     ```
+
+   > **注意**: 首次启动请确保已配置 `.env.local` 文件（可参考 `apps/web/.env.example`）。
 
 ---
 
