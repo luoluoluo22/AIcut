@@ -251,7 +251,41 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     sceneStore.clearScenes();
 
     try {
-      const project = await storageService.loadProject({ id });
+      let project = await storageService.loadProject({ id });
+
+      // If not found in IndexedDB, try loading from filesystem
+      if (!project) {
+        try {
+          const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${id}`);
+          const data = await res.json();
+          if (data.success && data.snapshot?.project) {
+            // Create project from filesystem snapshot
+            const fsProject = data.snapshot.project;
+            project = {
+              id: fsProject.id || id,
+              name: fsProject.name || id,
+              thumbnail: fsProject.thumbnail || null,
+              createdAt: new Date(fsProject.createdAt || Date.now()),
+              updatedAt: new Date(fsProject.updatedAt || Date.now()),
+              scenes: fsProject.scenes || [createMainScene()],
+              currentSceneId: fsProject.currentSceneId || fsProject.scenes?.[0]?.id || "",
+              backgroundColor: fsProject.backgroundColor || "#000000",
+              backgroundType: fsProject.backgroundType || "color",
+              blurIntensity: fsProject.blurIntensity || 0,
+              bookmarks: fsProject.bookmarks || [],
+              fps: fsProject.fps || 30,
+              canvasSize: fsProject.canvasSize || { width: 1920, height: 1080 },
+              canvasMode: fsProject.canvasMode || "preset",
+            };
+            // Save to IndexedDB for future loads
+            await storageService.saveProject({ project });
+            console.log(`[Project Store] Imported project ${id} from filesystem to IndexedDB`);
+          }
+        } catch (e) {
+          console.warn("[Project Store] Failed to load from filesystem:", e);
+        }
+      }
+
       if (project) {
         set({ activeProject: project });
 
