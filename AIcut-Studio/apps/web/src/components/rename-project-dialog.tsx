@@ -35,9 +35,9 @@ export function RenameProjectDialog({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Rename Project</DialogTitle>
+          <DialogTitle>重命名项目</DialogTitle>
           <DialogDescription>
-            Enter a new name for your project.
+            请输入项目的新名称。
           </DialogDescription>
         </DialogHeader>
 
@@ -50,7 +50,7 @@ export function RenameProjectDialog({
               onConfirm(name);
             }
           }}
-          placeholder="Enter a new name"
+          placeholder="输入新名称"
           className="mt-0 bg-background border-2 border-border"
         />
 
@@ -63,9 +63,9 @@ export function RenameProjectDialog({
               onOpenChange(false);
             }}
           >
-            Cancel
+            取消
           </Button>
-          <Button onClick={() => onConfirm(name)}>Rename</Button>
+          <Button onClick={() => onConfirm(name)}>确认</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

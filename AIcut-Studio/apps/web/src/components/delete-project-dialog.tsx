@@ -32,19 +32,18 @@ export function DeleteProjectDialog({
           <DialogTitle>
             {projectName ? (
               <>
-                {"Delete '"}
+                {"删除 '"}
                 <span className="inline-block max-w-[300px] truncate align-bottom">
                   {projectName}
                 </span>
-                {"'?"}
+                {"' ？"}
               </>
             ) : (
-              "Delete Project?"
+              "删除项目？"
             )}
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this project? This action cannot be
-            undone.
+            您确定要删除这个项目吗？此操作无法撤销。
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -56,10 +55,10 @@ export function DeleteProjectDialog({
               onOpenChange(false);
             }}
           >
-            Cancel
+            取消
           </Button>
           <Button variant="destructive" onClick={onConfirm}>
-            Delete
+            删除
           </Button>
         </DialogFooter>
       </DialogContent>
