@@ -45,7 +45,7 @@ import { useMediaPanelStore } from "./media-panel/store";
 export function PreviewPanel() {
   const { tracks, getTotalDuration, updateTextElement } = useTimelineStore();
   const { mediaFiles } = useMediaStore();
-  const { previewMedia } = useMediaPanelStore();
+  const { previewMedia, setPreviewMedia } = useMediaPanelStore();
   const { currentTime, toggle, setCurrentTime } = usePlaybackStore();
   const { isPlaying, volume, muted } = usePlaybackStore();
   const { activeProject } = useProjectStore();
@@ -53,6 +53,13 @@ export function PreviewPanel() {
   const previewRef = useRef<HTMLDivElement>(null);
   // const canvasRef = useRef<HTMLCanvasElement>(null); // Unused
   // const { getCachedFrame, cacheFrame, invalidateCache, preRenderNearbyFrames } = useFrameCache(); // Unused
+
+  // Auto-exit source preview when timeline starts playing or timeline seeks
+  useEffect(() => {
+    if (isPlaying) {
+      setPreviewMedia(null);
+    }
+  }, [isPlaying, setPreviewMedia]);
   const lastFrameTimeRef = useRef(0);
   const renderSeqRef = useRef(0);
   const offscreenCanvasRef = useRef<OffscreenCanvas | HTMLCanvasElement | null>(
