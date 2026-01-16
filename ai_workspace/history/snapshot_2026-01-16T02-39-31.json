@@ -1,0 +1,52 @@
+{
+  "project": {
+    "id": "demo",
+    "name": "AI还原纪录片",
+    "thumbnail": null,
+    "createdAt": "2026-01-15T15:51:12.170Z",
+    "updatedAt": "2026-01-16T10:25:00.000Z",
+    "scenes": [
+      {
+        "id": "scene1",
+        "name": "Scene 1",
+        "isMain": true,
+        "createdAt": "2026-01-15T15:51:12.170Z",
+        "updatedAt": "2026-01-15T15:51:12.170Z"
+      }
+    ],
+    "currentSceneId": "scene1",
+    "backgroundColor": "#000000",
+    "backgroundType": "color",
+    "blurIntensity": 0,
+    "bookmarks": [],
+    "fps": 30,
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvasMode": "original"
+  },
+  "tracks": [
+    {
+      "id": "track_1",
+      "name": "Video Track",
+      "type": "media",
+      "isMain": true,
+      "elements": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_cover",
+      "name": "AI还原纪录片-封面.jpg",
+      "type": "image",
+      "url": "/materials/images/AI还原纪录片-封面.jpg"
+    },
+    {
+      "id": "asset_bgm",
+      "name": "AI还原纪录片.MP3",
+      "type": "audio",
+      "url": "/materials/audio/AI还原纪录片.MP3"
+    }
+  ]
+}

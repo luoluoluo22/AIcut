@@ -79,6 +79,40 @@ function loadProjectToWorkspace(projectId: string) {
     return true;
 }
 
+// Helper: Switch materials symlink to project's assets directory
+function switchMaterialsLink(projectId: string): { success: boolean; error?: string } {
+    const { execSync } = require("child_process");
+    const materialsLink = path.join(process.cwd(), "public/materials");
+    const projectAssetsDir = path.join(PROJECTS_DIR, projectId, "assets");
+
+    // Ensure project assets directory exists
+    if (!fs.existsSync(projectAssetsDir)) {
+        fs.mkdirSync(projectAssetsDir, { recursive: true });
+        // Create subdirectories
+        ["videos", "images", "audio", "_thumbnails"].forEach(sub => {
+            fs.mkdirSync(path.join(projectAssetsDir, sub), { recursive: true });
+        });
+    }
+
+    try {
+        // Remove existing link/directory
+        if (fs.existsSync(materialsLink)) {
+            const stats = fs.lstatSync(materialsLink);
+            if (stats.isSymbolicLink() || stats.isDirectory()) {
+                execSync(`cmd /c rmdir "${materialsLink}"`, { stdio: "ignore" });
+            }
+        }
+
+        // Create new junction link
+        execSync(`cmd /c mklink /J "${materialsLink}" "${projectAssetsDir}"`, { stdio: "ignore" });
+        console.log(`[Materials] Switched symlink to projects/${projectId}/assets`);
+        return { success: true };
+    } catch (e) {
+        console.error("[Materials] Failed to switch symlink:", e);
+        return { success: false, error: String(e) };
+    }
+}
+
 
 interface PendingEdit {
     id: string;
@@ -417,10 +451,26 @@ export async function POST(request: NextRequest) {
 
                 // 2. Load new project
                 const loaded = loadProjectToWorkspace(newProjectId);
+
+                // 3. Switch materials symlink
+                const linkResult = switchMaterialsLink(newProjectId);
+                if (!linkResult.success) {
+                    console.warn(`[Switch] Failed to switch materials link: ${linkResult.error}`);
+                }
+
                 if (loaded) {
-                    return NextResponse.json({ success: true, message: `Switched to project ${newProjectId}` });
+                    return NextResponse.json({
+                        success: true,
+                        message: `Switched to project ${newProjectId}`,
+                        materialsLinked: linkResult.success
+                    });
                 } else {
-                    return NextResponse.json({ success: false, error: `Project ${newProjectId} not found` }, { status: 404 });
+                    // Even if snapshot not found, we may have created the assets dir
+                    return NextResponse.json({
+                        success: false,
+                        error: `Project ${newProjectId} not found`,
+                        materialsLinked: linkResult.success
+                    }, { status: 404 });
                 }
             }
 
