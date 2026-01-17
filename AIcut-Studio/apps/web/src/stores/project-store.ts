@@ -65,7 +65,7 @@ interface ProjectStore {
   ) => Promise<void>;
   updateProjectFps: (fps: number) => Promise<void>;
   updateCanvasSize: (size: CanvasSize, mode: CanvasMode) => Promise<void>;
-  updateProject: (updates: Partial<TProject>) => void;
+  updateProject: (updates: Partial<TProject>) => Promise<void>;
 
   // Bookmark methods
   toggleBookmark: (time: number) => Promise<void>;
@@ -678,10 +678,38 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }
   },
 
-  updateProject: (updates: Partial<TProject>) => {
+  updateProject: async (updates: Partial<TProject>) => {
     const { activeProject } = get();
     if (!activeProject) return;
-    set({ activeProject: { ...activeProject, ...updates } });
+
+    const updatedProject = { ...activeProject, ...updates };
+    set({ activeProject: updatedProject });
+
+    // Archive to project directory immediately for important settings
+    try {
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "updateSnapshot",
+          data: { project: updatedProject }
+        })
+      });
+
+      // Also archive to project directory
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "archiveProject",
+          data: { projectId: activeProject.id }
+        })
+      });
+
+      console.log("[Project Store] Project settings updated and archived");
+    } catch (e) {
+      console.error("[Project Store] Failed to archive project settings:", e);
+    }
   },
 
   getFilteredAndSortedProjects: (searchQuery: string, sortOption: string) => {

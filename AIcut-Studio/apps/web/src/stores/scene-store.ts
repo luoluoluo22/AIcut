@@ -97,6 +97,22 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
       await storageService.saveProject({ project: updatedProject });
       useProjectStore.setState({ activeProject: updatedProject });
       set({ scenes: updatedScenes });
+
+      // Archive to project directory immediately
+      try {
+        await fetch("/api/ai-edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "archiveProject",
+            data: { projectId: activeProject.id }
+          })
+        });
+        console.log("[Scene Store] Scene created and archived");
+      } catch (archiveErr) {
+        console.warn("[Scene Store] Failed to archive after creating scene:", archiveErr);
+      }
+
       return newScene.id;
     } catch (error) {
       console.error("Failed to create scene:", error);
@@ -153,6 +169,21 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
           projectId: activeProject.id,
           sceneId: newCurrentScene.id,
         });
+      }
+
+      // Archive to project directory immediately
+      try {
+        await fetch("/api/ai-edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "archiveProject",
+            data: { projectId: activeProject.id }
+          })
+        });
+        console.log("[Scene Store] Scene deleted and archived");
+      } catch (archiveErr) {
+        console.warn("[Scene Store] Failed to archive after deleting scene:", archiveErr);
       }
     } catch (error) {
       console.error("Failed to delete scene:", error);

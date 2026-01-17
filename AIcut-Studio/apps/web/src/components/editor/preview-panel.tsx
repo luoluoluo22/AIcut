@@ -365,7 +365,7 @@ export function PreviewPanel() {
           await audioContextRef.current!.resume();
         } catch { }
       }
-      const gainValue = muted ? 0 : Math.max(0, Math.min(1, volume));
+      const gainValue = muted ? 0 : Math.max(0, volume);
       audioGainRef.current!.gain.setValueAtTime(
         gainValue,
         audioContextRef.current!.currentTime
@@ -390,6 +390,7 @@ export function PreviewPanel() {
         duration: number;
         muted: boolean;
         trackMuted: boolean;
+        volume: number;
       }> = [];
       const uniqueIds = new Set<string>();
       for (const track of tracksSnapshot) {
@@ -410,6 +411,7 @@ export function PreviewPanel() {
             duration: element.duration,
             muted: !!element.muted,
             trackMuted: !!track.muted,
+            volume: element.volume ?? 1,
           });
           uniqueIds.add(media.id);
         }
@@ -424,9 +426,13 @@ export function PreviewPanel() {
           const mediaItem = idToMedia.get(id);
           if (!mediaItem) continue;
           const p = (async () => {
-            const arr = await mediaItem.file.arrayBuffer();
-            const buf = await audioCtx.decodeAudioData(arr.slice(0));
-            audioBuffersRef.current.set(id, buf);
+            try {
+              const arr = await mediaItem.file.arrayBuffer();
+              const buf = await audioCtx.decodeAudioData(arr.slice(0));
+              audioBuffersRef.current.set(id, buf);
+            } catch (err) {
+              console.error(`Failed to decode audio for ${id}:`, err);
+            }
           })();
           decodePromises.push(p);
         }
@@ -446,9 +452,18 @@ export function PreviewPanel() {
         );
         const playDuration = Math.max(0, visibleDuration - localTime);
         if (playDuration <= 0) continue;
+        
         const src = audioCtx.createBufferSource();
         src.buffer = buffer;
-        src.connect(gain);
+        
+        // Create a per-element gain node for volume boost
+        const elementGain = audioCtx.createGain();
+        elementGain.gain.value = Math.max(0, entry.volume); // Apply element volume (can be > 1)
+        
+        // Connect: Source -> ElementGain -> MasterGain -> Destination
+        src.connect(elementGain);
+        elementGain.connect(gain);
+        
         try {
           src.start(startAt, localTime, playDuration);
           playingSourcesRef.current.add(src);

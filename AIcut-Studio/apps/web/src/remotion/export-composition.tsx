@@ -33,6 +33,7 @@ interface MediaElement {
     rotation: number;
     scale: number;
     opacity: number;
+    volume?: number;
     muted?: boolean;
 }
 
@@ -156,6 +157,9 @@ export const ExportComposition: React.FC<ExportCompositionProps> = ({
                         const durationFrames = Math.round(visibleDuration * fps);
                         const trimStartFrame = Math.round(element.trimStart * fps);
 
+                        // Respect track mute and element mute, otherwise use volume (default 1)
+                        const volume = track.muted || element.muted ? 0 : (element.volume ?? 1);
+
                         return (
                             <Sequence
                                 key={element.id}
@@ -166,7 +170,7 @@ export const ExportComposition: React.FC<ExportCompositionProps> = ({
                                     <OffthreadVideo
                                         src={src}
                                         startFrom={trimStartFrame}
-                                        volume={track.muted || element.muted ? 0 : 1}
+                                        volume={volume}
                                         style={{
                                             width: "100%",
                                             height: "100%",
@@ -186,7 +190,7 @@ export const ExportComposition: React.FC<ExportCompositionProps> = ({
                                     <Audio
                                         src={src}
                                         startFrom={trimStartFrame}
-                                        volume={track.muted || element.muted ? 0 : 1}
+                                        volume={volume}
                                     />
                                 ) : null}
                             </Sequence>

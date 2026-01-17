@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         const outputPath = path.join(materialsDir, filename);
 
         // Calculate absolute path to the python script
-        const scriptPath = path.resolve(process.cwd(), '../../../tools/flux_api.py');
+        const scriptPath = path.resolve(process.cwd(), '../../../tools/generators/flux_api.py');
 
         console.log(`[AI Gen] Script path: ${scriptPath}`);
 

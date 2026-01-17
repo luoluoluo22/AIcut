@@ -1,0 +1,168 @@
+{
+  "project": {
+    "id": "demo",
+    "name": "AIcut Demo Project",
+    "thumbnail": null,
+    "createdAt": "2026-01-16T09:44:18.173Z",
+    "updatedAt": "2026-01-16T10:22:57.740Z",
+    "scenes": [
+      {
+        "id": "scene1",
+        "name": "Scene 1",
+        "isMain": true,
+        "createdAt": "2026-01-16T09:44:18.173Z",
+        "updatedAt": "2026-01-16T09:44:18.173Z"
+      }
+    ],
+    "currentSceneId": "scene1",
+    "backgroundColor": "#000000",
+    "backgroundType": "color",
+    "blurIntensity": 0,
+    "bookmarks": [],
+    "fps": 30,
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvasMode": "original",
+    "markers": []
+  },
+  "tracks": [
+    {
+      "id": "track_text_1768614609",
+      "name": "Subtitles",
+      "type": "text",
+      "isMain": false,
+      "elements": [
+        {
+          "id": "el_text_1768614664",
+          "type": "text",
+          "name": "Subtitle 1",
+          "content": "这是一个测试字幕",
+          "startTime": 0,
+          "duration": 3,
+          "x": 0,
+          "y": 400,
+          "width": 800,
+          "height": 100,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "fontSize": 60,
+          "fontFamily": "Inter",
+          "color": "#ffffff",
+          "backgroundColor": "transparent",
+          "textAlign": "center",
+          "fontWeight": "bold",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "trimStart": 0,
+          "trimEnd": 0
+        }
+      ]
+    },
+    {
+      "id": "8e7a8317-246e-473b-8de6-a0aaa55f3733",
+      "name": "Main Track",
+      "type": "media",
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "asset_068756",
+          "name": "AI还原纪录片.mp4 (left)",
+          "duration": 107.043991,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 99.1625910000001,
+          "id": "b44ac153-2a80-47b2-9e11-2bc20e17d8ae",
+          "muted": false,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        }
+      ],
+      "muted": false,
+      "isMain": true
+    },
+    {
+      "id": "10f14eb9-0e19-4fac-8820-58e208b5fc50",
+      "name": "AI 语音轨",
+      "type": "audio",
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "ecc0eb31-006c-4fae-a279-af32841131ed",
+          "name": "TTS: 这是一个测试字幕",
+          "startTime": 0,
+          "duration": 2.184,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "id": "1e4e0750-f0d0-491e-b9c1-d4f48e0306fc"
+        }
+      ],
+      "muted": false
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_918155",
+      "name": "AI还原纪录片-封面.jpg",
+      "type": "image",
+      "url": "/materials/images/AI还原纪录片-封面.jpg",
+      "width": 1950,
+      "height": 1080
+    },
+    {
+      "id": "asset_975280",
+      "name": "AIcut Local Project (2).mp4",
+      "type": "video",
+      "url": "/api/media/serve?path=F%3A%5CBackup%5CDownloads%5CAIcut%20Local%20Project%20(2).mp4",
+      "filePath": "F:\\Backup\\Downloads\\AIcut Local Project (2).mp4",
+      "thumbnailUrl": "/materials/_thumbnails/AIcut Local Project (2).jpg",
+      "width": 1920,
+      "height": 1080,
+      "duration": 3.221333
+    },
+    {
+      "id": "asset_008973",
+      "name": "AIcut.mp4",
+      "type": "video",
+      "url": "/api/media/serve?path=F%3A%5CBackup%5CDownloads%5CAIcut.mp4",
+      "filePath": "F:\\Backup\\Downloads\\AIcut.mp4",
+      "thumbnailUrl": "/materials/_thumbnails/AIcut.jpg",
+      "width": 1920,
+      "height": 1080,
+      "duration": 6.122667
+    },
+    {
+      "id": "asset_panda_gen_1768614946",
+      "name": "panda_test.jpg",
+      "type": "image",
+      "url": "/materials/images/panda_test.jpg",
+      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\images\\panda_test.jpg",
+      "width": 1024,
+      "height": 576
+    },
+    {
+      "id": "asset_068756",
+      "name": "AI还原纪录片.mp4",
+      "type": "video",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAI%E8%BF%98%E5%8E%9F%E7%BA%AA%E5%BD%95%E7%89%87%5CAI%E8%BF%98%E5%8E%9F%E7%BA%AA%E5%BD%95%E7%89%87.mp4",
+      "filePath": "F:\\桌面\\AI还原纪录片\\AI还原纪录片.mp4",
+      "thumbnailUrl": "/materials/_thumbnails/AI还原纪录片.jpg",
+      "width": 1950,
+      "height": 1080,
+      "duration": 107.043991
+    }
+  ]
+}

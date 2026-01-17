@@ -298,7 +298,7 @@ export function MediaProperties({ element }: { element: MediaElement }) {
                     <Slider
                       value={[currentVolume * 100]}
                       min={0}
-                      max={100}
+                      max={1000}
                       step={1}
                       onValueChange={([value]) => {
                         handleValueChange("volume", value / 100);

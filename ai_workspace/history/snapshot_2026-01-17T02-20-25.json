@@ -39,7 +39,7 @@
           "mediaId": "asset_406891",
           "name": "PixPin_2026-01-17_10-10-04.mp4",
           "duration": 1600.95,
-          "startTime": 0.03333333333333333,
+          "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
           "id": "04d47ba4-3a1f-4870-997d-5eea94c381a2",
@@ -49,7 +49,7 @@
           "scale": 1,
           "rotation": 0,
           "opacity": 1,
-          "volume": 2
+          "volume": 1
         }
       ],
       "muted": false,

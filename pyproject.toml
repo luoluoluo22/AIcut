@@ -12,4 +12,5 @@ dependencies = [
     "requests>=2.32.4",
     "uiautomation>=2.0.29",
     "uvicorn[standard]>=0.35.0",
+    "edge-tts>=7.2.7",
 ]

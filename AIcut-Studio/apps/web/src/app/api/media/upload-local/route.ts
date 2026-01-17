@@ -131,6 +131,16 @@ export async function POST(req: NextRequest) {
             }
 
             fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(data, null, 2));
+
+            // Archive to project directory for persistence
+            try {
+                const archiveSnapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+                fs.writeFileSync(archiveSnapshotPath, JSON.stringify(data, null, 2));
+                console.log(`[Upload API] Archived to project directory: ${archiveSnapshotPath}`);
+            } catch (archiveErr) {
+                console.warn(`[Upload API] Failed to archive to project directory:`, archiveErr);
+                // Don't fail the request if archiving fails
+            }
         } else {
             console.warn("[Upload API] Snapshot file not found, cannot add asset");
         }

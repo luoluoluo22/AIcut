@@ -4,7 +4,7 @@
     "name": "AIcut Demo Project",
     "thumbnail": null,
     "createdAt": "2026-01-16T09:44:18.173Z",
-    "updatedAt": "2026-01-17T02:20:09.317Z",
+    "updatedAt": "2026-01-16T10:22:57.740Z",
     "scenes": [
       {
         "id": "scene1",
@@ -33,25 +33,7 @@
       "id": "bfd95de4-cf74-4355-854a-f2790768eedc",
       "name": "Main Track",
       "type": "media",
-      "elements": [
-        {
-          "type": "media",
-          "mediaId": "asset_406891",
-          "name": "PixPin_2026-01-17_10-10-04.mp4",
-          "duration": 1600.95,
-          "startTime": 0.03333333333333333,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "id": "04d47ba4-3a1f-4870-997d-5eea94c381a2",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "volume": 2
-        }
-      ],
+      "elements": [],
       "muted": false,
       "isMain": true
     }

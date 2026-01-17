@@ -27,7 +27,7 @@ print("[AI Daemon] Script loaded. Initializing heartbeat...", flush=True)
 load_dotenv()
 
 # 配置
-WORKSPACE_ROOT = os.environ.get('WORKSPACE_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+WORKSPACE_ROOT = os.environ.get('WORKSPACE_ROOT', os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 BASE_URL = "http://localhost:3000"
 POLL_INTERVAL = 0.5
 

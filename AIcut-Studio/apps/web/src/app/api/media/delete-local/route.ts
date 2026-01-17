@@ -120,6 +120,16 @@ export async function DELETE(req: NextRequest) {
         fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(data, null, 2));
         console.log(`[Delete API] Successfully deleted asset ${id} (linked: ${isLinked})`);
 
+        // Archive to project directory for persistence
+        try {
+            const archiveSnapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+            fs.writeFileSync(archiveSnapshotPath, JSON.stringify(data, null, 2));
+            console.log(`[Delete API] Archived to project directory: ${archiveSnapshotPath}`);
+        } catch (archiveErr) {
+            console.warn(`[Delete API] Failed to archive to project directory:`, archiveErr);
+            // Don't fail the request if archiving fails
+        }
+
         return NextResponse.json({
             success: true,
             message: isLinked ? "Asset reference removed (original file preserved)" : "Asset and physical file deleted"

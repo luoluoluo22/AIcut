@@ -15,6 +15,7 @@
 ### 1. 环境准备
 - **Node.js**: 18.0+
 - **Python**: 3.10+
+- **包管理器**: 推荐使用 **Bun** (本项目已配置 bun.lock)
 
 ### 2. 安装与启动
 
@@ -26,7 +27,7 @@
 2. **安装前端依赖** (进入 `AIcut-Studio` 目录):
    ```bash
    cd AIcut-Studio
-   npm install
+   bun install  # 推荐使用 bun，npm 可能会有 workspace 协议兼容问题
    ```
 
 3. **启动项目**:
@@ -41,10 +42,24 @@
    - **终端 2 (启动 Electron 客户端)**:
      ```bash
      cd AIcut-Studio/apps/web
-     npx electron .
+     npm run electron  # 或者 npx electron .
      ```
 
    > **注意**: 首次启动请确保已配置 `.env.local` 文件（可参考 `apps/web/.env.example`）。
+
+## 🔧 常见问题 (Troubleshooting)
+
+### Electron 启动报错: "Electron binary not found"
+这种情况常见于网络环境导致 electron 二进制文件下载失败。请尝试手动运行安装脚本：
+
+```bash
+cd AIcut-Studio
+node node_modules/electron/install.js
+```
+或者使用淘宝镜像加速：
+```bash
+ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ bun install
+```
 
 ---
 
