@@ -120,14 +120,14 @@
         "nsis",
         "portable"
       ],
-      "icon": "electron/assets/icon.ico"
+      "icon": "electron/assets/icon.png"
     },
     "mac": {
       "target": [
         "dmg",
         "zip"
       ],
-      "icon": "electron/assets/icon.icns"
+      "icon": "electron/assets/icon.png"
     },
     "linux": {
       "target": [

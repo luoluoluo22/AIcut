@@ -3,11 +3,11 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: false,
   },
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
-  output: "standalone",
+  output: "export",
   images: {
     remotePatterns: [
       {
@@ -68,14 +68,7 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: "/materials/:path*",
-        destination: "/api/materials/:path*",
-      },
-    ];
-  },
+  /* rewrites are not supported in export mode */
 };
 
 export default nextConfig;
