@@ -14,62 +14,73 @@ This skill helps understand and manipulate the AIcut video editing system.
 - **Assets**: `projects/<project-name>/assets/` - Media files organized by type (videos/, images/, audio/)
 - **Exports**: `exports/` - Final rendered videos
 
-### Timeline Model
-
-The timeline consists of:
-1. **Tracks**: Containers for elements (type: `media` or `text`)
-2. **Elements**: Individual items on tracks
-3. **Assets**: Media references (videos, images, audio)
-
 ### Element Types
 
+#### 1. Media Element (Video/Image/Audio)
 ```json
-// Media Element
 {
-  "id": "unique-id",
+  "id": "e.g., el-0",
   "type": "media",
-  "mediaId": "asset-reference",
-  "startTime": 0,
-  "duration": 5,
-  "trimStart": 0,
-  "trimEnd": 0,
-  "x": 960,
-  "y": 540,
-  "scale": 1,
-  "opacity": 1,
-  "volume": 1
+  "mediaId": "asset-reference-id",
+  "name": "display-name.mp4",
+  "startTime": 0.0,      // In seconds
+  "duration": 5.0,       // Visible duration
+  "trimStart": 0.0,      // Crop from start of source
+  "trimEnd": 0.0,        // Crop from end of source
+  "x": 960, "y": 540,    // Postion (Center origin is 960, 540)
+  "scale": 1.0, 
+  "opacity": 1.0,
+  "volume": 1.0
 }
+```
 
-// Text/Subtitle Element
+#### 2. Text/Subtitle Element (Crucial)
+To ensure compatibility between Python and Frontend, **ALWAYS** use this expanded format:
+```json
 {
   "id": "unique-id",
   "type": "text",
-  "text": "Your subtitle here",
-  "startTime": 0,
-  "duration": 3,
-  "style": {
-    "fontSize": 60,
-    "color": "#ffffff",
-    "fontWeight": "bold"
-  },
-  "x": 960,
-  "y": 900
+  "text": "The display text",       // Snapshot & Python preference
+  "content": "The display text",    // Legacy/Frontend preference (Mirror text)
+  "startTime": 0.0,
+  "duration": 3.0,
+  "trimStart": 0, "trimEnd": 0,    // MUST include (default to 0)
+  "x": 960, "y": 900,              // Subtitle position (bottom center)
+  "rotation": 0, "opacity": 1,     // MUST include defaults
+  "fontSize": 60,                  // Styles MUST be at top level
+  "fontFamily": "Arial",           
+  "color": "#ffffff",
+  "textAlign": "center",
+  "fontWeight": "bold",
+  "style": {                       // Optional nested style for Python SDK
+     "fontSize": 60,
+     "color": "#ffffff"
+  }
 }
 ```
+
+## Data Schema Rules (The "Contract")
+
+1. **Dual Text Fields**: Always set BOTH `text` and `content` for text elements to prevent rendering failures.
+2. **Flattened Styles**: While Python SDK uses a `style` object, the frontend requires `fontSize`, `color`, etc., at the **top level** of the element.
+3. **Implicit Defaults**: Never skip `trimStart`, `trimEnd`, `rotation`, and `opacity`. If missing, the frontend might fail to render or default to 0 (invisible).
+4. **Coordinate System**: origin `(0,0)` is Top-Left. 1920x1080 canvas. Standard center is `(960, 540)`.
+5. **IDs**: IDs must be unique strings (e.g., `nanoid` or `sub-0`, `sub-1`).
 
 ## Common Operations
 
 ### Adding Media
-1. Create an asset entry in the `assets` array
-2. Create an element in a track referencing the asset's `id`
-3. Set `startTime`, `duration`, and optional `trimStart`/`trimEnd`
+1. Create an asset entry in the `assets` array.
+2. Create an element in a track referencing the asset's `id`.
+3. Set `startTime`, `duration`, and optional `trimStart`/`trimEnd`.
 
 ### Creating Subtitles
-1. Create or use an existing text track (type: `text`)
-2. Add text elements with timing synchronized to audio
+1. Create or use an existing text track (type: `text`).
+2. Add text elements according to the **Text Element Schema** above.
+3. Synchronize `startTime` with audio assets.
 
 ### Modifying Volume
-- Set `element.volume` (0.0 = mute, 1.0 = normal, up to 10.0 = 1000%)
+- Set `element.volume` (0.0 = mute, 1.0 = normal, up to 10.0 = 1000%).
 
 ## API Integration
 
@@ -80,7 +91,7 @@ The frontend exposes these endpoints:
 
 ## Best Practices
 
-1. Always include `id` fields when creating new elements
-2. Use relative paths starting with `projects/<name>/assets/` for `filePath`
-3. Set proper `duration` based on actual media length
-4. Keep `startTime` sequential to avoid overlaps
+1. **Atomic Updates**: Read the full snapshot, modify your slice, then write the full snapshot back.
+2. **Validation**: Before writing, ensure all numeric fields are `number` type, not strings.
+3. **Paths**: Use relative paths starting with `/materials/` for URLs and project-relative paths for `filePath`.
+4. **Order**: Maintain `tracks` order (Text tracks normally go at index 0 to stay on top).

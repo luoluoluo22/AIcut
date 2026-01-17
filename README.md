@@ -60,6 +60,8 @@ AIcut/
 
 ## 🤖 AI 开发者指南
 
+> **⚠️ 重要提示**: 如果你正在使用 **AI 助教 (Antigravity/Claude 等)** 协助开发，请务必要求其优先查阅 [AIcut Editing Skill](.agent/skills/aicut-editing/SKILL.md)。该文档定义了时间轴的 **数据契约 (Data Schema)**，是确保 Python 逻辑与前端 UI 渲染一致的唯一准则。
+
 ### 使用 Python SDK 操作
 我们封装了 `AIcutClient` 以简化对时间轴的操作：
 
