@@ -1,6 +1,5 @@
 {
   "name": "opencut",
-  "packageManager": "bun@1.2.18",
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
     "husky": "^9.1.7",

@@ -27,7 +27,7 @@
 2. **安装前端依赖** (进入 `AIcut-Studio` 目录):
    ```bash
    cd AIcut-Studio
-   bun install  # 推荐使用 bun，npm 可能会有 workspace 协议兼容问题
+   npm install  # 或者使用 bun install
    ```
 
 3. **启动项目**:
