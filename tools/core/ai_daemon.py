@@ -151,13 +151,35 @@ class AIDaemon:
             if proc.returncode != 0:
                  self.log(f"FFmpeg Error Output: {proc.stderr.decode('utf-8', 'ignore')}")
 
-            if not os.path.exists(temp_audio) or os.path.getsize(temp_audio) < 100:
-                self.log("FFmpeg extraction failed, attempting full file (not recommended for trimmed clips).")
-                work_file = file_path
-                is_sliced = False
-            else:
-                work_file = temp_audio
-                is_sliced = True
+            work_file = temp_audio if os.path.exists(temp_audio) and os.path.getsize(temp_audio) > 100 else file_path
+            is_sliced = (work_file == temp_audio)
+
+            # Check file size for Groq API limit (25MB)
+            file_size_mb = os.path.getsize(work_file) / (1024 * 1024)
+            if file_size_mb > 24:
+                self.log(f"Audio file is too large ({file_size_mb:.2f}MB > 25MB limit). Attempting compression...")
+                mp3_file = work_file.replace('.wav', '.mp3') if work_file.endswith('.wav') else work_file + '.mp3'
+                try:
+                    # Convert to mono mp3 at 32k to minimize size
+                    cmd_compress = [
+                        "ffmpeg", "-y", "-i", work_file, 
+                        "-ac", "1", "-ar", "16000", "-b:a", "32k", 
+                        mp3_file
+                    ]
+                    subprocess.run(cmd_compress, capture_output=True, check=True)
+                    if os.path.exists(mp3_file) and os.path.getsize(mp3_file) > 100:
+                        work_file = mp3_file
+                        file_size_mb = os.path.getsize(work_file) / (1024 * 1024)
+                        self.log(f"Compressed to MP3: {file_size_mb:.2f}MB")
+                    else:
+                        self.log("Compression failed, file not created.")
+                except Exception as e:
+                    self.log(f"Compression error: {e}")
+
+            if file_size_mb > 24:
+                self.log(f"Skipping recognition: File still too large ({file_size_mb:.2f}MB) for API.")
+                if is_sliced and os.path.exists(work_file): os.remove(work_file)
+                return
 
             # 1. 不再自动清除该区域原有的 AI 字幕 (支持用户要求的“追加”模式)
             # self.log(f"Clearing existing subtitles in range [{el_start:.2f}, {el_start+effective_dur:.2f}]")
@@ -167,21 +189,28 @@ class AIDaemon:
             url = "https://api.groq.com/openai/v1/audio/transcriptions"
             headers = {"Authorization": f"Bearer {api_key}"}
             
-            with open(work_file, "rb") as f:
-                files = {"file": (os.path.basename(work_file), f)}
-                data = {
-                    "model": "whisper-large-v3-turbo",
-                    "response_format": "verbose_json",
-                    "language": "zh",
-                    "timestamp_granularities[]": ["word", "segment"]
-                }
-                resp = requests.post(url, headers=headers, files=files, data=data)
-                if resp.status_code != 200:
-                    self.log(f"Groq API Error: {resp.status_code} - {resp.text}")
-                    return
-                result = resp.json()
-                # 打印原始返回结果，供用户排查 (Original API result logging)
-                self.log(f"Groq Raw Result: {json.dumps(result, ensure_ascii=False)}")
+            try:
+                with open(work_file, "rb") as f:
+                    files = {"file": (os.path.basename(work_file), f)}
+                    data = {
+                        "model": "whisper-large-v3-turbo",
+                        "response_format": "verbose_json",
+                        "language": "zh",
+                        "timestamp_granularities[]": ["word", "segment"]
+                    }
+                    resp = requests.post(url, headers=headers, files=files, data=data, timeout=120)
+                    if resp.status_code != 200:
+                        self.log(f"Groq API Error: {resp.status_code} - {resp.text}")
+                        # Don't crash, just return
+                        if is_sliced and os.path.exists(work_file): os.remove(work_file)
+                        return
+                    result = resp.json()
+                    # 打印原始返回结果，供用户排查 (Original API result logging)
+                    self.log(f"Groq Raw Result: {json.dumps(result, ensure_ascii=False)[:200]}...") # Limit log size
+            except Exception as req_err:
+                self.log(f"API Request Failed: {req_err}")
+                if is_sliced and os.path.exists(work_file): os.remove(work_file)
+                return
 
             segments = result.get("segments") or []
             words = result.get("words") or []
