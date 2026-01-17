@@ -1,17 +1,17 @@
 {
   "project": {
     "id": "demo",
-    "name": "AIcut Demo Project",
+    "name": "AIcut 演示项目",
     "thumbnail": null,
-    "createdAt": "2026-01-16T09:44:18.173Z",
-    "updatedAt": "2026-01-17T02:20:09.317Z",
+    "createdAt": "2026-01-17T11:00:00.000Z",
+    "updatedAt": "2026-01-17T11:00:00.000Z",
     "scenes": [
       {
         "id": "scene1",
-        "name": "Scene 1",
+        "name": "主场景",
         "isMain": true,
-        "createdAt": "2026-01-16T09:44:18.173Z",
-        "updatedAt": "2026-01-16T09:44:18.173Z"
+        "createdAt": "2026-01-17T11:00:00.000Z",
+        "updatedAt": "2026-01-17T11:00:00.000Z"
       }
     ],
     "currentSceneId": "scene1",
@@ -26,119 +26,274 @@
     },
     "canvasMode": "original",
     "markers": [],
-    "duration": 18
+    "duration": 20
   },
   "tracks": [
     {
-      "id": "bfd95de4-cf74-4355-854a-f2790768eedc",
-      "name": "Main Track",
+      "id": "track-images",
+      "name": "图片层",
       "type": "media",
       "elements": [
         {
+          "id": "el-img-0",
           "type": "media",
-          "mediaId": "asset_406891",
-          "name": "PixPin_2026-01-17_10-10-04.mp4",
-          "duration": 1600.95,
-          "startTime": 0.03333333333333333,
+          "mediaId": "asset-img-0",
+          "name": "intro_img_0.jpg",
+          "startTime": 0,
+          "duration": 5,
           "trimStart": 0,
           "trimEnd": 0,
-          "id": "04d47ba4-3a1f-4870-997d-5eea94c381a2",
-          "muted": false,
           "x": 960,
           "y": 540,
           "scale": 1,
-          "rotation": 0,
           "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        },
+        {
+          "id": "el-img-1",
+          "type": "media",
+          "mediaId": "asset-img-1",
+          "name": "intro_img_1.jpg",
+          "startTime": 5,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        },
+        {
+          "id": "el-img-2",
+          "type": "media",
+          "mediaId": "asset-img-2",
+          "name": "intro_img_2.jpg",
+          "startTime": 10,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        },
+        {
+          "id": "el-img-3",
+          "type": "media",
+          "mediaId": "asset-img-3",
+          "name": "intro_img_3.jpg",
+          "startTime": 15,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
           "volume": 1
         }
       ],
       "muted": false,
       "isMain": true
+    },
+    {
+      "id": "track-audio",
+      "name": "配音层",
+      "type": "media",
+      "elements": [
+        {
+          "id": "el-voice-0",
+          "type": "media",
+          "mediaId": "asset-voice-0",
+          "name": "intro_voice_0.mp3",
+          "startTime": 0,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        },
+        {
+          "id": "el-voice-1",
+          "type": "media",
+          "mediaId": "asset-voice-1",
+          "name": "intro_voice_1.mp3",
+          "startTime": 5,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        },
+        {
+          "id": "el-voice-2",
+          "type": "media",
+          "mediaId": "asset-voice-2",
+          "name": "intro_voice_2.mp3",
+          "startTime": 10,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        },
+        {
+          "id": "el-voice-3",
+          "type": "media",
+          "mediaId": "asset-voice-3",
+          "name": "intro_voice_3.mp3",
+          "startTime": 15,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        }
+      ],
+      "muted": false
+    },
+    {
+      "id": "track-subs",
+      "name": "字幕层",
+      "type": "text",
+      "elements": [
+        {
+          "id": "sub-0",
+          "type": "text",
+          "text": "欢迎使用 AIcut 全自动视频编辑引擎",
+          "startTime": 0.5,
+          "duration": 4,
+          "style": {
+            "fontSize": 60,
+            "color": "#ffffff",
+            "fontWeight": "bold",
+            "textAlign": "center",
+            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
+          },
+          "x": 960,
+          "y": 900
+        },
+        {
+          "id": "sub-1",
+          "type": "text",
+          "text": "通过 Python 后端与前端实时同步工作流",
+          "startTime": 5.5,
+          "duration": 4,
+          "style": {
+            "fontSize": 60,
+            "color": "#ffffff",
+            "fontWeight": "bold",
+            "textAlign": "center",
+            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
+          },
+          "x": 960,
+          "y": 900
+        },
+        {
+          "id": "sub-2",
+          "type": "text",
+          "text": "您可以轻松实现 AI 辅助剪辑与批量生产",
+          "startTime": 10.5,
+          "duration": 4,
+          "style": {
+            "fontSize": 60,
+            "color": "#ffffff",
+            "fontWeight": "bold",
+            "textAlign": "center",
+            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
+          },
+          "x": 960,
+          "y": 900
+        },
+        {
+          "id": "sub-3",
+          "type": "text",
+          "text": "即刻开启您的 AI 创作之旅",
+          "startTime": 15.5,
+          "duration": 4,
+          "style": {
+            "fontSize": 60,
+            "color": "#ffffff",
+            "fontWeight": "bold",
+            "textAlign": "center",
+            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
+          },
+          "x": 960,
+          "y": 900
+        }
+      ]
     }
   ],
   "assets": [
     {
-      "id": "asset_intro_img_0_1768615606",
-      "name": "Intro Image 0",
+      "id": "asset-img-0",
+      "name": "intro_img_0.jpg",
       "type": "image",
-      "url": "/materials/generated_intro/images/intro_img_0.jpg",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\images\\intro_img_0.jpg",
+      "url": "/materials/images/intro_img_0.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_0.jpg",
       "width": 1024,
-      "height": 576,
-      "duration": 5
+      "height": 576
     },
     {
-      "id": "asset_intro_voice_0_1768615606",
-      "name": "Intro Voice 0",
-      "type": "audio",
-      "url": "/materials/generated_intro/audio/intro_voice_0.mp3",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\audio\\intro_voice_0.mp3",
-      "duration": 4
-    },
-    {
-      "id": "asset_intro_img_1_1768615606",
-      "name": "Intro Image 1",
+      "id": "asset-img-1",
+      "name": "intro_img_1.jpg",
       "type": "image",
-      "url": "/materials/generated_intro/images/intro_img_1.jpg",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\images\\intro_img_1.jpg",
+      "url": "/materials/images/intro_img_1.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_1.jpg",
       "width": 1024,
-      "height": 576,
-      "duration": 5
+      "height": 576
     },
     {
-      "id": "asset_intro_voice_1_1768615606",
-      "name": "Intro Voice 1",
-      "type": "audio",
-      "url": "/materials/generated_intro/audio/intro_voice_1.mp3",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\audio\\intro_voice_1.mp3",
-      "duration": 5
-    },
-    {
-      "id": "asset_intro_img_2_1768615606",
-      "name": "Intro Image 2",
+      "id": "asset-img-2",
+      "name": "intro_img_2.jpg",
       "type": "image",
-      "url": "/materials/generated_intro/images/intro_img_2.jpg",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\images\\intro_img_2.jpg",
+      "url": "/materials/images/intro_img_2.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_2.jpg",
       "width": 1024,
-      "height": 576,
-      "duration": 5
+      "height": 576
     },
     {
-      "id": "asset_intro_voice_2_1768615606",
-      "name": "Intro Voice 2",
-      "type": "audio",
-      "url": "/materials/generated_intro/audio/intro_voice_2.mp3",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\audio\\intro_voice_2.mp3",
-      "duration": 5
-    },
-    {
-      "id": "asset_intro_img_3_1768615606",
-      "name": "Intro Image 3",
+      "id": "asset-img-3",
+      "name": "intro_img_3.jpg",
       "type": "image",
-      "url": "/materials/generated_intro/images/intro_img_3.jpg",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\images\\intro_img_3.jpg",
+      "url": "/materials/images/intro_img_3.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_3.jpg",
       "width": 1024,
-      "height": 576,
-      "duration": 5
+      "height": 576
     },
     {
-      "id": "asset_intro_voice_3_1768615606",
-      "name": "Intro Voice 3",
+      "id": "asset-voice-0",
+      "name": "intro_voice_0.mp3",
       "type": "audio",
-      "url": "/materials/generated_intro/audio/intro_voice_3.mp3",
-      "filePath": "F:\\桌面\\开发\\AIcut\\AIcut-Studio\\apps\\web\\public\\materials\\generated_intro\\audio\\intro_voice_3.mp3",
-      "duration": 4
+      "url": "/materials/audio/intro_voice_0.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_0.mp3"
     },
     {
-      "id": "asset_406891",
-      "name": "PixPin_2026-01-17_10-10-04.mp4",
-      "type": "video",
-      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CPixPin_2026-01-17_10-10-04.mp4",
-      "filePath": "F:\\桌面\\PixPin_2026-01-17_10-10-04.mp4",
-      "thumbnailUrl": "/materials/_thumbnails/PixPin_2026-01-17_10-10-04.jpg",
-      "width": 2554,
-      "height": 1396,
-      "duration": 1600.95
+      "id": "asset-voice-1",
+      "name": "intro_voice_1.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_1.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_1.mp3"
+    },
+    {
+      "id": "asset-voice-2",
+      "name": "intro_voice_2.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_2.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_2.mp3"
+    },
+    {
+      "id": "asset-voice-3",
+      "name": "intro_voice_3.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_3.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_3.mp3"
     }
   ]
 }

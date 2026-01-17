@@ -32,40 +32,19 @@ yarn-error.log*
 remotion-studio/out/
 out/
 
-# Media Assets (Strict)
-# Ignore all assets in remotion-studio/public/assets by default
-remotion-studio/public/assets/projects/*
-!remotion-studio/public/assets/projects/demo/
+# Projects (Strict)
+projects/*
+!projects/demo/
 
-# Global ignore for media files
-*.mp4
-*.mov
-*.webm
-*.avi
-*.mp3
-*.wav
-*.png
-*.jpg
-*.jpeg
-*.gif
+# Exceptions for Demo Assets
+!projects/demo/**/*.mp4
+!projects/demo/**/*.mp3
+!projects/demo/**/*.wav
+!projects/demo/**/*.png
+!projects/demo/**/*.jpg
+!projects/demo/**/*.jpeg
+!projects/demo/**/*.json
 
-# Exceptions for Documentation and Demo
-!docs/*.png
-!docs/*.mp4
-!docs/*.gif
-!remotion-studio/public/assets/projects/demo/**/*.png
-!remotion-studio/public/assets/projects/demo/**/*.mp3
-!remotion-studio/public/assets/projects/demo/**/*.wav
-!remotion-studio/public/assets/projects/demo/**/*.mp4
-
-# Allow CNY and Product Promo assets
-!remotion-studio/public/assets/projects/cny/**/*.mp4
-!remotion-studio/public/assets/projects/cny/**/*.mp3
-!remotion-studio/public/assets/projects/cny/**/*.png
-!remotion-studio/public/assets/projects/product_promo/**/*.mp3
-!remotion-studio/public/assets/projects/product_promo/**/*.png
-!remotion-studio/public/assets/projects/product_promo/**/*.json
-!remotion-studio/public/assets/projects/product_promo/**/*.mp4
 
 # Exceptions (if you want to keep logos or icons, uncomment below)
 # !remotion-studio/public/logo.png
