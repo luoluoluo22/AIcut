@@ -48,7 +48,8 @@ export function useAIEditSync(enabled: boolean = true) {
                     useTimelineStore.getState().addElementToTrack(textTrack.id, {
                         type: "text",
                         name: data.text.substring(0, 20) + (data.text.length > 20 ? "..." : ""),
-                        content: data.text,
+                        text: data.text,        // Snapshot format
+                        content: data.text,     // Legacy format
                         startTime: data.startTime || 0,
                         duration: data.duration || 5,
                         trimStart: 0,
@@ -87,7 +88,8 @@ export function useAIEditSync(enabled: boolean = true) {
                         store.addElementToTrack(targetTrackId, {
                             type: "text",
                             name: sub.text.substring(0, 20),
-                            content: sub.text,
+                            text: sub.text,        // Snapshot format
+                            content: sub.text,     // Legacy format
                             startTime: sub.startTime || 0,
                             duration: sub.duration || 3,
                             trimStart: 0,
@@ -366,11 +368,66 @@ export function useAIEditSync(enabled: boolean = true) {
         // --- Sync Tracks ---
         if (data.tracks) {
             console.log(`[AI Sync] <Handle> Processing ${data.tracks.length} tracks from snapshot`);
+
+            // Normalize tracks data - convert Python SDK format to frontend format
+            const normalizedTracks = data.tracks.map((track: any) => ({
+                ...track,
+                elements: track.elements.map((element: any) => {
+                    if (element.type === 'text') {
+                        // Normalize text elements
+                        const normalized: any = {
+                            ...element,
+                            // Ensure both 'content' and 'text' are set
+                            content: element.content || element.text || 'Text',
+                            text: element.text || element.content || 'Text',
+                            // Add missing required fields
+                            trimStart: element.trimStart ?? 0,
+                            trimEnd: element.trimEnd ?? 0,
+                            name: element.name || (element.text || element.content || 'Text').substring(0, 20),
+                        };
+
+                        // Flatten style object if it exists
+                        if (element.style) {
+                            normalized.fontSize = element.style.fontSize ?? element.fontSize ?? 48;
+                            normalized.fontFamily = element.style.fontFamily ?? element.fontFamily ?? 'Arial';
+                            normalized.color = element.style.color ?? element.color ?? '#ffffff';
+                            normalized.backgroundColor = element.style.backgroundColor ?? element.backgroundColor ?? 'transparent';
+                            normalized.textAlign = element.style.textAlign ?? element.textAlign ?? 'center';
+                            normalized.fontWeight = element.style.fontWeight ?? element.fontWeight ?? 'normal';
+                            normalized.fontStyle = element.style.fontStyle ?? element.fontStyle ?? 'normal';
+                            normalized.textDecoration = element.style.textDecoration ?? element.textDecoration ?? 'none';
+                        } else {
+                            // Ensure default values exist
+                            normalized.fontSize = element.fontSize ?? 48;
+                            normalized.fontFamily = element.fontFamily ?? 'Arial';
+                            normalized.color = element.color ?? '#ffffff';
+                            normalized.backgroundColor = element.backgroundColor ?? 'transparent';
+                            normalized.textAlign = element.textAlign ?? 'center';
+                            normalized.fontWeight = element.fontWeight ?? 'normal';
+                            normalized.fontStyle = element.fontStyle ?? 'normal';
+                            normalized.textDecoration = element.textDecoration ?? 'none';
+                        }
+
+                        // Ensure position and transformation values
+                        normalized.x = element.x ?? 0;
+                        normalized.y = element.y ?? 0;
+                        normalized.rotation = element.rotation ?? 0;
+                        normalized.opacity = element.opacity ?? 1;
+
+                        return normalized;
+                    }
+
+                    return element;
+                })
+            }));
+
+            console.log('[AI Sync] <Handle> Normalized tracks:', normalizedTracks.length);
+
             const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
-            const newTracksSnapshot = JSON.stringify(data.tracks);
+            const newTracksSnapshot = JSON.stringify(normalizedTracks);
             if (currentTracksSnapshot !== newTracksSnapshot) {
                 console.log("[AI Sync] <Handle> Applying external track snapshot update...");
-                useTimelineStore.getState().setTracks(data.tracks);
+                useTimelineStore.getState().setTracks(normalizedTracks);
             } else {
                 console.log("[AI Sync] <Handle> Tracks match current state, skipping setTracks");
             }

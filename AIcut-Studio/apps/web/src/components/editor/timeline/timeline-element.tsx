@@ -212,9 +212,10 @@ export function TimelineElement({
         const t = allTracks.find(tr => tr.id === sel.trackId);
         const el = t?.elements.find(e => e.id === sel.elementId);
         if (el && el.type === "text") {
+          const content = (el as any).text || (el as any).content || "";
           textElements.push({
             id: el.id,
-            content: (el as any).content,
+            content: content,
             startTime: el.startTime,
             duration: el.duration - el.trimStart - el.trimEnd,
             voiceId: (el as any).voiceId
@@ -223,9 +224,10 @@ export function TimelineElement({
       }
     } else if (element.type === "text") {
       // 单选模式：只处理当前元素
+      const content = (element as any).text || (element as any).content || "";
       textElements.push({
         id: element.id,
-        content: (element as any).content,
+        content: content,
         startTime: element.startTime,
         duration: element.duration - element.trimStart - element.trimEnd,
         voiceId: (element as any).voiceId
@@ -259,9 +261,10 @@ export function TimelineElement({
 
   const renderElementContent = () => {
     if (element.type === "text") {
+      const textContent = element.text || element.content || "Text";
       return (
         <div className="w-full h-full flex items-center justify-start pl-2">
-          <span className="text-xs text-white truncate">{element.content}</span>
+          <span className="text-xs text-white truncate" title={textContent}>{textContent}</span>
         </div>
       );
     }

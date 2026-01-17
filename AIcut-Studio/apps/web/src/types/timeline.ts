@@ -49,7 +49,8 @@ export interface MediaElement extends BaseTimelineElement {
 // Text element with embedded text data
 export interface TextElement extends BaseTimelineElement {
   type: "text";
-  content: string;
+  content?: string; // Legacy
+  text?: string;    // Snapshot compatible
   fontSize: number;
   fontFamily: string;
   color: string;
@@ -63,6 +64,16 @@ export interface TextElement extends BaseTimelineElement {
   rotation: number; // in degrees
   opacity: number; // 0-1
   voiceId?: string; // TTS音色ID
+  style?: {
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    backgroundColor?: string;
+    textAlign?: "left" | "center" | "right";
+    fontWeight?: "normal" | "bold";
+    fontStyle?: "normal" | "italic";
+    textDecoration?: "none" | "underline" | "line-through";
+  };
 }
 
 // Typed timeline elements

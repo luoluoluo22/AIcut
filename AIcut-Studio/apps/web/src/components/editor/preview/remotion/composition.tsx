@@ -192,7 +192,7 @@ export const MainComposition: React.FC<MainCompositionProps> = ({
                                             maxWidth: '90%',
                                         }}
                                     >
-                                        {textElement.content}
+                                        {textElement.text || textElement.content || ""}
                                     </div>
                                 </AbsoluteFill>
                             </Sequence>

@@ -201,6 +201,22 @@ export const ExportComposition: React.FC<ExportCompositionProps> = ({
                         const startFrame = Math.round(element.startTime * fps);
                         const durationFrames = Math.round(element.duration * fps);
 
+                        // Resolve properties from direct or style object
+                        const textContent = element.text || element.content || "";
+                        const style = element.style || {};
+                        const fontSize = element.fontSize ?? style.fontSize ?? 40;
+                        const fontFamily = element.fontFamily ?? style.fontFamily ?? "Arial";
+                        const color = element.color ?? style.color ?? "#ffffff";
+                        const bg = element.backgroundColor ?? style.backgroundColor ?? "transparent";
+                        const align = element.textAlign ?? style.textAlign ?? "center";
+                        const weight = element.fontWeight ?? style.fontWeight ?? "normal";
+                        const fStyle = element.fontStyle ?? style.fontStyle ?? "normal";
+
+                        // Calculate transform for centering
+                        // Assuming (x,y) is the center point for text
+                        // We translate -50%, -50% so that left/top corresponds to center
+                        const transform = `translate(-50%, -50%) rotate(${element.rotation || 0}deg)`;
+
                         return (
                             <Sequence
                                 key={element.id}
@@ -213,19 +229,21 @@ export const ExportComposition: React.FC<ExportCompositionProps> = ({
                                             position: "absolute",
                                             left: element.x,
                                             top: element.y,
-                                            fontSize: element.fontSize,
-                                            fontFamily: element.fontFamily,
-                                            color: element.color,
-                                            backgroundColor: element.backgroundColor || "transparent",
-                                            textAlign: element.textAlign,
-                                            fontWeight: element.fontWeight,
-                                            fontStyle: element.fontStyle,
-                                            transform: `rotate(${element.rotation}deg)`,
-                                            opacity: element.opacity,
+                                            fontSize,
+                                            fontFamily,
+                                            color,
+                                            backgroundColor: bg,
+                                            textAlign: align,
+                                            fontWeight: weight,
+                                            fontStyle: fStyle,
+                                            transform,
+                                            opacity: element.opacity ?? 1,
                                             whiteSpace: "pre-wrap",
+                                            width: "max-content", // Ensure width fits content for centering
+                                            maxWidth: "80%",      // Prevent overflow
                                         }}
                                     >
-                                        {element.content}
+                                        {textContent}
                                     </div>
                                 </AbsoluteFill>
                             </Sequence>

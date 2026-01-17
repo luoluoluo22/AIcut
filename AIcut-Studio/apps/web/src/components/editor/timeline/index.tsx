@@ -100,6 +100,14 @@ export function Timeline() {
   const rulerRef = useRef<HTMLDivElement>(null);
   const [isInTimeline, setIsInTimeline] = useState(false);
 
+  // Debug: Log tracks changes
+  useEffect(() => {
+    console.log('[Timeline] 🎬 Tracks updated:', {
+      count: tracks.length,
+      tracks: tracks.map(t => ({ id: t.id, name: t.name, type: t.type, elements: t.elements.length }))
+    });
+  }, [tracks]);
+
   // Track mouse down/up for distinguishing clicks from drag/resize ends
   const mouseTrackingRef = useRef({
     isMouseDown: false,
