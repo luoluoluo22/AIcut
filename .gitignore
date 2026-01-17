@@ -66,3 +66,4 @@ AIcut-Studio/apps/web/temp/
 tmp/
 .agent/
 !.agent/workflows/
+!.agent/skills/
