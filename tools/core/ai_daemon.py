@@ -374,8 +374,13 @@ class AIDaemon:
         valid_results = [r for r in results if r is not None]
 
         if valid_results:
-            self.log(f"TTS generation completed. Directly importing {len(valid_results)} items to project...")
+            # 为本次生成创建一个新的专用轨道，防止重叠
+            import datetime
+            time_str = datetime.datetime.now().strftime("%H:%M:%S")
+            batch_track_name = f"AI 语音 {time_str}"
             
+            self.log(f"Importing clean TTS batch to new track: {batch_track_name}")
+
             for item in valid_results:
                 try:
                     # 使用 SDK 直接导入到项目快照，类似 aicut_tool.py 的行为
@@ -385,7 +390,7 @@ class AIDaemon:
                         media_type="audio", 
                         name=item["name"],
                         start_time=item["startTime"],
-                        track_name="AI 语音轨"
+                        track_name=batch_track_name
                     )
                     
                     if res and res.get("success"):
