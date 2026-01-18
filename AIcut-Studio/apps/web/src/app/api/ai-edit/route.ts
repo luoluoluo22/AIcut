@@ -13,6 +13,7 @@
  *     "data": { "text": "Hello World", "startTime": 0, "duration": 5 }
  *   })
  */
+export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
@@ -52,6 +53,32 @@ function backupSnapshot() {
     files.slice(MAX_HISTORY).forEach(f => fs.unlinkSync(path.join(HISTORY_DIR, f)));
 }
 
+// Helper: Determine which snapshot is newer (Workspace vs Archive)
+function getNewestSnapshotPath(projectId: string): { path: string; isWorkspace: boolean } {
+    const archivePath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+    if (!fs.existsSync(archivePath)) {
+        return { path: SNAPSHOT_FILE, isWorkspace: true };
+    }
+
+    if (fs.existsSync(SNAPSHOT_FILE)) {
+        try {
+            const workspaceContent = fs.readFileSync(SNAPSHOT_FILE, "utf-8");
+            const workspaceSnapshot = JSON.parse(workspaceContent);
+            if (workspaceSnapshot?.project?.id === projectId) {
+                const statWorkspace = fs.statSync(SNAPSHOT_FILE);
+                const statArchive = fs.statSync(archivePath);
+                // Compare modification times
+                if (statWorkspace.mtime > statArchive.mtime) {
+                    return { path: SNAPSHOT_FILE, isWorkspace: true };
+                }
+            }
+        } catch (e) {
+            // If workspace JSON is corrupt, fall back to archive
+        }
+    }
+    return { path: archivePath, isWorkspace: false };
+}
+
 // Helper: Archive workspace to project folder
 function archiveToProject(projectId: string) {
     if (!fs.existsSync(SNAPSHOT_FILE)) return false;
@@ -66,30 +93,26 @@ function archiveToProject(projectId: string) {
 
 // Helper: Load project snapshot to workspace
 function loadProjectToWorkspace(projectId: string) {
-    const projectSnapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
-    if (!fs.existsSync(projectSnapshotPath)) {
-        console.log(`[Load] Project ${projectId} not found in projects/`);
+    const { path: newestPath, isWorkspace } = getNewestSnapshotPath(projectId);
+
+    if (!fs.existsSync(newestPath)) {
+        console.log(`[Load] Project ${projectId} not found anywhere`);
         return false;
     }
 
-    // Check if workspace already has this project loaded
-    try {
-        if (fs.existsSync(SNAPSHOT_FILE)) {
-            const currentSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
-            if (currentSnapshot?.project?.id === projectId) {
-                console.log(`[Load] Workspace already has project ${projectId} loaded. Skipping overwrite to preserve session.`);
-                return true;
-            }
-        }
-    } catch (e) {
-        console.warn("[Load] Failed to check current workspace state:", e);
+    // If workspace is already the newest one, we might just need to sync it to archive
+    if (isWorkspace && newestPath === SNAPSHOT_FILE) {
+        console.log(`[Load] Workspace version for ${projectId} is the newest. Preserving changes.`);
+        // Sync to archive as requested: "automatically save it to the archived project"
+        archiveToProject(projectId);
+        return true;
     }
 
     // Backup current workspace first
     backupSnapshot();
     // Copy project snapshot to workspace
-    fs.copyFileSync(projectSnapshotPath, SNAPSHOT_FILE);
-    console.log(`[Load] Loaded projects/${projectId}/snapshot.json to workspace`);
+    fs.copyFileSync(newestPath, SNAPSHOT_FILE);
+    console.log(`[Load] Loaded ${newestPath} to workspace`);
     return true;
 }
 
@@ -198,10 +221,11 @@ export async function GET(request: NextRequest) {
             const projectId = searchParams.get("projectId");
             try {
                 let snapshotPath = SNAPSHOT_FILE;
-                // If projectId is provided, load from projects/<id>/snapshot.json
                 if (projectId) {
-                    snapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+                    const { path: newestPath } = getNewestSnapshotPath(projectId);
+                    snapshotPath = newestPath;
                 }
+
                 if (fs.existsSync(snapshotPath)) {
                     const snapshot = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
                     return NextResponse.json({ success: true, snapshot });

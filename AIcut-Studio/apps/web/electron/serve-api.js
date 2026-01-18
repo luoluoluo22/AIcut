@@ -70,11 +70,37 @@ function startServer({ workspaceRoot, staticDir, port = 0 }) {
             return true;
         }
 
+        // Helper: Determine which snapshot is newer (Workspace vs Archive)
+        function getNewestSnapshotPath(projectId) {
+            const archivePath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
+            if (!fs.existsSync(archivePath)) return { path: SNAPSHOT_FILE, isWorkspace: true };
+
+            if (fs.existsSync(SNAPSHOT_FILE)) {
+                try {
+                    const workspaceSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                    if (workspaceSnapshot?.project?.id === projectId) {
+                        const statWorkspace = fs.statSync(SNAPSHOT_FILE);
+                        const statArchive = fs.statSync(archivePath);
+                        if (statWorkspace.mtime > statArchive.mtime) return { path: SNAPSHOT_FILE, isWorkspace: true };
+                    }
+                } catch (e) { }
+            }
+            return { path: archivePath, isWorkspace: false };
+        }
+
         function loadProjectToWorkspace(projectId) {
-            const pPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
-            if (!fs.existsSync(pPath)) return false;
+            const { path: newestPath, isWorkspace } = getNewestSnapshotPath(projectId);
+            if (!fs.existsSync(newestPath)) return false;
+
+            if (isWorkspace && newestPath === SNAPSHOT_FILE) {
+                console.log(`[Express Load] Workspace for ${projectId} is newest. Syncing to archive.`);
+                archiveToProject(projectId);
+                return true;
+            }
+
             backupSnapshot();
-            fs.copyFileSync(pPath, SNAPSHOT_FILE);
+            fs.copyFileSync(newestPath, SNAPSHOT_FILE);
+            console.log(`[Express Load] Loaded ${newestPath}`);
             return true;
         }
 
@@ -107,13 +133,23 @@ function startServer({ workspaceRoot, staticDir, port = 0 }) {
 
             console.log(`[API Server] SSE Client connected (${sseClients.length} total)`);
 
-            // Send current snapshot immediately
-            if (fs.existsSync(SNAPSHOT_FILE)) {
-                try {
+            // Send newest snapshot immediately (simulated getSnapshot)
+            try {
+                // If we can detect projectId from workspace, check if archive is newer
+                let newestPath = SNAPSHOT_FILE;
+                if (fs.existsSync(SNAPSHOT_FILE)) {
                     const snap = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, 'utf-8'));
+                    if (snap?.project?.id) {
+                        const { path: p } = getNewestSnapshotPath(snap.project.id);
+                        newestPath = p;
+                    }
+                }
+
+                if (fs.existsSync(newestPath)) {
+                    const snap = JSON.parse(fs.readFileSync(newestPath, 'utf-8'));
                     res.write(`event: snapshot_update\ndata: ${JSON.stringify(snap)}\n\n`);
-                } catch (e) { }
-            }
+                }
+            } catch (e) { }
 
             req.on('close', () => {
                 sseClients = sseClients.filter(c => c.id !== clientId);
