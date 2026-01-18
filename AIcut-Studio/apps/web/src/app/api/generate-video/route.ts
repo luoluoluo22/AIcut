@@ -52,7 +52,7 @@ export async function POST(request: Request) {
             fs.writeFileSync(imagePath, buffer);
         }
 
-        const scriptPath = path.resolve(process.cwd(), '../../../tools/grok_adapter.py');
+        const scriptPath = path.resolve(process.cwd(), '../../../tools/generators/grok_adapter.py');
         console.log(`[AI Video] Starting ${mode}-to-video generation...`);
         console.log(`[AI Video] Saving to: ${outputDir}`);
 

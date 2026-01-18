@@ -650,6 +650,7 @@ export function MediaView() {
                   </TooltipContent>
                 </Tooltip>
 
+                {/* Temporarily hidden due to service access issues
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -665,6 +666,7 @@ export function MediaView() {
                     <p>AI 生成视频</p>
                   </TooltipContent>
                 </Tooltip>
+                */}
               </div>
               <div className="flex items-center gap-0">
                 <Tooltip>
