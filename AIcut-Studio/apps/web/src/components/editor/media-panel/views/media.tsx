@@ -330,22 +330,29 @@ export function MediaView() {
         let height = 0;
         let duration = 0;
 
-        // For videos, we need to generate thumbnail - fetch file temporarily
-        if (isVideo) {
+        // For videos and audio, we need to extract metadata (duration/thumbnail)
+        // We fetch the file temporarily via the serve API
+        if (isVideo || isAudio) {
           try {
-            // Fetch file via serve API to get blob for thumbnail generation
             const response = await fetch(`/api/media/serve?path=${encodeURIComponent(filePath)}`);
             if (response.ok) {
               const blob = await response.blob();
-              const file = new File([blob], fileName, { type: `video/${ext}` });
-              const info = await getVideoInfo(file);
-              width = info.width;
-              height = info.height;
-              duration = info.duration;
-              thumbnail = await generateThumbnail(file, 0.5);
+
+              if (isVideo) {
+                const file = new File([blob], fileName, { type: `video/${ext}` });
+                const info = await getVideoInfo(file);
+                width = info.width;
+                height = info.height;
+                duration = info.duration;
+                thumbnail = await generateThumbnail(file, 0.5);
+              } else if (isAudio) {
+                const file = new File([blob], fileName, { type: `audio/${ext}` });
+                const { getMediaDuration } = await import("@/stores/media-store");
+                duration = await getMediaDuration(file);
+              }
             }
           } catch (e) {
-            console.warn("Failed to extract video metadata:", e);
+            console.warn("Failed to extract media metadata:", e);
           }
         }
 
@@ -821,6 +828,7 @@ export function MediaView() {
                 registerElement={registerElement}
                 onItemClick={handleItemClick}
                 isSelected={isSelected}
+                isProcessing={isProcessing}
               />
             ) : (
               <ListView
@@ -831,6 +839,7 @@ export function MediaView() {
                 registerElement={registerElement}
                 onItemClick={handleItemClick}
                 isSelected={isSelected}
+                isProcessing={isProcessing}
               />
             )}
           </div>
@@ -860,6 +869,7 @@ function GridView({
   registerElement,
   onItemClick,
   isSelected,
+  isProcessing
 }: {
   filteredMediaItems: MediaFile[];
   renderPreview: (item: MediaFile) => React.ReactNode;
@@ -868,6 +878,7 @@ function GridView({
   registerElement: (id: string, element: HTMLElement | null) => void;
   onItemClick: (e: React.MouseEvent, item: MediaFile) => void;
   isSelected: (id: string) => boolean;
+  isProcessing?: boolean;
 }) {
   const { addElementAtTime } = useTimelineStore();
 
@@ -878,6 +889,12 @@ function GridView({
         gridTemplateColumns: "repeat(auto-fill, 160px)",
       }}
     >
+      {isProcessing && (
+        <div className="aspect-video w-full rounded-lg border border-dashed border-primary/50 bg-primary/5 flex flex-col items-center justify-center gap-2 animate-pulse">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="text-xs text-muted-foreground font-medium">正在生成/处理...</span>
+        </div>
+      )}
       {filteredMediaItems.map((item) => (
         <div key={item.id} ref={(el) => registerElement(item.id, el)}>
           <MediaItemWithContextMenu item={item} onRemove={handleRemove}>
@@ -914,6 +931,7 @@ function ListView({
   registerElement,
   onItemClick,
   isSelected,
+  isProcessing
 }: {
   filteredMediaItems: MediaFile[];
   renderPreview: (item: MediaFile) => React.ReactNode;
@@ -922,11 +940,18 @@ function ListView({
   registerElement: (id: string, element: HTMLElement | null) => void;
   onItemClick: (e: React.MouseEvent, item: MediaFile) => void;
   isSelected: (id: string) => boolean;
+  isProcessing?: boolean;
 }) {
   const { addElementAtTime } = useTimelineStore();
 
   return (
     <div className="space-y-1">
+      {isProcessing && (
+        <div className="h-12 w-full rounded-md border border-dashed border-primary/50 bg-primary/5 flex items-center justify-center gap-2 animate-pulse">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          <span className="text-xs text-muted-foreground font-medium">正在生成/处理...</span>
+        </div>
+      )}
       {filteredMediaItems.map((item) => (
         <div key={item.id} ref={(el) => registerElement(item.id, el)}>
           <MediaItemWithContextMenu item={item} onRemove={handleRemove}>

@@ -1,5 +1,7 @@
 # AIcut - 全自动 AI 视频剪辑引擎
 
+![AIcut Promo](docs/promo_banner.png)
+
 AIcut 是一款 **AI 原生** 的自动化视频制作工具。它将**专业时间轴（Timeline）**与 **Python AI 逻辑** 深度结合，通过双向实时同步实现“所写即所得”的自动化剪辑体验。
 
 ---

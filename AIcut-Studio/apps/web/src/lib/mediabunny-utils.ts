@@ -50,15 +50,20 @@ export const generateThumbnail = async (
       video.remove();
     };
 
-    video.onloadeddata = () => {
-      video.currentTime = time;
+    video.onloadedmetadata = () => {
+      // Ensure we have dimensions
+      if (video.videoWidth === 0) return;
+      video.currentTime = Math.min(time, video.duration);
     };
 
     video.onseeked = () => {
       try {
         const canvas = document.createElement("canvas");
+        const videoWidth = video.videoWidth || 640;
+        const videoHeight = video.videoHeight || 360;
+
         // Resize to reasonable thumbnail size
-        const aspect = video.videoWidth / video.videoHeight;
+        const aspect = videoWidth / videoHeight;
         canvas.width = 320;
         canvas.height = 320 / aspect;
 

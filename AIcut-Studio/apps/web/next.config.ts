@@ -66,8 +66,8 @@ const nextConfig = (phase: string): NextConfig => {
     webpack: (config, { dev, isServer }) => {
       if (dev) {
         config.watchOptions = {
-          poll: 1000,
-          aggregateTimeout: 300,
+          // poll: 1000, // Removed to improve performance on Windows (uses native events)
+          // aggregateTimeout: 300,
           ignored: [
             "**/.git/**",
             "**/.next/**",

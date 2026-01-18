@@ -289,12 +289,6 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
-          },
-          "transition": {
-            "out": {
-              "type": "fade",
-              "duration": 0.5
-            }
           }
         },
         {
@@ -317,12 +311,6 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
-          },
-          "transition": {
-            "in": {
-              "type": "fade",
-              "duration": 0.5
-            }
           }
         },
         {
@@ -505,7 +493,7 @@
       "muted": false
     },
     {
-      "id": "b8eade5e-653f-447f-a2d0-bad3ac9e006b",
+      "id": "b96c1059-0c84-4c5c-85c8-7fde758072d9",
       "name": "Main Track",
       "type": "media",
       "elements": [],

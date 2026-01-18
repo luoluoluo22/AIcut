@@ -10,10 +10,14 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 async def ensure_chrome_connected(p):
     """确保连接到 Chrome 调试端口，如果没开则尝试启动"""
+    import subprocess # Re-import locally just in case
     try:
+        print("Attempting to connect to existing Chrome at port 9222...", flush=True)
         browser = await p.chromium.connect_over_cdp("http://localhost:9222")
+        print("✅ Successfully connected to existing Chrome instance.", flush=True)
         return browser
-    except Exception:
+    except Exception as e:
+        print(f"DEBUG: Connection failed ({e}), trying to launch new instance...", flush=True)
         # 寻找 Chrome 路径
         chrome_paths = [
             r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -23,24 +27,54 @@ async def ensure_chrome_connected(p):
         chrome_exe = next((path for path in chrome_paths if os.path.exists(path)), None)
         
         if not chrome_exe:
-            print("Error: Chrome executable not found.")
+            print("❌ Error: Chrome executable not found in standard locations.", flush=True)
             return None
 
         # 计算 Profile 绝对路径 (项目根目录下的 chrome_debug_profile)
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.dirname(script_dir)
-        user_data_dir = os.path.join(project_root, "chrome_debug_profile")
+        # __file__ is tools/generators/grok_adapter.py
+        # script_dir is tools/generators
+        # project_root is tools
+        # user_data_dir is tools/chrome_debug_profile
+        # WAIT: Based on user feedback, they might expect it in the REAL Workspace Root (AIcut/)
+        # Let's adjust this to be smarter.
         
-        print(f"Launching Chrome with profile: {user_data_dir}")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # tools/generators -> tools -> AIcut (Workspace Root)
+        workspace_root = os.path.dirname(os.path.dirname(script_dir)) 
+        
+        # Check if chrome_debug_profile exists in Workspace Root first
+        user_data_dir = os.path.join(workspace_root, "chrome_debug_profile")
+        
+        # If not, fallback to tools/chrome_debug_profile (legacy)
+        tools_dir = os.path.dirname(script_dir)
+        legacy_profile = os.path.join(tools_dir, "chrome_debug_profile")
+        
+        if not os.path.exists(user_data_dir) and os.path.exists(legacy_profile):
+             user_data_dir = legacy_profile
+             
+        # Create if neither exists
+        if not os.path.exists(user_data_dir):
+             os.makedirs(user_data_dir, exist_ok=True)
+        
+        print(f"🚀 Launching Chrome...", flush=True)
+        print(f"   Exe: {chrome_exe}", flush=True)
+        print(f"   Profile: {user_data_dir}", flush=True)
+        print(f"   Port: 9222", flush=True)
+        
         cmd = [chrome_exe, "--remote-debugging-port=9222", f"--user-data-dir={user_data_dir}"]
         
+        # Use Popen
         subprocess.Popen(cmd)
+        
+        print("Waiting 5s for Chrome to start...", flush=True)
         await asyncio.sleep(5)
         
         try:
-            return await p.chromium.connect_over_cdp("http://localhost:9222")
+            browser = await p.chromium.connect_over_cdp("http://localhost:9222")
+            print("✅ Successfully connected to newly launched Chrome.", flush=True)
+            return browser
         except Exception as e:
-            print(f"Error: Failed to connect to Chrome: {e}")
+            print(f"❌ Error: Failed to connect to Chrome after launch: {e}", flush=True)
             return None
 
 async def generate_video(mode, prompt, image_path, output_dir):

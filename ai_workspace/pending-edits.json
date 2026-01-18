@@ -1,181 +1,548 @@
 [
   {
-    "id": "edit_1768701655783_sus82fasf",
-    "action": "addSubtitle",
+    "id": "edit_1768728742626_51u67y9sl",
+    "action": "requestTask",
     "data": {
-      "content": "欢迎来到 新项目 (10:00:55)",
-      "startTime": 0,
-      "duration": 3,
-      "x": 960,
-      "y": 900,
-      "fontSize": 64,
-      "fontFamily": "Arial",
-      "color": "#00FF00",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8368,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768701655783,
+    "timestamp": 1768728742626,
     "processed": true
   },
   {
-    "id": "edit_1768701655792_k7p67kpqk",
-    "action": "addSubtitle",
+    "id": "edit_1768728879489_5zzcfdh06",
+    "action": "requestTask",
     "data": {
-      "content": "这是通过 Python 脚本自动创建并初始化的。",
-      "startTime": 3,
-      "duration": 4,
-      "x": 960,
-      "y": 900,
-      "fontSize": 48,
-      "fontFamily": "Arial",
-      "color": "#FFFFFF",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8368,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768701655792,
+    "timestamp": 1768728879489,
     "processed": true
   },
   {
-    "id": "edit_1768701817382_6o9zstxbz",
-    "action": "addSubtitle",
+    "id": "edit_1768729057743_qipkggekr",
+    "action": "requestTask",
     "data": {
-      "content": "欢迎来到 新项目 (10:03:37)",
-      "startTime": 0,
-      "duration": 3,
-      "x": 960,
-      "y": 900,
-      "fontSize": 64,
-      "fontFamily": "Arial",
-      "color": "#00FF00",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768701817382,
+    "timestamp": 1768729057743,
     "processed": true
   },
   {
-    "id": "edit_1768701817392_fdjb776dn",
-    "action": "addSubtitle",
+    "id": "edit_1768729135301_7jryi6r4e",
+    "action": "requestTask",
     "data": {
-      "content": "这是通过 Python 脚本自动创建并初始化的。",
-      "startTime": 3,
-      "duration": 4,
-      "x": 960,
-      "y": 900,
-      "fontSize": 48,
-      "fontFamily": "Arial",
-      "color": "#FFFFFF",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768701817392,
+    "timestamp": 1768729135301,
     "processed": true
   },
   {
-    "id": "edit_1768701988466_wu8ljv5yt",
-    "action": "addSubtitle",
+    "id": "edit_1768729443447_oaa3s4v7d",
+    "action": "requestTask",
     "data": {
-      "content": "欢迎来到 新项目 (10:06:28)",
-      "startTime": 0,
-      "duration": 3,
-      "x": 960,
-      "y": 900,
-      "fontSize": 64,
-      "fontFamily": "Arial",
-      "color": "#00FF00",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768701988466,
+    "timestamp": 1768729443447,
     "processed": true
   },
   {
-    "id": "edit_1768701988482_c3o3nshlf",
-    "action": "addSubtitle",
+    "id": "edit_1768729788287_w41z2qevx",
+    "action": "requestTask",
     "data": {
-      "content": "这是通过 Python 脚本自动创建并初始化的。",
-      "startTime": 3,
-      "duration": 4,
-      "x": 960,
-      "y": 900,
-      "fontSize": 48,
-      "fontFamily": "Arial",
-      "color": "#FFFFFF",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768701988482,
+    "timestamp": 1768729788287,
     "processed": true
   },
   {
-    "id": "edit_1768703459775_gkbws4rsf",
-    "action": "addSubtitle",
+    "id": "edit_1768730114431_auzsahw2j",
+    "action": "requestTask",
     "data": {
-      "content": "欢迎来到 新项目 (10:30:59)",
-      "startTime": 0,
-      "duration": 3,
-      "x": 960,
-      "y": 900,
-      "fontSize": 64,
-      "fontFamily": "Arial",
-      "color": "#00FF00",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768703459775,
+    "timestamp": 1768730114431,
     "processed": true
   },
   {
-    "id": "edit_1768703459791_k963k1pqx",
-    "action": "addSubtitle",
+    "id": "edit_1768730479826_3rr88ntgw",
+    "action": "requestTask",
     "data": {
-      "content": "这是通过 Python 脚本自动创建并初始化的。",
-      "startTime": 3,
-      "duration": 4,
-      "x": 960,
-      "y": 900,
-      "fontSize": 48,
-      "fontFamily": "Arial",
-      "color": "#FFFFFF",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
     },
-    "timestamp": 1768703459791,
+    "timestamp": 1768730479826,
     "processed": true
   },
   {
-    "id": "edit_1768703500116_olzgk1kq3",
+    "id": "edit_1768730564980_1ssx4yyg8",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.8367999999999998,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768730564980,
+    "processed": true
+  },
+  {
+    "id": "edit_1768730583947_9od5tn7to",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "el_test_1768730583",
+          "content": "这是一个测试音频，用于验证AI语音生成功能是否正常。",
+          "startTime": 0,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        }
+      ]
+    },
+    "timestamp": 1768730583947,
+    "processed": true
+  },
+  {
+    "id": "edit_1768730617023_hnsgdun21",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "el_test_1768730617",
+          "content": "这是一个测试音频，用于验证AI语音生成功能是否正常。",
+          "startTime": 0,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        }
+      ]
+    },
+    "timestamp": 1768730617023,
+    "processed": true
+  },
+  {
+    "id": "edit_1768730867495_16sxjupdd",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "el_test_1768730867",
+          "content": "这是一个测试音频，用于验证AI语音生成功能是否正常。",
+          "startTime": 0,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        }
+      ]
+    },
+    "timestamp": 1768730867495,
+    "processed": true
+  },
+  {
+    "id": "edit_1768731042837_xeyd02pnp",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "el_test_1768731042",
+          "content": "这是一个测试音频，用于验证AI语音生成功能是否正常。",
+          "startTime": 0,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        }
+      ]
+    },
+    "timestamp": 1768731042837,
+    "processed": true
+  },
+  {
+    "id": "edit_1768731380001_6o4fntj2u",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "el_test_1768731379",
+          "content": "这是一个测试音频，用于验证AI语音生成功能是否正常。",
+          "startTime": 0,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        }
+      ]
+    },
+    "timestamp": 1768731380001,
+    "processed": true
+  },
+  {
+    "id": "edit_1768731412459_a4y0jgvpz",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "el_test_1768731412",
+          "content": "这是一个测试音频，用于验证AI语音生成功能是否正常。",
+          "startTime": 0,
+          "voiceId": "zh-CN-XiaoxiaoNeural"
+        }
+      ]
+    },
+    "timestamp": 1768731412459,
+    "processed": true
+  },
+  {
+    "id": "edit_1768731432923_nf1prcctg",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.6333333333333333,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768731432923,
+    "processed": true
+  },
+  {
+    "id": "edit_1768731822318_z4tb14633",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.6333333333333333,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768731822318,
+    "processed": true
+  },
+  {
+    "id": "edit_1768731893029_5sjjyjq1q",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.6333333333333333,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768731893029,
+    "processed": true
+  },
+  {
+    "id": "edit_1768732159318_m91q8vqxh",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 2.6333333333333333,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768732159318,
+    "processed": true
+  },
+  {
+    "id": "edit_1768732230256_nebx6u5dc",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 0,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768732230256,
+    "processed": true
+  },
+  {
+    "id": "edit_1768732277344_dqrv53t12",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 0,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768732277344,
+    "processed": true
+  },
+  {
+    "id": "edit_1768732320400_ukh5c4xxm",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 0,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768732320400,
+    "processed": true
+  },
+  {
+    "id": "edit_1768732593630_wspcvvpre",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "content": "你好李尔",
+          "startTime": 0,
+          "duration": 2.3298666666666668
+        }
+      ]
+    },
+    "timestamp": 1768732593630,
+    "processed": true
+  },
+  {
+    "id": "edit_1768739616949_t3ak973t8",
+    "action": "requestTask",
+    "data": {
+      "taskType": "subtitle_generation",
+      "elementId": "c8374272-c9c2-42da-aa02-9f313912458c",
+      "mediaId": "asset_424966_1768738603",
+      "mediaName": "narration"
+    },
+    "timestamp": 1768739616949,
+    "processed": true
+  },
+  {
+    "id": "edit_1768739689509_0zjgap1bd",
+    "action": "requestTask",
+    "data": {
+      "taskType": "subtitle_generation",
+      "elementId": "c8374272-c9c2-42da-aa02-9f313912458c",
+      "mediaId": "asset_424966_1768738603",
+      "mediaName": "narration"
+    },
+    "timestamp": 1768739689509,
+    "processed": true
+  },
+  {
+    "id": "edit_1768739699215_7xmcrmswu",
     "action": "addMultipleSubtitles",
     "data": {
       "subtitles": [
         {
-          "content": "这是测试字幕 1",
-          "startTime": 7,
-          "duration": 3,
+          "content": "那是一个宁静的午后",
+          "startTime": 0.36,
+          "duration": 1.7400000000000002,
           "x": 960,
           "y": 900,
           "fontSize": 48,
           "fontFamily": "Arial",
-          "color": "#FF0000",
+          "color": "#FFFFFF",
           "backgroundColor": "rgba(0,0,0,0.7)",
           "textAlign": "center"
         },
         {
-          "content": "这是测试字幕 2",
-          "startTime": 10,
-          "duration": 3,
+          "content": "洛阳城外",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999,
           "x": 960,
           "y": 900,
           "fontSize": 48,
           "fontFamily": "Arial",
-          "color": "#0000FF",
+          "color": "#FFFFFF",
           "backgroundColor": "rgba(0,0,0,0.7)",
           "textAlign": "center"
         },
         {
-          "content": "AIcut 正在为您服务",
-          "startTime": 13,
-          "duration": 5,
+          "content": "阳光透过树梢",
+          "startTime": 4.44,
+          "duration": 1.3999999999999995,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "洒满林间",
+          "startTime": 6.32,
+          "duration": 0.9399999999999995,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "远道而来的孔秋",
+          "startTime": 8,
+          "duration": 1.6199999999999992,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "和他仰慕已久的李尔",
+          "startTime": 10.98,
+          "duration": 1.5399999999999991,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "做了最后一次交谈",
+          "startTime": 12.84,
+          "duration": 1.1999999999999993,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "年轻的孔秋滔滔不绝",
+          "startTime": 14.94,
+          "duration": 2.0600000000000005,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "既慷慨又坦诚",
+          "startTime": 17.44,
+          "duration": 1.9399999999999977,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "讲述了他对时下风气的焦虑和疑惑",
+          "startTime": 20.48,
+          "duration": 3.719999999999999,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "也表达了他对理想社会的强烈渴望",
+          "startTime": 25.06,
+          "duration": 2.9800000000000004,
           "x": 960,
           "y": 900,
           "fontSize": 48,
@@ -186,43 +553,246 @@
         }
       ]
     },
-    "timestamp": 1768703500116,
+    "timestamp": 1768739699215,
     "processed": true
   },
   {
-    "id": "edit_1768705411938_uwtv2k9z2",
-    "action": "addSubtitle",
+    "id": "edit_1768740075553_guhbjs1ax",
+    "action": "requestTask",
     "data": {
-      "content": "欢迎来到 新项目 (11:03:31)",
-      "startTime": 0,
-      "duration": 3,
-      "x": 960,
-      "y": 900,
-      "fontSize": 64,
-      "fontFamily": "Arial",
-      "color": "#00FF00",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "taskType": "subtitle_generation",
+      "elementId": "c8374272-c9c2-42da-aa02-9f313912458c",
+      "mediaId": "asset_424966_1768738603",
+      "mediaName": "narration"
     },
-    "timestamp": 1768705411938,
+    "timestamp": 1768740075553,
     "processed": true
   },
   {
-    "id": "edit_1768705411957_l75ut1c5z",
-    "action": "addSubtitle",
+    "id": "edit_1768740090352_nv16lhts1",
+    "action": "addMultipleSubtitles",
     "data": {
-      "content": "这是通过 Python 脚本自动创建并初始化的。",
-      "startTime": 3,
-      "duration": 4,
-      "x": 960,
-      "y": 900,
-      "fontSize": 48,
-      "fontFamily": "Arial",
-      "color": "#FFFFFF",
-      "backgroundColor": "rgba(0,0,0,0.7)",
-      "textAlign": "center"
+      "subtitles": [
+        {
+          "content": "那是一个宁静的午后",
+          "startTime": 0.36,
+          "duration": 1.7400000000000002,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "洛阳城外",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "阳光透过树梢",
+          "startTime": 4.44,
+          "duration": 1.3999999999999995,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "洒满林间",
+          "startTime": 6.32,
+          "duration": 0.9399999999999995,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "远道而来的孔秋",
+          "startTime": 8,
+          "duration": 1.6199999999999992,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "和他仰慕已久的李尔",
+          "startTime": 10.98,
+          "duration": 1.5399999999999991,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "做了最后一次交谈",
+          "startTime": 12.84,
+          "duration": 1.1999999999999993,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "年轻的孔秋滔滔不绝",
+          "startTime": 14.94,
+          "duration": 2.0600000000000005,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "既慷慨又坦诚",
+          "startTime": 17.44,
+          "duration": 1.9399999999999977,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "讲述了他对时下风气的焦虑和疑惑",
+          "startTime": 20.48,
+          "duration": 3.719999999999999,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "也表达了他对理想社会的强烈渴望",
+          "startTime": 25.06,
+          "duration": 2.9800000000000004,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        }
+      ]
     },
-    "timestamp": 1768705411957,
+    "timestamp": 1768740090352,
+    "processed": true
+  },
+  {
+    "id": "edit_1768740093943_nhv6c8uto",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "eed0f0f8-5dbc-4d16-8c32-5f4976d7b664",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.36,
+          "duration": 1.7400000000000002
+        }
+      ]
+    },
+    "timestamp": 1768740093943,
+    "processed": true
+  },
+  {
+    "id": "edit_1768740307399_pz3v30d2q",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "eed0f0f8-5dbc-4d16-8c32-5f4976d7b664",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.36,
+          "duration": 1.7400000000000002
+        }
+      ]
+    },
+    "timestamp": 1768740307399,
+    "processed": true
+  },
+  {
+    "id": "edit_1768740471901_r34e5mcr3",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "eed0f0f8-5dbc-4d16-8c32-5f4976d7b664",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.3333333333333333,
+          "duration": 1.7400000000000002
+        }
+      ]
+    },
+    "timestamp": 1768740471901,
+    "processed": true
+  },
+  {
+    "id": "edit_1768740489639_gxyyv000d",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "81e1d12f-620a-4590-b61b-be6fd26a9640",
+          "content": "洛阳城外",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999
+        }
+      ]
+    },
+    "timestamp": 1768740489639,
+    "processed": true
+  },
+  {
+    "id": "edit_1768740743179_9bb7pdw26",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "eed0f0f8-5dbc-4d16-8c32-5f4976d7b664",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.3333333333333333,
+          "duration": 1.7400000000000002
+        }
+      ]
+    },
+    "timestamp": 1768740743179,
     "processed": true
   }
 ]

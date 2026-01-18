@@ -56,6 +56,9 @@ export function TimelineElement({
     revealElementInMedia,
     replaceElementWithFile,
     getContextMenuState,
+    addTrack,
+    updateTrack,
+    addElementToTrack,
   } = useTimelineStore();
   const { currentTime } = usePlaybackStore();
 
@@ -166,8 +169,8 @@ export function TimelineElement({
     });
     toast.info("正在调起 AI 字幕识别服务...");
 
+    // 1. 先触发一次快照保存，确保 AI 助手拿到最新状态 (包括 trim)
     try {
-      // 1. 先触发一次快照保存，确保 AI 助手拿到最新状态 (包括 trim)
       const currentState = useTimelineStore.getState();
 
       await fetch("/api/ai-edit", {
@@ -178,7 +181,44 @@ export function TimelineElement({
           data: currentState
         })
       });
+    } catch (e) { console.warn("Snapshot save failed:", e); }
 
+    // 0. 添加 "Loading Placeholder" - 给用户即时反馈
+    try {
+      const effectiveDuration = element.duration - element.trimStart - element.trimEnd;
+      // 创建临时轨道
+      const placeholderTrackId = addTrack("text");
+      updateTrack(placeholderTrackId, { name: "AI 字幕 (生成中...)" });
+
+      // 添加 Loading 文本
+      addElementToTrack(placeholderTrackId, {
+        type: "text",
+        content: "⏳ 正在识别字幕...",
+        startTime: element.startTime,
+        duration: effectiveDuration,
+        trimStart: 0,
+        trimEnd: 0,
+        // 样式: 半透明背景，居中
+        fontSize: 40,
+        fontFamily: "Arial",
+        color: "#ffffff",
+        backgroundColor: "#000000aa",
+        textAlign: "center",
+        x: 960,
+        y: 850, // 稍微靠下
+        scale: 1,
+        rotation: 0,
+        opacity: 0.8,
+        fontWeight: "normal",
+        fontStyle: "normal",
+        textDecoration: "none",
+        voiceId: undefined
+      });
+    } catch (e) {
+      console.warn("Failed to create placeholder:", e);
+    }
+
+    try {
       // 2. 请求任务
       await fetch("/api/ai-edit", {
         method: "POST",
@@ -241,6 +281,49 @@ export function TimelineElement({
 
     toast.info(`正在为 ${textElements.length} 段文本生成语音...`);
 
+    // 1. 先触发一次快照保存 (在添加 Placeholder 之前)
+    try {
+      const currentState = useTimelineStore.getState();
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "updateSnapshot",
+          data: currentState
+        })
+      });
+    } catch (e) { console.warn("Snapshot save failed:", e); }
+
+    // 0. 添加 "Loading Placeholder"
+    try {
+      const placeholderTrackId = addTrack("text");
+      updateTrack(placeholderTrackId, { name: "AI 语音 (生成中...)" });
+
+      textElements.forEach(el => {
+        addElementToTrack(placeholderTrackId, {
+          type: "text",
+          content: "⏳ 正在生成语音...",
+          startTime: el.startTime,
+          duration: el.duration,
+          trimStart: 0,
+          trimEnd: 0,
+          fontSize: 30, // 稍微小一点
+          fontFamily: "Arial",
+          color: "#ffffff",
+          backgroundColor: "#16a34a99", // Greenish for TTS
+          textAlign: "center",
+          x: 960,
+          y: 600,
+          scale: 1,
+          rotation: 0,
+          opacity: 0.8
+        });
+      });
+
+    } catch (e) {
+      console.warn("Failed to create TTS placeholder:", e);
+    }
+
     try {
       await fetch("/api/ai-edit", {
         method: "POST",
@@ -285,32 +368,34 @@ export function TimelineElement({
       const trackHeight = getTrackHeight(track.type);
       const tileWidth = trackHeight * (16 / 9);
 
-      const rawImageUrl =
-        mediaItem.type === "image" ? mediaItem.url : mediaItem.thumbnailUrl;
-
-      // Encode URL for CSS background-image (handle spaces, parentheses, and special chars)
-      // encodeURI handles spaces but not parentheses, so we need additional handling
-      const imageUrl = rawImageUrl
-        ? encodeURI(rawImageUrl).replace(/\(/g, '%28').replace(/\)/g, '%29')
-        : null;
+      const imageUrl = mediaItem.thumbnailUrl || mediaItem.url || (element as any).thumbnailUrl;
 
       return (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center relative">
           <div
-            className={`w-full h-full relative ${isSelected ? "bg-primary" : "bg-transparent"
+            className={`w-full h-full relative ${isSelected ? "bg-primary/30" : "bg-transparent"
               }`}
           >
+            {/* Background Preview */}
             <div
-              className={`absolute top-[0.25rem] bottom-[0.25rem] left-0 right-0`}
+              className="absolute inset-0"
               style={{
                 backgroundImage: imageUrl ? `url("${imageUrl}")` : "none",
                 backgroundRepeat: "repeat-x",
                 backgroundSize: `${tileWidth}px ${trackHeight}px`,
                 backgroundPosition: "left center",
                 pointerEvents: "none",
+                opacity: 0.8
               }}
               aria-label={`${mediaItem.type === "image" ? "背景图" : "缩略图"}: ${mediaItem.name}`}
             />
+
+            {/* Text Fallback / Label */}
+            <div className="absolute inset-x-0 bottom-0 top-0 flex items-center px-1 pointer-events-none overflow-hidden">
+              <span className="text-[10px] text-white/90 truncate font-medium drop-shadow-sm">
+                {element.name}
+              </span>
+            </div>
           </div>
         </div>
       );

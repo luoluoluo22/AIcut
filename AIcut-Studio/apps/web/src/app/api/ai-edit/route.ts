@@ -135,6 +135,13 @@ function archiveToProject(idOrName: string) {
     try {
         const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
         internalId = snapshot?.project?.id || idOrName;
+
+        // Safety check: Don't archive deleted or temp projects
+        if (!internalId || internalId.startsWith("deleted_")) {
+            console.log(`[Archive] Skipping archive for invalid project ID: ${internalId}`);
+            return false;
+        }
+
         displayName = snapshot?.project?.name || idOrName;
         // Clean folder name for FS
         folderName = displayName.replace(/[<>:"/\\|?*]/g, '_').trim();
@@ -656,17 +663,67 @@ export async function POST(request: NextRequest) {
                 if (!newProjectId) {
                     return NextResponse.json({ success: false, error: "Missing projectId for switchProject" }, { status: 400 });
                 }
+
                 // 1. Archive current project (if any)
                 try {
                     const currentSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
                     const currentId = currentSnapshot?.project?.id;
-                    if (currentId && currentId !== newProjectId) {
+                    // Only archive if it's a valid, non-deleted project and different from new one
+                    if (currentId && currentId !== newProjectId && !currentId.startsWith("deleted_")) {
                         archiveToProject(currentId);
                     }
                 } catch (e) { /* No current project to archive */ }
 
-                // 2. Load new project
-                const loaded = loadProjectToWorkspace(newProjectId);
+                // 2. Check if project exists
+                const existingFolder = findProjectFolder(newProjectId);
+                let loaded = false;
+
+                if (existingFolder) {
+                    // Load existing
+                    loaded = loadProjectToWorkspace(newProjectId);
+                } else {
+                    // Create NEW: Initialize clean state directly
+                    console.log(`[Switch] Project ${newProjectId} not found, initializing new clean project.`);
+
+                    const newSnapshot = {
+                        project: {
+                            id: newProjectId,
+                            name: newProjectId, // Default name
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                            fps: 30,
+                            canvasSize: { width: 1920, height: 1080 },
+                            canvasMode: "preset",
+                            backgroundType: "color",
+                            backgroundColor: "#000000",
+                            scenes: [{
+                                id: `scene_${Date.now()}`,
+                                name: "Main Scene",
+                                isMain: true
+                            }],
+                            markers: []
+                        },
+                        tracks: [
+                            { id: "main-track", name: "Main Track", type: "media", elements: [], isMain: true },
+                            { id: "text-track", name: "Text Track", type: "text", elements: [] },
+                            { id: "audio-track", name: "Audio Track", type: "audio", elements: [] }
+                        ],
+                        assets: []
+                    };
+
+                    try {
+                        backupSnapshot();
+                        fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(newSnapshot, null, 2));
+                        // Immediately archive it to create the folder structure on disk
+                        archiveToProject(newProjectId);
+                        // Also switch materials link to the new folder
+                        switchMaterialsLink(newProjectId);
+                        loaded = true;
+                    } catch (e) {
+                        console.error("[Switch] Failed to initialize new project:", e);
+                        loaded = false;
+                    }
+                }
 
                 if (loaded) {
                     // Notify frontend to refresh projects list and potentially switch view
@@ -681,8 +738,8 @@ export async function POST(request: NextRequest) {
                 } else {
                     return NextResponse.json({
                         success: false,
-                        error: `Project ${newProjectId} not found`,
-                    }, { status: 404 });
+                        error: `Project ${newProjectId} could not be loaded or created`,
+                    }, { status: 500 });
                 }
             }
 
@@ -714,6 +771,19 @@ export async function POST(request: NextRequest) {
                         if (fs.existsSync(projectPath)) {
                             console.error(`[Delete] Folder still exists after deletion: ${projectPath}`);
                             return NextResponse.json({ success: false, error: `Failed to delete project folder - files may be in use` }, { status: 500 });
+                        }
+
+                        // CRITICAL: Check and reset workspace snapshot if it matches the deleted project
+                        try {
+                            if (fs.existsSync(SNAPSHOT_FILE)) {
+                                const currentSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                                if (currentSnapshot?.project?.id === projectId) {
+                                    console.log(`[Delete] Removing workspace snapshot as it matched deleted project ${projectId}`);
+                                    fs.unlinkSync(SNAPSHOT_FILE);
+                                }
+                            }
+                        } catch (e) {
+                            console.warn("[Delete] Failed to check/reset workspace:", e);
                         }
 
                         // Clean up from map

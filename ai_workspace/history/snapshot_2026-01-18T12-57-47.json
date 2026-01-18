@@ -289,12 +289,6 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
-          },
-          "transition": {
-            "out": {
-              "type": "fade",
-              "duration": 0.5
-            }
           }
         },
         {
@@ -317,12 +311,6 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
-          },
-          "transition": {
-            "in": {
-              "type": "fade",
-              "duration": 0.5
-            }
           }
         },
         {
@@ -505,12 +493,66 @@
       "muted": false
     },
     {
-      "id": "b8eade5e-653f-447f-a2d0-bad3ac9e006b",
+      "id": "1ee1364b-7d24-4520-a192-58ef95a00128",
       "name": "Main Track",
       "type": "media",
       "elements": [],
       "muted": false,
       "isMain": true
+    },
+    {
+      "id": "928ae3a2-d066-4428-bd3c-747bdb8b3fbf",
+      "name": "Audio Track",
+      "type": "audio",
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "asset_022242",
+          "name": "群星下的远征.mp3",
+          "duration": 245.4,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "id": "33c5f8d1-12ec-4d25-847c-290c66a296fd",
+          "muted": false,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "volume": 1
+        }
+      ],
+      "muted": false
+    },
+    {
+      "id": "f95bf0bf-61b9-46f4-8a7d-28bb470551ea",
+      "name": "AI 语音 20:52:47",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "eed2365d-0b42-4e5c-a170-0d6ffd97bc64",
+          "type": "media",
+          "mediaId": "asset_793305_1768740767",
+          "name": "TTS: 那是一个宁静的午后",
+          "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
+          "startTime": 0.3333333333333333,
+          "duration": 2.256,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "metadata": {
+            "importSource": "sdk_v2"
+          }
+        }
+      ],
+      "muted": false
     }
   ],
   "assets": [

@@ -87,6 +87,7 @@ export function Timeline() {
     setSelectedElements,
     toggleTrackMute,
     dragState,
+    deleteSelected,
   } = useTimelineStore();
   const { setPreviewMedia } = useMediaPanelStore();
   const { mediaFiles, addMediaFile } = useMediaStore();
@@ -121,6 +122,39 @@ export function Timeline() {
     containerRef: timelineRef,
     isInTimeline,
   });
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      const target = e.target as HTMLElement;
+      if (
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === "Delete" || e.key === "Backspace") {
+        // Prevent default only for backspace to avoid navigation, 
+        // though modern browsers often don't nav back on backspace anymore.
+        // For delete, it's safer to prevent default too.
+        // Only trigger if we have something selected? 
+        // deleteSelected checks selectedElements internally, so it's safe to call.
+        const { selectedElements } = useTimelineStore.getState();
+        if (selectedElements.length > 0) {
+          e.preventDefault(); // Prevent accidental navigation or other browser defaults
+          deleteSelected();
+          toast.success("已删除选中素材");
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [deleteSelected]);
 
   // Old marquee selection removed - using new SelectionBox component instead
 

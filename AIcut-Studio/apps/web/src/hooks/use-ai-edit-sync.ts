@@ -75,6 +75,13 @@ export function useAIEditSync(enabled: boolean = true) {
 
                 const store = useTimelineStore.getState();
 
+                // 0. 清理 Loading Placeholder
+                const placeholderTracks = store.tracks.filter(t => t.name === "AI 字幕 (生成中...)");
+                if (placeholderTracks.length > 0) {
+                    console.log("[AI Edit] Removing placeholder tracks...");
+                    placeholderTracks.forEach(t => store.removeTrack(t.id));
+                }
+
                 // 1. 总是新建一条轨道
                 const targetTrackId = store.addTrack("text");
                 // 重构轨道名称
@@ -194,6 +201,8 @@ export function useAIEditSync(enabled: boolean = true) {
                 } else if (filePath.endsWith(".mp3") || filePath.endsWith(".wav") || filePath.endsWith(".aac")) {
                     mediaType = "audio";
                 }
+
+
 
                 (async () => {
                     try {
@@ -390,6 +399,20 @@ export function useAIEditSync(enabled: boolean = true) {
                                 rotation: 0,
                                 opacity: 1,
                             });
+
+                            // Cleanup TTS Placeholders (MOVED HERE for better UX: remove only after new element is added)
+                            if (mediaType === "audio") {
+                                // Defer slightly to ensure React renders the new element first
+                                setTimeout(() => {
+                                    const store = useTimelineStore.getState();
+                                    const placeholderTracks = store.tracks.filter(t => t.name === "AI 语音 (生成中...)");
+                                    if (placeholderTracks.length > 0) {
+                                        console.log("[AI Edit] Removing TTS placeholder tracks (post-add)...");
+                                        placeholderTracks.forEach(t => store.removeTrack(t.id));
+                                    }
+                                }, 100);
+                            }
+
                             console.log(`[AI Edit] ${mediaType} imported and added to track successfully:`, addedMedia.name);
                         }
                     } catch (e) {

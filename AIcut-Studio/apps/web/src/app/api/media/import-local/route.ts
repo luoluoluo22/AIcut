@@ -11,12 +11,22 @@ export async function POST(req: NextRequest) {
     try {
         const { filePath, name, type, duration, startTime } = await req.json();
 
+        // DEBUG LOGGING
+        // Force logging
+        const logPath = path.join(process.cwd(), "../../../debug_import.log");
+        const logMsg = `[Import] NODE_ENV=${process.env.NODE_ENV}, Path: ${filePath}, Exists: ${fs.existsSync(filePath)}\n`;
+        try {
+            fs.appendFileSync(logPath, logMsg);
+        } catch (e) { console.error("Log failed", e); }
+
         if (!filePath) {
             return NextResponse.json({ error: "Missing filePath" }, { status: 400 });
         }
 
         // 验证文件存在
         if (!fs.existsSync(filePath)) {
+            const logPath = path.join(process.cwd(), "../../../debug_import.log");
+            fs.appendFileSync(logPath, `[Import] FAIL: File not found: ${filePath}\n`);
             return NextResponse.json({ error: `File not found: ${filePath}` }, { status: 404 });
         }
 

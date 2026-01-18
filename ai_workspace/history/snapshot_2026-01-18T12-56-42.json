@@ -289,12 +289,6 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
-          },
-          "transition": {
-            "out": {
-              "type": "fade",
-              "duration": 0.5
-            }
           }
         },
         {
@@ -317,12 +311,6 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
-          },
-          "transition": {
-            "in": {
-              "type": "fade",
-              "duration": 0.5
-            }
           }
         },
         {
@@ -505,12 +493,41 @@
       "muted": false
     },
     {
-      "id": "b8eade5e-653f-447f-a2d0-bad3ac9e006b",
+      "id": "e6a78c86-2691-4305-8954-c0dc4e69e621",
       "name": "Main Track",
       "type": "media",
       "elements": [],
       "muted": false,
       "isMain": true
+    },
+    {
+      "id": "f95bf0bf-61b9-46f4-8a7d-28bb470551ea",
+      "name": "AI 语音 20:52:47",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "eed2365d-0b42-4e5c-a170-0d6ffd97bc64",
+          "type": "media",
+          "mediaId": "asset_793305_1768740767",
+          "name": "TTS: 那是一个宁静的午后",
+          "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
+          "startTime": 0.3333333333333333,
+          "duration": 2.256,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "metadata": {
+            "importSource": "sdk_v2"
+          }
+        }
+      ],
+      "muted": false
     }
   ],
   "assets": [
@@ -615,6 +632,22 @@
       "isLinked": true
     },
     {
+      "id": "asset_688907",
+      "name": "旁白.mp3",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E6%97%81%E7%99%BD.mp3",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\旁白.mp3",
+      "isLinked": true
+    },
+    {
+      "id": "asset_688928",
+      "name": "群星下的远征.mp3",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E7%BE%A4%E6%98%9F%E4%B8%8B%E7%9A%84%E8%BF%9C%E5%BE%81.mp3",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\群星下的远征.mp3",
+      "isLinked": true
+    },
+    {
       "id": "asset_793305_1768740767",
       "name": "TTS: 那是一个宁静的午后",
       "type": "audio",
@@ -622,15 +655,6 @@
       "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
       "filePath": "F:\\桌面\\开发\\AIcut\\projects\\demo\\assets\\audio\\tts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
       "duration": 2.256,
-      "isLinked": true
-    },
-    {
-      "id": "asset_022242",
-      "name": "群星下的远征.mp3",
-      "type": "audio",
-      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E7%BE%A4%E6%98%9F%E4%B8%8B%E7%9A%84%E8%BF%9C%E5%BE%81.mp3",
-      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\群星下的远征.mp3",
-      "duration": 245.4,
       "isLinked": true
     }
   ]

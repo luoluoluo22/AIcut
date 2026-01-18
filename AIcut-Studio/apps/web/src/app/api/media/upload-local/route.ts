@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
             const thumbPath = path.join(thumbnailsDir, thumbName);
             const base64Data = thumbnail.split(",")[1];
             fs.writeFileSync(thumbPath, Buffer.from(base64Data, "base64"));
-            thumbnailUrl = `/materials/_thumbnails/${thumbName}`;
+            thumbnailUrl = `/api/media/serve?path=${encodeURIComponent(thumbPath)}`;
             console.log(`[Upload API] Saved thumbnail to: ${thumbPath}`);
         }
 
