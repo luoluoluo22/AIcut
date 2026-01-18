@@ -39,6 +39,7 @@ To manage projects via API/Python:
   "type": "media",
   "mediaId": "asset-reference-id",
   "name": "display-name.mp4",
+  "thumbnailUrl": "/api/media/serve?path=...", // CRITICAL for video/image preview
   "startTime": 0.0,      // In seconds
   "duration": 5.0,       // Visible duration
   "trimStart": 0.0,      // Crop from start of source
@@ -46,7 +47,10 @@ To manage projects via API/Python:
   "x": 960, "y": 540,    // Postion (Center origin is 960, 540)
   "scale": 1.0, 
   "opacity": 1.0,
-  "volume": 1.0
+  "volume": 1.0,
+  "metadata": {
+    "importSource": "sdk_v2" 
+  }
 }
 ```
 
@@ -85,9 +89,16 @@ To ensure compatibility between Python and Frontend, use this format:
 ## Common Operations
 
 ### Adding Media
+**Preferred Method: Use AIcut SDK (`import_media`).**
+The SDK automates the following steps:
+1.  **Thumbnail Generation**: Calls `/api/media/generate-thumbnail` for videos to create high-quality frames.
+2.  **Asset Creation**: Automatically calculates IDs and creates an asset entry with a stable serve URL.
+3.  **Element Placement**: Adds the element to the timeline with the correct `thumbnailUrl`.
+
+**Manual Method (Advanced):**
 1. Create an asset entry in the `assets` array.
 2. Create an element in a track referencing the asset's `id`.
-3. Set `startTime`, `duration`, and optional `trimStart`/`trimEnd`.
+3. **MUST** set `thumbnailUrl` (use the asset's URL or a dedicated JPG thumb) for visual feedback.
 
 ### Creating Subtitles
 1. Create or use an existing text track (type: `text`).
@@ -108,36 +119,38 @@ The frontend exposes a state-syncing API at `POST /api/ai-edit`. **Always prefer
 | `addSubtitle`          | Add a single subtitle    | `text`, `startTime`, `duration`, `fontSize`, `color` |
 | `addMultipleSubtitles` | Batch add subtitles      | `subtitles` (Array of subtitle objects)              |
 | `clearSubtitles`       | Remove subtitles         | `startTime`, `duration` (Optional range)             |
-| `importMedia`          | Add video/image/audio    | `filePath`, `type` (video/image/audio), `startTime`  |
 | `switchProject`        | Load or create project   | `projectId`                                          |
 | `archiveProject`       | Save workspace to disk   | `projectId` (Optional)                               |
 | `deleteProject`        | Delete project folder    | `projectId`                                          |
 | `updateSnapshot`       | Push full timeline state | `project`, `tracks`, `assets` (Full JSON object)     |
 
-### GET Endpoints
+### Media Utilities
+- `GET /api/media/serve?path=<encoded_absolute_path>`: Serves local files as browser-accessible URLs.
+- `POST /api/media/generate-thumbnail`: Generate a JPG from a video file (Body: `{ filePath: string }`).
+
+### Snapshot & Project Endpoints
 - `GET /api/ai-edit?action=getSnapshot`: Retrieve current timeline state.
 - `GET /api/ai-edit?action=listProjects`: List all archived projects.
 - `GET /api/ai-edit?action=poll`: Polled by frontend to fetch pending edits.
 
 ## Best Practices
 
-1. **Avoid `curl` on Windows**: When sending complex JSON via CLI (PowerShell/CMD), **NEVER** use `curl`. Escaping double quotes is error-prone and often causes silent failures or hung processes. Use a temporary Python script with `requests` or the AIcut SDK.
-2. **Atomic Updates**: Read the full snapshot, modify your slice, then write the full snapshot back.
-3. **Validation**: Before writing, ensure all numeric fields are `number` type, not `string`.
-4. **Paths**: Use relative paths starting with `/materials/` for URLs and project-relative paths (e.g., `projects/demo/assets/...`) for `filePath`.
-5. **Layering**: Text tracks normally go at index 0 (top of the list) to ensure they render above media tracks.
-6. **SDK First**: Always import `AIcutClient` from `scripts/aicut_sdk.py` for programmatic operations to ensure you follow the latest schema.
+1. **Avoid `curl` on Windows**: Use a temporary Python script or the AIcut SDK for stable JSON communication.
+2. **Paths**: **DO NOT** use `/materials/` relative paths. **Always use absolute paths** wrapped in the `/api/media/serve?path=` API. This ensures files from any drive (F:, D:, etc.) work correctly.
+3. **Atomic Updates**: Read the full snapshot, modify your slice, then write the full snapshot back.
+4. **Validation**: Ensure all numeric fields are `number` type, not `string`.
+5. **Layering**: Text tracks should remain at the top (lower array index) to be visible over media.
+6. **SDK First**: Always use `scripts/aicut_sdk.py`. It correctly handles thumbnail generation calls and internal path mapping.
 
 ## Executable Scripts
 
-The following scripts are available in the `scripts/` directory for automation:
+The following scripts/CLIs are available in the `scripts/` directory:
 
-| Script                       | Purpose                                                | Usage                                       |
-| ---------------------------- | ------------------------------------------------------ | ------------------------------------------- |
-| `create_project.py`          | Create and initialize a new project                    | `python scripts/create_project.py`          |
-| `switch_project.py`          | Switch current editor to another project               | `python scripts/switch_project.py <id>`     |
-| `delete_project.py`          | Delete a project by ID or Folder Name                  | `python scripts/delete_project.py <id>`     |
-| `fix_subtitle_positions.py`  | Automatically align all subtitles to the bottom center | `python scripts/fix_subtitle_positions.py`  |
-| `update_subtitle_content.py` | Batch update subtitle tracking                         | `python scripts/update_subtitle_content.py` |
+| Tool                  | Purpose                                            | Usage Example                                                   |
+| --------------------- | -------------------------------------------------- | --------------------------------------------------------------- |
+| `aicut_tool.py`       | **Centralized CLI** for all common tasks.          | `python scripts/aicut_tool.py media import "path/to/video.mp4"` |
+| `aicut_sdk.py`        | Core library for all programmatic edits.           | `from aicut_sdk import AIcutClient`                             |
+| `fix_subtitle_pos.py` | Align subtitles to bottom center.                  | `python scripts/fix_subtitle_pos.py`                            |
+| `project_manager.py`  | Standalone project lifecycle tool (legacy support) | `python scripts/project_manager.py list`                        |
 
 > **Note**: These scripts depend on `scripts/aicut_sdk.py`. Ensure you run them from the skill directory or add the directory to your `PYTHONPATH`.
