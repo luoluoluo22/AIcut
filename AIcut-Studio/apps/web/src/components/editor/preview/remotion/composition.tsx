@@ -23,6 +23,11 @@ const AnimatedMediaElement: React.FC<{
     const opacity = interpolateKeyframes(element.keyframes?.opacity, time, element.opacity ?? 1);
     const volume = interpolateKeyframes(element.keyframes?.volume, time, element.volume ?? 1);
 
+    // Debug log for Audio components
+    if (media.type === 'audio') {
+        // console.log(`[AudioRender] ${media.name} (Vol: ${volume}) Src: ${url}`);
+    }
+
     return (
         <AbsoluteFill style={{
             opacity,
@@ -67,6 +72,8 @@ const AnimatedMediaElement: React.FC<{
                         src={url}
                         startFrom={trimStartFrame}
                         volume={trackMuted || element.muted ? 0 : volume}
+                        // Force acceptable range?
+                        playbackRate={1}
                     />
                 ) : null}
             </div>
