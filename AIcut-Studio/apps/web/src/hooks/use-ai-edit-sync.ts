@@ -651,6 +651,9 @@ export function useAIEditSync(enabled: boolean = true) {
                             router.push(`/editor/${data.projectId}`);
                         }
                     }
+                } else if (data.action === "forceRefresh") {
+                    console.log("[AI Sync] Force refresh requested, reloading page...");
+                    window.location.reload();
                 } else if (data.action === "projectDeleted") {
                     // A project was deleted via Python script or API
                     console.log(`[AI Sync] Project deleted: ${data.deletedProjectId}`);

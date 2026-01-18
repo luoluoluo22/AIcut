@@ -28,6 +28,16 @@ const AnimatedMediaElement: React.FC<{
         // console.log(`[AudioRender] ${media.name} (Vol: ${volume}) Src: ${url}`);
     }
 
+    // Cache busting: Append timestamp to URL to prevent caching of partial/empty files
+    // This is critical for generated assets that might be requested before fully written
+    const cacheBust = React.useMemo(() => Date.now(), [url]);
+    const finalUrl = React.useMemo(() => {
+        if (!url) return '';
+        if (url.startsWith('blob:') || url.startsWith('data:')) return url;
+        const separator = url.includes('?') ? '&' : '?';
+        return `${url}${separator}cb=${cacheBust}`;
+    }, [url, cacheBust]);
+
     return (
         <AbsoluteFill style={{
             opacity,
@@ -48,7 +58,7 @@ const AnimatedMediaElement: React.FC<{
             }}>
                 {media.type === 'video' ? (
                     <OffthreadVideo
-                        src={url}
+                        src={finalUrl}
                         startFrom={trimStartFrame}
                         volume={trackMuted || element.muted ? 0 : volume}
                         style={{
@@ -59,7 +69,7 @@ const AnimatedMediaElement: React.FC<{
                     />
                 ) : media.type === 'image' ? (
                     <Img
-                        src={url}
+                        src={url} // Images usually don't need this as much, and Img tag might be strict
                         style={{
                             width: '100%',
                             height: '100%',
@@ -69,11 +79,12 @@ const AnimatedMediaElement: React.FC<{
                 ) : media.type === 'audio' ? (
                     <Audio
                         key={`${element.id}-${url}-${Math.round((trackMuted || element.muted ? 0 : volume) * 100)}`}
-                        src={url}
+                        src={finalUrl}
                         startFrom={trimStartFrame}
                         volume={trackMuted || element.muted ? 0 : volume}
                         // Force acceptable range?
                         playbackRate={1}
+                    // onError={(e) => console.error("Audio Load Error", finalUrl, e)}
                     />
                 ) : null}
             </div>
