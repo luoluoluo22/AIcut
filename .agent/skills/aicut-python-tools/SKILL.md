@@ -114,3 +114,10 @@ dependencies = [
     "imageio",         # Image processing
 ]
 ```
+
+## Local Script Examples
+
+Refer to these files in the `scripts/` directory for boilerplate:
+
+- `demo_file_driven.py`: Shows how to read the snapshot directly and modify it without API calls.
+- `aicut_sdk.py`: The core client implementation for programmatic editing.

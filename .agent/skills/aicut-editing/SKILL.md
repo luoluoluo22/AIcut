@@ -10,9 +10,20 @@ This skill helps understand and manipulate the AIcut video editing system.
 ## Core Concepts
 
 ### Project Structure
-- **Project Snapshot**: `ai_workspace/project-snapshot.json` - The single source of truth for timeline state
-- **Assets**: `projects/<project-name>/assets/` - Media files organized by type (videos/, images/, audio/)
-- **Exports**: `exports/` - Final rendered videos
+- **Project Snapshot**: `ai_workspace/project-snapshot.json` - The single source of truth for timeline state.
+- **Assets**: `projects/<project-id>/assets/` - Media files organized by type.
+- **Exports**: `exports/` - Final rendered videos.
+
+### Project Management
+
+#### 1. UI Creation
+Users can click the **"New Project"** button in the `/projects` page. The system will auto-generate a UUID and initialize a default timeline.
+
+#### 2. Programmatic Creation (New Project Logic)
+To create a project via API/Python:
+1.  **Initialize**: Call `switch_project(projectId)` with a new ID. The API will detect the project is missing and create it locally.
+2.  **Archiving**: Use `archive_project()` to persist the current workspace to the specific project folder.
+3.  **Flow**: `Switch (New ID)` -> `Update Snapshot` -> `Archive`.
 
 ### Element Types
 
@@ -94,3 +105,15 @@ The frontend exposes these endpoints:
 2. **Validation**: Before writing, ensure all numeric fields are `number` type, not strings.
 3. **Paths**: Use relative paths starting with `/materials/` for URLs and project-relative paths for `filePath`.
 4. **Order**: Maintain `tracks` order (Text tracks normally go at index 0 to stay on top).
+
+## Executable Scripts
+
+The following scripts are available in the `scripts/` directory for automation:
+
+| Script                       | Purpose                                                | Usage                                       |
+| ---------------------------- | ------------------------------------------------------ | ------------------------------------------- |
+| `create_project.py`          | Create and initialize a new project                    | `python scripts/create_project.py`          |
+| `fix_subtitle_positions.py`  | Automatically align all subtitles to the bottom center | `python scripts/fix_subtitle_positions.py`  |
+| `update_subtitle_content.py` | Batch update subtitle tracking                         | `python scripts/update_subtitle_content.py` |
+
+> **Note**: These scripts depend on `scripts/aicut_sdk.py`. Ensure you run them from the skill directory or add the directory to your `PYTHONPATH`.

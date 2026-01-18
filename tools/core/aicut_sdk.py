@@ -193,6 +193,25 @@ class AIcutClient:
         """导入图片"""
         return self.import_media(file_path, "image", name, start_time, duration, track_id=track_id)
 
+    def switch_project(self, project_id: str) -> Dict:
+        """切换项目（如果ID不存在，系统会自动初始化一个新项目）
+        
+        Args:
+            project_id: 项目唯一标识符
+        """
+        return self._post("switchProject", {"projectId": project_id})
+
+    def archive_project(self, project_id: Optional[str] = None) -> Dict:
+        """归档当前工作区到项目文件夹
+        
+        Args:
+            project_id: 项目ID（可选，如果不传，API会尝试从当前快照中检测）
+        """
+        payload = {}
+        if project_id:
+            payload["projectId"] = project_id
+        return self._post("archiveProject", payload)
+
 
 def demo():
     """演示 AIcut SDK 用法"""
