@@ -42,6 +42,13 @@ class AIcutClient:
         resp = requests.get(f"{self.api_url}?action={action}")
         resp.raise_for_status()
         return resp.json()
+
+    def _post_raw(self, endpoint: str, json: Dict) -> Dict:
+        """发送原始 POST 请求到指定端点 (如缩略图生成)"""
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        resp = requests.post(url, json=json)
+        resp.raise_for_status()
+        return resp.json()
     
     def get_api_info(self) -> Dict:
         """获取 API 信息"""
@@ -49,6 +56,18 @@ class AIcutClient:
         resp.raise_for_status()
         return resp.json()
     
+    
+    def _get_media_duration(self, file_path: str) -> float:
+        """使用 ffprobe 获取媒体文件时长"""
+        import subprocess
+        try:
+            cmd = ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file_path]
+            output = subprocess.check_output(cmd).decode('utf-8').strip()
+            return float(output)
+        except Exception as e:
+            # print(f"警告: 无法获取媒体时长 {file_path}: {e}")
+            return 0.0
+
     def add_subtitle(
         self,
         text: str,
@@ -164,26 +183,142 @@ class AIcutClient:
             "duration": duration
         })
 
-    def import_media(self, file_path: str, media_type: str = "video", name: str = None, start_time: float = 0, duration: float = None, track_id: str = None) -> Dict:
-        """导入媒体文件 (通用)
+    def get_snapshot(self) -> Dict:
+        """获取当前项目完整快照"""
+        res = self._get("getSnapshot")
+        if not res.get("success"):
+            raise Exception(f"获取快照失败: {res.get('error')}")
+        return res.get("snapshot", {})
+
+    def update_snapshot(self, snapshot: Dict) -> Dict:
+        """全量更新项目快照"""
+        return self._post("updateSnapshot", snapshot)
+
+    def import_media(self, file_path: str, media_type: str = "video", name: str = None, start_time: float = 0, duration: float = None, track_id: str = None, track_name: str = None) -> Dict:
+        """导入媒体文件 (模仿 demo_file_driven 逻辑)
         
-        Args:
-            file_path: 文件路径
-            media_type: 媒体类型 ("video", "audio", "image")
-            name: 名称
-            start_time: 开始时间
-            duration: 持续时间
-            track_id: 指定轨道ID (可选)
+        通过直接更新 Snapshot 的方式实现，这种方式最稳定，支持本地绝对路径。
         """
         import os
-        return self._post("importMedia", {
-            "filePath": file_path,
-            "type": media_type,
-            "name": name or os.path.basename(file_path),
+        import urllib.parse
+        import uuid
+        import time
+
+        abs_path = os.path.abspath(file_path)
+        file_name = name or os.path.basename(abs_path)
+        
+        # 1. 获取当前状态
+        snapshot = self.get_snapshot()
+        assets = snapshot.get("assets", [])
+        tracks = snapshot.get("tracks", [])
+        
+        # 2. 构造 Asset
+        asset_id = f"asset_{hash(abs_path) % 1000000}_{int(os.path.getmtime(abs_path) if os.path.exists(abs_path) else 0)}"
+        
+        # 路径编码
+        encoded_path = urllib.parse.quote(abs_path)
+        serve_url = f"/api/media/serve?path={encoded_path}"
+        
+        # 默认使用路径本身作为缩略图 (如图片)
+        thumbnail_url = serve_url
+        
+        # 如果是视频，尝试生成真实的缩略图
+        if media_type == "video":
+            try:
+                thumb_res = self._post_raw("/api/media/generate-thumbnail", {"filePath": abs_path})
+                if thumb_res.get("success"):
+                    thumbnail_url = thumb_res.get("thumbnailUrl")
+            except Exception as e:
+                pass
+                # print(f"警告: 视频缩略图生成失败: {e}")
+        
+        # 如果没有指定时长，尝试自动探测
+        if duration is None:
+            if media_type == "image":
+                duration = 5.0
+            else:
+                duration = self._get_media_duration(abs_path)
+        
+        # 检查是否已存在
+        existing_asset = next((a for a in assets if a.get("filePath") == abs_path or a.get("id") == asset_id), None)
+        if not existing_asset:
+            new_asset = {
+                "id": asset_id,
+                "name": file_name,
+                "type": media_type,
+                "url": serve_url,
+                "thumbnailUrl": thumbnail_url, # 使用生成的缩略图
+                "filePath": abs_path,
+                "duration": duration or 0,
+                "isLinked": True
+            }
+            assets.append(new_asset)
+            snapshot["assets"] = assets # Ensure list is attached
+        else:
+            asset_id = existing_asset["id"]
+            # 即使 Asset 存在，也更新其 thumbnailUrl
+            existing_asset["thumbnailUrl"] = thumbnail_url
+            serve_url = existing_asset.get("url", serve_url)
+
+        # 3. 找到或创建目标轨道
+        target_track = None
+        
+        # 确定轨道类型
+        track_type = "audio" if media_type == "audio" else "media"
+        default_name = "Audio Track" if media_type == "audio" else "Media Track"
+
+        if track_id:
+            target_track = next((t for t in tracks if t.get("id") == track_id), None)
+        
+        if not target_track and track_name:
+            # 搜索同名轨道
+            target_track = next((t for t in tracks if t.get("name") == track_name), None)
+
+        if not target_track:
+            # 只有在没有显式指定轨道名称时，才寻找匹配类型的默认轨道
+            if not track_name:
+                target_track = next((t for t in tracks if t.get("type") == track_type and not t.get("isMain")), None)
+
+        if not target_track:
+            # 如果没有，创建一个新的匹配类型的轨道
+            new_track_id = str(uuid.uuid4())
+            target_track = {
+                "id": new_track_id,
+                "name": track_name or default_name,
+                "type": track_type,
+                "elements": [],
+                "muted": False
+            }
+            tracks.append(target_track)
+            snapshot["tracks"] = tracks # Ensure list is attached
+
+        # 4. 构造 Element
+        new_element = {
+            "id": str(uuid.uuid4()),
+            "type": "media",
+            "mediaId": asset_id,
+            "name": file_name,
+            "thumbnailUrl": thumbnail_url,   # 使用实际生成的缩略图 URL
             "startTime": start_time,
-            "duration": duration,
-            "trackId": track_id
-        })
+            "duration": duration or 5.0,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "muted": False,
+            "volume": 1,
+            "x": 960,
+            "y": 540,
+            "scale": 1,
+            "rotation": 0,
+            "opacity": 1,
+            "metadata": {
+                "importSource": "sdk_v2"
+            }
+        }
+        
+        target_track["elements"].append(new_element)
+        
+        # 5. 回写状态
+        return self.update_snapshot(snapshot)
 
     def import_video(self, file_path: str, name: str = None, start_time: float = 0, track_id: str = None) -> Dict:
         """导入视频"""

@@ -1,40 +1,259 @@
 {
   "project": {
-    "id": "87a39176-1a71-446d-9c1c-440b87a963e1",
-    "name": "项目",
-    "thumbnail": "",
-    "createdAt": "2026-01-18T03:41:21.881Z",
-    "updatedAt": "2026-01-18T03:44:29.385Z",
+    "id": "demo",
+    "name": "demo",
+    "thumbnail": null,
+    "createdAt": "2026-01-18T09:25:41.831Z",
+    "updatedAt": "2026-01-18T09:25:41.831Z",
     "scenes": [
       {
-        "id": "1d75bd3a-16b7-4861-b475-1aac50bc6aee",
+        "id": "scene_1768728341831",
         "name": "Main Scene",
-        "isMain": true,
-        "createdAt": "2026-01-18T03:41:21.881Z",
-        "updatedAt": "2026-01-18T03:41:21.881Z"
+        "isMain": true
       }
     ],
-    "currentSceneId": "1d75bd3a-16b7-4861-b475-1aac50bc6aee",
+    "currentSceneId": "scene_1768728341831",
     "backgroundColor": "#000000",
     "backgroundType": "color",
-    "blurIntensity": 8,
+    "blurIntensity": 0,
     "bookmarks": [],
     "fps": 30,
     "canvasSize": {
       "width": 1920,
       "height": 1080
     },
-    "canvasMode": "preset"
+    "canvasMode": "preset",
+    "markers": []
   },
   "tracks": [
     {
-      "id": "257cad8c-791b-48b3-aa1f-831002f6dcc3",
+      "id": "3de79c74-5580-44d6-b2b7-4acea9c22e10",
+      "name": "Text Track",
+      "type": "text",
+      "elements": [
+        {
+          "id": "sub_1768728597770_2.8368",
+          "type": "text",
+          "content": "你好李尔",
+          "startTime": 0,
+          "duration": 2.8368,
+          "trimStart": 0,
+          "trimEnd": 0.5069333333333335,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center",
+          "fontWeight": "normal",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1
+        }
+      ],
+      "muted": false
+    },
+    {
+      "id": "8c2af87d-d938-4397-9202-3555e2e058b3",
       "name": "Main Track",
       "type": "media",
       "elements": [],
       "muted": false,
       "isMain": true
+    },
+    {
+      "id": "10898a14-2cf0-479b-89f7-6c4435f3b204",
+      "name": "AI 语音轨",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "185204c7-85fc-4965-8957-5c183ca7bcfd",
+          "type": "media",
+          "mediaId": "asset_564494_1768732300",
+          "name": "TTS: 你好李尔",
+          "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_sub_1768728597770_2.8368.mp3",
+          "startTime": 0,
+          "duration": 1.488,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "metadata": {
+            "importSource": "sdk_v2"
+          }
+        },
+        {
+          "id": "337618ff-c7c1-409e-af43-aed2395587a3",
+          "type": "media",
+          "mediaId": "asset_564494_1768732300",
+          "name": "TTS: 你好李尔",
+          "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_sub_1768728597770_2.8368.mp3",
+          "startTime": 1.9333333333333333,
+          "duration": 1.488,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "metadata": {
+            "importSource": "sdk_v2"
+          }
+        }
+      ],
+      "muted": false
     }
   ],
-  "assets": []
+  "assets": [
+    {
+      "id": "asset_904048_1768374667",
+      "name": "旁白.mp3",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E6%97%81%E7%99%BD.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E6%97%81%E7%99%BD.mp3",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\旁白.mp3",
+      "duration": 28.368,
+      "isLinked": true
+    },
+    {
+      "id": "asset_567448_1768377612",
+      "name": "Gemini_Generated_Image_3qoch3qoch3qoch3.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_3qoch3qoch3qoch3.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_3qoch3qoch3qoch3.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_3qoch3qoch3qoch3.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_569325_1768377697",
+      "name": "Gemini_Generated_Image_68nkq568nkq568nk.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_68nkq568nkq568nk.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_68nkq568nkq568nk.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_68nkq568nkq568nk.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_641956_1768377811",
+      "name": "Gemini_Generated_Image_cit5wqcit5wqcit5.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_cit5wqcit5wqcit5.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_cit5wqcit5wqcit5.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_cit5wqcit5wqcit5.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_379432_1768377592",
+      "name": "Gemini_Generated_Image_g5b2ymg5b2ymg5b2.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_g5b2ymg5b2ymg5b2.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_g5b2ymg5b2ymg5b2.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_g5b2ymg5b2ymg5b2.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_710802_1768377798",
+      "name": "Gemini_Generated_Image_lrdkkalrdkkalrdk.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_lrdkkalrdkkalrdk.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_lrdkkalrdkkalrdk.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_lrdkkalrdkkalrdk.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_388856_1768377759",
+      "name": "Gemini_Generated_Image_m5bqfbm5bqfbm5bq.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_m5bqfbm5bqfbm5bq.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_m5bqfbm5bqfbm5bq.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_m5bqfbm5bqfbm5bq.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_306464_1768377727",
+      "name": "Gemini_Generated_Image_ot50nfot50nfot50.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_ot50nfot50nfot50.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_ot50nfot50nfot50.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_ot50nfot50nfot50.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_266671_1768377668",
+      "name": "Gemini_Generated_Image_qzcmglqzcmglqzcm.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_qzcmglqzcmglqzcm.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_qzcmglqzcmglqzcm.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_qzcmglqzcmglqzcm.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_996994_1768377643",
+      "name": "Gemini_Generated_Image_s4vce2s4vce2s4vc.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_s4vce2s4vce2s4vc.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_s4vce2s4vce2s4vc.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_s4vce2s4vce2s4vc.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_582750_1768377790",
+      "name": "Gemini_Generated_Image_xa6pyzxa6pyzxa6p.png",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_xa6pyzxa6pyzxa6p.png",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5CGemini_Generated_Image_xa6pyzxa6pyzxa6p.png",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\Gemini_Generated_Image_xa6pyzxa6pyzxa6p.png",
+      "duration": 2.8367999999999998,
+      "isLinked": true
+    },
+    {
+      "id": "asset_375216_1768382068",
+      "name": "群星下的远征.mp3",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E7%BE%A4%E6%98%9F%E4%B8%8B%E7%9A%84%E8%BF%9C%E5%BE%81.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E7%BE%A4%E6%98%9F%E4%B8%8B%E7%9A%84%E8%BF%9C%E5%BE%81.mp3",
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\群星下的远征.mp3",
+      "duration": 28.368,
+      "isLinked": true
+    },
+    {
+      "id": "asset_130612_1768406737",
+      "name": "37c4e133-c0e7-4446-b7da-cf24a6c1e030.jpg",
+      "type": "image",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C37c4e133-c0e7-4446-b7da-cf24a6c1e030.jpg",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C37c4e133-c0e7-4446-b7da-cf24a6c1e030.jpg",
+      "filePath": "F:\\桌面\\37c4e133-c0e7-4446-b7da-cf24a6c1e030.jpg",
+      "duration": 2.04,
+      "isLinked": true
+    },
+    {
+      "id": "asset_564494_1768732300",
+      "name": "TTS: 你好李尔",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_sub_1768728597770_2.8368.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_sub_1768728597770_2.8368.mp3",
+      "filePath": "F:\\桌面\\开发\\AIcut\\projects\\demo\\assets\\audio\\tts_sub_1768728597770_2.8368.mp3",
+      "duration": 1.488,
+      "isLinked": true
+    }
+  ]
 }

@@ -197,35 +197,94 @@ export function useAIEditSync(enabled: boolean = true) {
 
                 (async () => {
                     try {
-                        // 调用 API 获取文件内容
-                        const response = await fetch("/api/media/import-local", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ filePath, name, type: mediaType, duration, startTime })
-                        });
+                        let file: File;
+                        let mimeType = "application/octet-stream";
 
-                        if (!response.ok) {
-                            console.error("[AI Edit] Failed to import media:", await response.text());
-                            return;
+                        // NEW: Intelligent Fast Import - DISABLED FOR STABILITY
+                        // We are encountering issues where files are not found or not loaded correctly via static URL.
+                        // Forcing API fallback to ensure reliability.
+                        let fastUrl: string | null = null;
+
+                        /* 
+                        // Distinguish between Next.js public assets and Project assets
+                        const publicAssetMatch = filePath.match(/[/\\]public[/\\]assets[/\\](.*)/);
+                        // Fallback for generic assets folder (could be project or public)
+                        const genericAssetMatch = filePath.match(/[/\\]assets[/\\](.*)/);
+
+                        if (publicAssetMatch) {
+                             // public/assets -> Served statically at /assets/...
+                             const rel = publicAssetMatch[1];
+                             fastUrl = `/assets/${rel.replace(/\\/g, "/")}`;
+                        } else if (genericAssetMatch) {
+                             // generic assets -> Try to guess based on path content
+                             const rel = genericAssetMatch[1];
+                             if (filePath.includes("public")) {
+                                 fastUrl = `/assets/${rel.replace(/\\/g, "/")}`;
+                             } else {
+                                 // Assume project asset handled by API
+                                 fastUrl = `/api/materials/${rel.replace(/\\/g, "/")}`;
+                             }
+                        } 
+                        */
+
+                        if (fastUrl) {
+                            console.log(`[AI Edit] Fast-import attempt via: ${fastUrl}`);
+                            try {
+                                const res = await fetch(fastUrl);
+                                if (!res.ok) throw new Error(`Status ${res.status}`);
+
+                                // Validation: Ensure we didn't get an HTML 404 page
+                                const cType = res.headers.get("content-type");
+                                if (cType && cType.includes("text/html")) throw new Error("Got HTML response (likely 404 fallback)");
+
+                                const blob = await res.blob();
+                                if (blob.size < 100) throw new Error("File too small");
+
+                                mimeType = blob.type || cType || mimeType;
+                                file = new File([blob], name || filePath.split(/[/\\]/).pop(), { type: mimeType });
+                            } catch (e) {
+                                console.warn("[AI Edit] Fast-import failed, falling back to API:", e);
+                            }
                         }
 
-                        const result = await response.json();
-                        if (!result.success || !result.media) {
-                            console.error("[AI Edit] Import response error:", result);
-                            return;
+                        // If fast path failed or not applicable, use API
+                        let serverMediaData: any = null;
+
+                        if (!file) {
+                            // 调用 API 获取文件内容
+                            const response = await fetch("/api/media/import-local", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ filePath, name, type: mediaType, duration, startTime })
+                            });
+
+                            if (!response.ok) {
+                                console.error("[AI Edit] Failed to import media:", await response.text());
+                                return;
+                            }
+
+                            const result = await response.json();
+                            if (!result.success || !result.media) {
+                                console.error("[AI Edit] Import response error:", result);
+                                return;
+                            }
+
+                            const { media } = result;
+                            serverMediaData = media;
+
+                            // 将 base64 转换为 File 对象
+                            const byteCharacters = atob(media.data);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const blob = new Blob([byteArray], { type: media.mimeType });
+                            file = new File([blob], media.name, { type: media.mimeType });
+                            mimeType = media.mimeType;
                         }
 
-                        const { media } = result;
 
-                        // 将 base64 转换为 File 对象
-                        const byteCharacters = atob(media.data);
-                        const byteNumbers = new Array(byteCharacters.length);
-                        for (let i = 0; i < byteCharacters.length; i++) {
-                            byteNumbers[i] = byteCharacters.charCodeAt(i);
-                        }
-                        const byteArray = new Uint8Array(byteNumbers);
-                        const blob = new Blob([byteArray], { type: media.mimeType });
-                        const file = new File([blob], media.name, { type: media.mimeType });
 
                         // Calculate real duration for accurate timeline placement
                         let realDuration = 0;
@@ -240,7 +299,7 @@ export function useAIEditSync(enabled: boolean = true) {
 
                         // Fallback if calculation failed
                         if (!realDuration) {
-                            realDuration = Math.max(media.duration || 0, (mediaType === "image" ? (duration || 5) : 3));
+                            realDuration = Math.max(serverMediaData?.duration || 0, (mediaType === "image" ? (duration || 5) : 3));
                         }
                         // Use provided duration for images if explicit
                         if (mediaType === "image" && duration) {
@@ -255,7 +314,7 @@ export function useAIEditSync(enabled: boolean = true) {
                         }
 
                         const addedMedia = await useMediaStore.getState().addMediaFile(activeProject.id, {
-                            name: media.name,
+                            name: serverMediaData?.name ?? file.name,
                             type: mediaType as any,
                             file: file,
                             url: URL.createObjectURL(file),
@@ -269,7 +328,7 @@ export function useAIEditSync(enabled: boolean = true) {
                         }
 
                         // 从 SDK 返回的 metadata 中获取 startTime
-                        const start_time = media.metadata?.startTime ?? startTime ?? 0;
+                        const start_time = serverMediaData?.metadata?.startTime ?? startTime ?? 0;
 
                         // 创建或找到目标轨道
                         const store = useTimelineStore.getState();
@@ -361,7 +420,69 @@ export function useAIEditSync(enabled: boolean = true) {
             return;
         }
 
-        // --- Sync Tracks ---
+        // --- 1. Sync Assets (Media Library) FIRST ---
+        // We sync assets first so they are available in the store when tracks are updated
+        const mediaStore = useMediaStore.getState();
+        const currentAssets = mediaStore.mediaFiles;
+        const remoteAssets = data.assets && Array.isArray(data.assets) ? data.assets : [];
+
+        console.log(`[AI Sync] <Handle> Processing ${remoteAssets.length} assets. Current store has ${currentAssets.length} assets.`);
+
+        // a. Remove assets that are no longer in the snapshot
+        for (const localAsset of currentAssets) {
+            const stillExists = remoteAssets.find((a: any) =>
+                a.id === localAsset.id || (a.url && a.url === localAsset.url)
+            );
+            if (!stillExists) {
+                console.log(`[AI Sync] <Asset> Removing deleted asset: ${localAsset.name} (ID: ${localAsset.id})`);
+                try {
+                    const currentMediaFiles = useMediaStore.getState().mediaFiles;
+                    useMediaStore.setState({
+                        mediaFiles: currentMediaFiles.filter(m => m.id !== localAsset.id)
+                    });
+                } catch (e) {
+                    console.warn(`[AI Sync] Failed to remove asset ${localAsset.id}:`, e);
+                }
+            }
+        }
+
+        // b. Add/Update assets from snapshot
+        for (const remoteAsset of remoteAssets) {
+            const freshAssets = useMediaStore.getState().mediaFiles;
+            const existingAsset = freshAssets.find(a =>
+                a.id === remoteAsset.id || (remoteAsset.url && a.url === remoteAsset.url)
+            );
+
+            if (!remoteAsset.url) continue;
+
+            if (existingAsset) {
+                const needsUpdate =
+                    (remoteAsset.url && existingAsset.url !== remoteAsset.url) ||
+                    (remoteAsset.thumbnailUrl && existingAsset.thumbnailUrl !== remoteAsset.thumbnailUrl) ||
+                    (remoteAsset.duration && existingAsset.duration !== remoteAsset.duration);
+
+                if (needsUpdate) {
+                    useMediaStore.setState(state => ({
+                        mediaFiles: state.mediaFiles.map(a =>
+                            a.id === existingAsset.id ? {
+                                ...a,
+                                ...remoteAsset,
+                                isLinked: true
+                            } : a
+                        )
+                    }));
+                }
+                continue;
+            }
+
+            console.log(`[AI Sync] <Asset> Linking local asset: ${remoteAsset.name} -> ${remoteAsset.url}`);
+            mediaStore.addMediaFile(data.project?.id || "demo", {
+                ...remoteAsset,
+                isLinked: true
+            } as any);
+        }
+
+        // --- 2. Sync Tracks SECOND ---
         if (data.tracks) {
             console.log(`[AI Sync] <Handle> Processing ${data.tracks.length} tracks from snapshot`);
 
@@ -416,104 +537,17 @@ export function useAIEditSync(enabled: boolean = true) {
                 })
             }));
 
-            console.log('[AI Sync] <Handle> Normalized tracks:', normalizedTracks.length);
-
             const currentTracksSnapshot = JSON.stringify(useTimelineStore.getState().tracks);
             const newTracksSnapshot = JSON.stringify(normalizedTracks);
             if (currentTracksSnapshot !== newTracksSnapshot) {
                 console.log("[AI Sync] <Handle> Applying external track snapshot update...");
                 useTimelineStore.getState().setTracks(normalizedTracks);
-            } else {
-                console.log("[AI Sync] <Handle> Tracks match current state, skipping setTracks");
             }
         }
 
-        // --- Sync Assets (Media Library) ---
-        const mediaStore = useMediaStore.getState();
-        const currentAssets = mediaStore.mediaFiles;
-        const remoteAssets = data.assets && Array.isArray(data.assets) ? data.assets : [];
-
-        console.log(`[AI Sync] <Handle> Processing ${remoteAssets.length} assets. Current store has ${currentAssets.length} assets.`);
-
-        // 1. Remove assets that are no longer in the snapshot
-        const projectId = data.project?.id || "demo";
-        for (const localAsset of currentAssets) {
-            const stillExists = remoteAssets.find((a: any) =>
-                a.id === localAsset.id || (a.url && a.url === localAsset.url)
-            );
-            if (!stillExists) {
-                console.log(`[AI Sync] <Asset> Removing deleted asset: ${localAsset.name} (ID: ${localAsset.id})`);
-                try {
-                    // Use simplified removal - just update state, don't touch IndexedDB for linked assets
-                    // This prevents errors when the asset was never in IndexedDB
-                    const currentMediaFiles = useMediaStore.getState().mediaFiles;
-                    useMediaStore.setState({
-                        mediaFiles: currentMediaFiles.filter(m => m.id !== localAsset.id)
-                    });
-                } catch (e) {
-                    console.warn(`[AI Sync] Failed to remove asset ${localAsset.id}:`, e);
-                }
-            }
-        }
-
-        // 2. Add new assets from snapshot
-        for (const remoteAsset of remoteAssets) {
-            // Re-fetch current assets after potential removals
-            const freshAssets = useMediaStore.getState().mediaFiles;
-            const existingAsset = freshAssets.find(a =>
-                a.id === remoteAsset.id || (remoteAsset.url && a.url === remoteAsset.url)
-            );
-
-            if (!remoteAsset.url) {
-                console.warn(`[AI Sync] <Asset> Missing URL for asset: ${remoteAsset.name}, cannot link.`);
-                continue;
-            }
-
-            if (existingAsset) {
-                // Asset exists - check if we need to update properties (like thumbnailUrl)
-                const needsUpdate =
-                    (remoteAsset.thumbnailUrl && existingAsset.thumbnailUrl !== remoteAsset.thumbnailUrl) ||
-                    (remoteAsset.duration && existingAsset.duration !== remoteAsset.duration) ||
-                    (remoteAsset.width && existingAsset.width !== remoteAsset.width) ||
-                    (remoteAsset.height && existingAsset.height !== remoteAsset.height);
-
-                if (needsUpdate) {
-                    console.log(`[AI Sync] <Asset> Updating existing asset: ${remoteAsset.name}`);
-                    // Update in-place by modifying the store
-                    useMediaStore.setState(state => ({
-                        mediaFiles: state.mediaFiles.map(a =>
-                            a.id === existingAsset.id ? {
-                                ...a,
-                                thumbnailUrl: remoteAsset.thumbnailUrl || a.thumbnailUrl,
-                                duration: remoteAsset.duration || a.duration,
-                                width: remoteAsset.width || a.width,
-                                height: remoteAsset.height || a.height,
-                            } : a
-                        )
-                    }));
-                }
-                continue;
-            }
-
-            console.log(`[AI Sync] <Asset> Linking local asset: ${remoteAsset.name} -> ${remoteAsset.url}`);
-            mediaStore.addMediaFile(data.project?.id || "demo", {
-                id: remoteAsset.id,
-                name: remoteAsset.name,
-                type: remoteAsset.type || "video",
-                url: remoteAsset.url,
-                filePath: remoteAsset.filePath,
-                thumbnailUrl: remoteAsset.thumbnailUrl,
-                duration: remoteAsset.duration || 0,
-                width: remoteAsset.width,
-                height: remoteAsset.height,
-                isLinked: true
-            } as any);
-        }
-
-        console.log("[AI Sync] <Handle> Asset synchronization complete.");
         hasSynced.current = true;
 
-        // --- Sync Project Metadata (only if IDs match, which is guaranteed here) ---
+        // --- 3. Sync Project Metadata ---
         if (currentProject && remoteProject) {
             const updates: any = {};
 
@@ -612,7 +646,7 @@ export function useAIEditSync(enabled: boolean = true) {
                     // If focusing a specific project and it's different, switch to it
                     if (data.projectId) {
                         const currentActiveId = useProjectStore.getState().activeProject?.id;
-                        if (currentActiveId && currentActiveId !== data.projectId) {
+                        if (currentActiveId !== data.projectId) {
                             console.log(`[AI Sync] Project switch requested to: ${data.projectId}`);
                             router.push(`/editor/${data.projectId}`);
                         }
@@ -682,12 +716,41 @@ export function useAIEditSync(enabled: boolean = true) {
 
         try {
             console.log("[AI Sync] Reporting tracks to backend...");
+
+            // Serialize assets (convert Blob URLs to persistent API URLs)
+            const currentAssets = useMediaStore.getState().mediaFiles;
+            const assetsToSave = currentAssets.map(a => {
+                let persistentUrl = a.url;
+                let isLinked = (a as any).isLinked;
+
+                if (a.filePath) {
+                    // It has a local path, so it should be linked
+                    isLinked = true;
+                    if (a.url && a.url.startsWith("blob:")) {
+                        // Convert to persistent URL
+                        persistentUrl = `/api/media/serve?path=${encodeURIComponent(a.filePath)}`;
+                    }
+                }
+
+                // Return a clean object without the File blob
+                const { file, ...rest } = a;
+                return {
+                    ...rest,
+                    url: persistentUrl,
+                    isLinked
+                };
+            });
+
             await fetch("/api/ai-edit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "updateSnapshot",
-                    data: { project: activeProject, tracks: currentTracks }
+                    data: {
+                        project: activeProject,
+                        tracks: currentTracks,
+                        assets: assetsToSave
+                    }
                 })
             });
             lastReportedState.current = stateSummary;

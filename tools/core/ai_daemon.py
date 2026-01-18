@@ -343,8 +343,26 @@ class AIDaemon:
 
         self.log(f"Starting Parallel TTS generation for {len(text_elements)} segments...")
         
-        # 确保输出目录存在 (在 public 下以便预览)
+        # 确定输出目录：改为直接输出到项目 assets/audio (如有) 或者保持原样
+        # 更好的策略：
+        # 1. 检测当前活跃项目ID (通过快照)
+        # 2. 如果能找到项目目录，优先输出到 projects/<id>/assets/audio
+        # 3. 否则回退到 public/assets/tts
+        
         output_dir = os.path.join(self.workspace_root, "AIcut-Studio", "apps", "web", "public", "assets", "tts")
+        
+        try:
+            snapshot = self.get_snapshot().get("snapshot", {})
+            project_id = snapshot.get("project", {}).get("id")
+            if project_id:
+                project_audio_dir = os.path.join(self.workspace_root, "projects", project_id, "assets", "audio")
+                if os.path.exists(os.path.dirname(project_audio_dir)): # assets dir exists
+                    os.makedirs(project_audio_dir, exist_ok=True)
+                    output_dir = project_audio_dir
+                    self.log(f"Redirecting TTS output to project assets: {output_dir}")
+        except Exception:
+            pass # Fallback to default
+            
         os.makedirs(output_dir, exist_ok=True)
         
         # 并发处理
@@ -356,11 +374,31 @@ class AIDaemon:
         valid_results = [r for r in results if r is not None]
 
         if valid_results:
-            self.log(f"TTS generation completed. Sending batch event with {len(valid_results)} items.")
-            # 批量返回结果，减少 IPC 拥堵
-            self.emit_event("importAudioBatch", {
-                "items": valid_results
-            })
+            self.log(f"TTS generation completed. Directly importing {len(valid_results)} items to project...")
+            
+            for item in valid_results:
+                try:
+                    # 使用 SDK 直接导入到项目快照，类似 aicut_tool.py 的行为
+                    # 这会更新 project-snapshot.json
+                    res = self.client.import_media(
+                        file_path=item["filePath"],
+                        media_type="audio", 
+                        name=item["name"],
+                        start_time=item["startTime"],
+                        track_name="AI 语音轨"
+                    )
+                    
+                    if res and res.get("success"):
+                         self.log(f"  > Imported asset: {item['name']}")
+                    else:
+                         self.log(f"  ! Import failed for {item['name']}: {res}")
+                         
+                except Exception as e:
+                    self.log(f"  ! API Error importing {item['name']}: {e}")
+
+            # 通知前端刷新 (可选，如果 import_media 内部已经触发了 updateSnapshot，前端 SSE 会收到通知)
+            # 但为了保险，我们可以发一个简单的 refresh 信号或者什么都不做
+            # self.emit_event("refreshProject", {}) 
         else:
             self.log("TTS generation completed but no audio files were generated.")
 
@@ -384,7 +422,11 @@ class AIDaemon:
             communicate = edge_tts.Communicate(text, voice_id)
             await communicate.save(filepath)
             # Ensure file is flushed
-            await asyncio.sleep(0.5)
+            for _ in range(10):
+                if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+                    break
+                await asyncio.sleep(0.5)
+            await asyncio.sleep(0.2) # Extra buffer
 
             # Verify file integrity
             if not os.path.exists(filepath) or os.path.getsize(filepath) < 100:
