@@ -63,6 +63,7 @@ const AnimatedMediaElement: React.FC<{
                     />
                 ) : media.type === 'audio' ? (
                     <Audio
+                        key={`${element.id}-${url}-${Math.round((trackMuted || element.muted ? 0 : volume) * 100)}`}
                         src={url}
                         startFrom={trimStartFrame}
                         volume={trackMuted || element.muted ? 0 : volume}
