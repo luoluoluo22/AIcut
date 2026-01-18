@@ -1,5 +1,4 @@
 {
-  "action": "projectDeleted",
-  "deletedProjectId": "488b4726-1e36-4e1f-ba0b-c5681dc70e4c",
-  "redirectTo": "/projects"
+  "action": "refreshProjects",
+  "projectId": "87a39176-1a71-446d-9c1c-440b87a963e1"
 }

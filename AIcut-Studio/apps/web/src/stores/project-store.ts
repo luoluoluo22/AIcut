@@ -201,7 +201,20 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }
   },
 
-  createNewProject: async (name: string) => {
+  createNewProject: async (baseName: string) => {
+    // Generate unique name
+    const { savedProjects } = get();
+    let name = baseName;
+    let counter = 1;
+    // Create a set of existing names for faster lookup
+    const existingNames = new Set(savedProjects.map(p => p.name));
+
+    // If name exists, try appending number until unique
+    while (existingNames.has(name)) {
+      name = `${baseName} ${counter}`;
+      counter++;
+    }
+
     const newProject = createDefaultProject(name);
 
     set({ activeProject: newProject });
@@ -224,12 +237,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
       // Sync new project to file system for AI tools
       try {
-        // First archive any existing project
-        await fetch("/api/ai-edit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "archiveProject" })
-        });
+        // No need to archive existing project here - it should be handled by save logic or switch logic
+        // archiveProject with no args archives whatever is in ai_workspace which might be stale
+
         // Then update workspace with new project
         await fetch("/api/ai-edit", {
           method: "POST",

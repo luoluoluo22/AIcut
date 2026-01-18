@@ -46,6 +46,14 @@ function getProjectIdMap(): Record<string, string> {
 
 function saveToIdMap(folderName: string, internalId: string) {
     const map = getProjectIdMap();
+
+    // Remove old entries for this ID to avoid duplicates/stale mappings
+    Object.keys(map).forEach(key => {
+        if (map[key] === internalId && key !== folderName) {
+            delete map[key];
+        }
+    });
+
     map[folderName] = internalId;
     fs.writeFileSync(PROJECT_ID_MAP_FILE, JSON.stringify(map, null, 2));
 }

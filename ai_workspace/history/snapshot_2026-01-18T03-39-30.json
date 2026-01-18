@@ -1,20 +1,20 @@
 {
   "project": {
-    "id": "87a39176-1a71-446d-9c1c-440b87a963e1",
-    "name": "项目",
-    "thumbnail": "",
-    "createdAt": "2026-01-18T03:41:21.881Z",
-    "updatedAt": "2026-01-18T03:44:29.385Z",
+    "id": "0fcd2cd1-0b32-4265-9346-c55c17c4da20",
+    "name": "新建项目",
+    "thumbnail": null,
+    "createdAt": "2026-01-18T03:37:14.743Z",
+    "updatedAt": "2026-01-18T03:37:14.743Z",
     "scenes": [
       {
-        "id": "1d75bd3a-16b7-4861-b475-1aac50bc6aee",
+        "id": "376219ac-58a7-4d7c-9028-ef5a9d1647ed",
         "name": "Main Scene",
         "isMain": true,
-        "createdAt": "2026-01-18T03:41:21.881Z",
-        "updatedAt": "2026-01-18T03:41:21.881Z"
+        "createdAt": "2026-01-18T03:37:14.743Z",
+        "updatedAt": "2026-01-18T03:37:14.743Z"
       }
     ],
-    "currentSceneId": "1d75bd3a-16b7-4861-b475-1aac50bc6aee",
+    "currentSceneId": "376219ac-58a7-4d7c-9028-ef5a9d1647ed",
     "backgroundColor": "#000000",
     "backgroundType": "color",
     "blurIntensity": 8,
@@ -28,7 +28,7 @@
   },
   "tracks": [
     {
-      "id": "257cad8c-791b-48b3-aa1f-831002f6dcc3",
+      "id": "435a282a-9ef1-4c92-b24d-da6f7f260b68",
       "name": "Main Track",
       "type": "media",
       "elements": [],

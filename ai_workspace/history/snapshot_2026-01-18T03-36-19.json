@@ -1,0 +1,318 @@
+{
+  "project": {
+    "id": "demo",
+    "name": "AIcut Demo Project",
+    "thumbnail": null,
+    "createdAt": "2026-01-16T09:44:18.173Z",
+    "updatedAt": "2026-01-17T02:20:09.317Z",
+    "scenes": [
+      {
+        "id": "scene1",
+        "name": "Scene 1",
+        "isMain": true,
+        "createdAt": "2026-01-16T09:44:18.173Z",
+        "updatedAt": "2026-01-16T09:44:18.173Z"
+      }
+    ],
+    "currentSceneId": "scene1",
+    "backgroundColor": "#000000",
+    "backgroundType": "color",
+    "blurIntensity": 0,
+    "bookmarks": [],
+    "fps": 30,
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvasMode": "original",
+    "markers": []
+  },
+  "tracks": [
+    {
+      "id": "track-subs",
+      "name": "字幕层",
+      "type": "text",
+      "elements": [
+        {
+          "id": "sub-0",
+          "type": "text",
+          "startTime": 0,
+          "duration": 4,
+          "x": 960,
+          "y": 900,
+          "content": "我使用 AIcut 全自动视频编辑引擎",
+          "trimStart": 0,
+          "trimEnd": 0,
+          "fontSize": 60,
+          "fontFamily": "Arial",
+          "color": "#ffffff",
+          "backgroundColor": "transparent",
+          "textAlign": "center",
+          "fontWeight": "bold",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1
+        },
+        {
+          "id": "sub-1",
+          "type": "text",
+          "startTime": 5.5,
+          "duration": 4,
+          "x": 960,
+          "y": 900,
+          "content": " Python 后端与前端实时同步工作流",
+          "trimStart": 0,
+          "trimEnd": 0,
+          "fontSize": 60,
+          "fontFamily": "Arial",
+          "color": "#ffffff",
+          "backgroundColor": "transparent",
+          "textAlign": "center",
+          "fontWeight": "bold",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1
+        },
+        {
+          "id": "sub-2",
+          "type": "text",
+          "startTime": 10.5,
+          "duration": 4,
+          "x": 960,
+          "y": 900,
+          "content": "轻松实现 AI 辅助剪辑与批量生产",
+          "trimStart": 0,
+          "trimEnd": 0,
+          "fontSize": 60,
+          "fontFamily": "Arial",
+          "color": "#ffffff",
+          "backgroundColor": "transparent",
+          "textAlign": "center",
+          "fontWeight": "bold",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1
+        },
+        {
+          "id": "sub-3",
+          "type": "text",
+          "startTime": 15.5,
+          "duration": 4,
+          "x": 960,
+          "y": 900,
+          "content": "即刻开启您的 AI 创作之旅",
+          "trimStart": 0,
+          "trimEnd": 0,
+          "fontSize": 60,
+          "fontFamily": "Arial",
+          "color": "#ffffff",
+          "backgroundColor": "transparent",
+          "textAlign": "center",
+          "fontWeight": "bold",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1
+        }
+      ]
+    },
+    {
+      "id": "track-audio",
+      "name": "配音层",
+      "type": "media",
+      "elements": [
+        {
+          "id": "el-voice-0",
+          "type": "media",
+          "mediaId": "asset-voice-0",
+          "name": "intro_voice_0.mp3",
+          "startTime": 0,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        },
+        {
+          "id": "el-voice-1",
+          "type": "media",
+          "mediaId": "asset-voice-1",
+          "name": "intro_voice_1.mp3",
+          "startTime": 5,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        },
+        {
+          "id": "el-voice-2",
+          "type": "media",
+          "mediaId": "asset-voice-2",
+          "name": "intro_voice_2.mp3",
+          "startTime": 10,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        },
+        {
+          "id": "el-voice-3",
+          "type": "media",
+          "mediaId": "asset-voice-3",
+          "name": "intro_voice_3.mp3",
+          "startTime": 15,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1,
+          "muted": false
+        }
+      ],
+      "muted": false
+    },
+    {
+      "id": "track-images",
+      "name": "图片层",
+      "type": "media",
+      "elements": [
+        {
+          "id": "el-img-0",
+          "type": "media",
+          "mediaId": "asset-img-0",
+          "name": "intro_img_0.jpg",
+          "startTime": 0,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        },
+        {
+          "id": "el-img-1",
+          "type": "media",
+          "mediaId": "asset-img-1",
+          "name": "intro_img_1.jpg",
+          "startTime": 5,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        },
+        {
+          "id": "el-img-2",
+          "type": "media",
+          "mediaId": "asset-img-2",
+          "name": "intro_img_2.jpg",
+          "startTime": 10,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        },
+        {
+          "id": "el-img-3",
+          "type": "media",
+          "mediaId": "asset-img-3",
+          "name": "intro_img_3.jpg",
+          "startTime": 15,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "opacity": 1,
+          "rotation": 0,
+          "volume": 1
+        }
+      ],
+      "muted": false,
+      "isMain": true
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset-img-0",
+      "name": "intro_img_0.jpg",
+      "type": "image",
+      "url": "/materials/images/intro_img_0.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_0.jpg",
+      "width": 1024,
+      "height": 576
+    },
+    {
+      "id": "asset-img-1",
+      "name": "intro_img_1.jpg",
+      "type": "image",
+      "url": "/materials/images/intro_img_1.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_1.jpg",
+      "width": 1024,
+      "height": 576
+    },
+    {
+      "id": "asset-img-2",
+      "name": "intro_img_2.jpg",
+      "type": "image",
+      "url": "/materials/images/intro_img_2.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_2.jpg",
+      "width": 1024,
+      "height": 576
+    },
+    {
+      "id": "asset-img-3",
+      "name": "intro_img_3.jpg",
+      "type": "image",
+      "url": "/materials/images/intro_img_3.jpg",
+      "filePath": "projects/demo/assets/images/intro_img_3.jpg",
+      "width": 1024,
+      "height": 576
+    },
+    {
+      "id": "asset-voice-0",
+      "name": "intro_voice_0.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_0.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_0.mp3"
+    },
+    {
+      "id": "asset-voice-1",
+      "name": "intro_voice_1.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_1.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_1.mp3"
+    },
+    {
+      "id": "asset-voice-2",
+      "name": "intro_voice_2.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_2.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_2.mp3"
+    },
+    {
+      "id": "asset-voice-3",
+      "name": "intro_voice_3.mp3",
+      "type": "audio",
+      "url": "/materials/audio/intro_voice_3.mp3",
+      "filePath": "projects/demo/assets/audio/intro_voice_3.mp3"
+    }
+  ]
+}
