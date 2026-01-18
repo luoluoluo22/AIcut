@@ -401,17 +401,24 @@ export function useAIEditSync(enabled: boolean = true) {
                             });
 
                             // Cleanup TTS Placeholders (MOVED HERE for better UX: remove only after new element is added)
-                            if (mediaType === "audio") {
-                                // Defer slightly to ensure React renders the new element first
-                                setTimeout(() => {
-                                    const store = useTimelineStore.getState();
-                                    const placeholderTracks = store.tracks.filter(t => t.name === "AI 语音 (生成中...)");
-                                    if (placeholderTracks.length > 0) {
-                                        console.log("[AI Edit] Removing TTS placeholder tracks (post-add)...");
-                                        placeholderTracks.forEach(t => store.removeTrack(t.id));
-                                    }
-                                }, 100);
-                            }
+                            // Cleanup TTS Placeholders (MOVED HERE for better UX: remove only after new element is added)
+                            const cleanupPlaceholders = () => {
+                                const store = useTimelineStore.getState();
+                                const placeholderTracks = store.tracks.filter(t =>
+                                    t.name === "AI 语音 (生成中...)" ||
+                                    t.elements.some((e: any) => e.mediaId === "placeholder-tts-generating")
+                                );
+
+                                if (placeholderTracks.length > 0) {
+                                    console.log(`[AI Edit] Removing ${placeholderTracks.length} TTS placeholder tracks...`);
+                                    placeholderTracks.forEach(t => store.removeTrack(t.id));
+                                }
+                            };
+
+                            // Run immediately and after a short delay to handle race conditions
+                            cleanupPlaceholders();
+                            setTimeout(cleanupPlaceholders, 100);
+                            setTimeout(cleanupPlaceholders, 500);
 
                             console.log(`[AI Edit] ${mediaType} imported and added to track successfully:`, addedMedia.name);
                         }
@@ -564,7 +571,71 @@ export function useAIEditSync(enabled: boolean = true) {
             const newTracksSnapshot = JSON.stringify(normalizedTracks);
             if (currentTracksSnapshot !== newTracksSnapshot) {
                 console.log("[AI Sync] <Handle> Applying external track snapshot update...");
-                useTimelineStore.getState().setTracks(normalizedTracks);
+
+                // CRITICAL FIX: Preserve local "loading placeholders" that might not be in the remote snapshot
+                // AND filter out remote placeholders to prevent resurrection of deleted ones.
+                const currentTracks = useTimelineStore.getState().tracks;
+                const localPlaceholders = currentTracks.filter(t =>
+                    t.name === "AI 语音 (生成中...)" || t.name === "AI 字幕 (生成中...)"
+                );
+
+                // 1. Clean Normalized tracks (from server) - remove any stale placeholders that might have been saved
+                const cleanNormalizedTracks = normalizedTracks.filter((t: any) =>
+                    t.name !== "AI 语音 (生成中...)" && t.name !== "AI 字幕 (生成中...)"
+                );
+
+                // 2. Merge local placeholders back in
+                let finalTracks = cleanNormalizedTracks;
+                if (localPlaceholders.length > 0) {
+                    // Filter out placeholders that seem to be "resolved" by the new snapshot
+                    // We process at the ELEMENT level now to handle batch tasks correctly
+                    const necessaryPlaceholders = localPlaceholders.map(pTrack => {
+                        // Filter elements inside the placeholder track
+                        const remainingElements = pTrack.elements.filter(pElement => {
+                            const pStart = pElement.startTime;
+
+                            // Check if this is a TTS placeholder
+                            if (pTrack.name === "AI 语音 (生成中...)") {
+                                // Look for ANY audio/media track in remote that has an element starting at roughly the same time
+                                const hasResult = cleanNormalizedTracks.some((rTrack: any) =>
+                                    (rTrack.type === "audio" || rTrack.type === "media") &&
+                                    rTrack.elements.some((rEl: any) => Math.abs(rEl.startTime - pStart) < 0.2)
+                                );
+                                if (hasResult) {
+                                    // console.log(`[AI Sync] Dropping TTS placeholder element at ${pStart.toFixed(2)}s`);
+                                    return false; // Result found, remove placeholder element
+                                }
+                            }
+
+                            // Check if this is an ASR placeholder
+                            if (pTrack.name === "AI 字幕 (生成中...)") {
+                                // Look for Text track
+                                const hasResult = cleanNormalizedTracks.some((rTrack: any) =>
+                                    rTrack.type === "text" &&
+                                    rTrack.elements.some((rEl: any) => Math.abs(rEl.startTime - pStart) < 0.2)
+                                );
+                                if (hasResult) {
+                                    // console.log(`[AI Sync] Dropping ASR placeholder element at ${pStart.toFixed(2)}s`);
+                                    return false; // Result found, remove placeholder element
+                                }
+                            }
+
+                            // Otherwise, keep it
+                            return true;
+                        });
+
+                        // Return the track with only the remaining placeholder elements
+                        return { ...pTrack, elements: remainingElements };
+                    }).filter(pTrack => pTrack.elements.length > 0); // Finally remove tracks that became empty
+
+
+                    if (necessaryPlaceholders.length > 0) {
+                        console.log(`[AI Sync] Preserving ${necessaryPlaceholders.length} local placeholder tracks (with ${necessaryPlaceholders.reduce((acc, t) => acc + t.elements.length, 0)} pending elements)`);
+                        finalTracks = [...cleanNormalizedTracks, ...necessaryPlaceholders];
+                    }
+                }
+
+                useTimelineStore.getState().setTracks(finalTracks);
             }
         }
 

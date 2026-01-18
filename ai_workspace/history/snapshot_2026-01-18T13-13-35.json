@@ -26,6 +26,35 @@
   },
   "tracks": [
     {
+      "id": "e264d49d-e177-4771-bafc-5e2437788807",
+      "name": "AI 字幕",
+      "type": "text",
+      "elements": [
+        {
+          "type": "text",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.47333333333333333,
+          "duration": 1.46,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center",
+          "fontWeight": "normal",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1,
+          "id": "061af20c-db9e-4708-9831-7d10697060d7"
+        }
+      ],
+      "muted": false
+    },
+    {
       "id": "6926d2b8-7787-4359-9da6-7134a9ccdfce",
       "name": "AI 字幕",
       "type": "text",
@@ -289,6 +318,12 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
+          },
+          "transition": {
+            "out": {
+              "type": "fade",
+              "duration": 0.5
+            }
           }
         },
         {
@@ -311,6 +346,12 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
+          },
+          "transition": {
+            "in": {
+              "type": "fade",
+              "duration": 0.5
+            }
           }
         },
         {
@@ -493,7 +534,7 @@
       "muted": false
     },
     {
-      "id": "e9e82206-b4c5-4b00-b021-31c809104c12",
+      "id": "25bcb49b-4fdd-4ca0-9ed2-7cfd079ab73a",
       "name": "Main Track",
       "type": "media",
       "elements": [],
@@ -501,42 +542,57 @@
       "isMain": true
     },
     {
-      "id": "8d033d41-3ddd-4dfc-8a61-41362d2eac10",
-      "name": "Audio Track",
+      "id": "5d382673-468a-4d8b-aba2-c58ccfc2851b",
+      "name": "AI 语音 21:07:45",
       "type": "audio",
       "elements": [
         {
+          "id": "14c01c18-8470-430b-bc60-37470098914a",
           "type": "media",
-          "mediaId": "asset_688907",
-          "name": "旁白.mp3",
-          "duration": 5,
-          "startTime": 0,
+          "mediaId": "asset_793305_1768740767",
+          "name": "TTS: 那是一个宁静的午后",
+          "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
+          "startTime": 0.3333333333333333,
+          "duration": 2.256,
           "trimStart": 0,
           "trimEnd": 0,
-          "id": "8b0fd788-929b-462d-8fb6-d1ebe338995b",
           "muted": false,
+          "volume": 1,
           "x": 960,
           "y": 540,
           "scale": 1,
           "rotation": 0,
           "opacity": 1,
-          "volume": 1
+          "metadata": {
+            "importSource": "sdk_v2"
+          }
         }
       ],
       "muted": false
     },
     {
-      "id": "17136aeb-ae7c-4847-ba9d-27bafa6ce39c",
-      "name": "Audio Track",
+      "id": "345e4f5e-bbd2-4eb0-ab16-463e682fcd5a",
+      "name": "AI 语音 (生成中...)",
       "type": "audio",
-      "elements": [],
-      "muted": false
-    },
-    {
-      "id": "bed124ab-7731-489c-b5bd-85c77e60003b",
-      "name": "Audio Track",
-      "type": "audio",
-      "elements": [],
+      "elements": [
+        {
+          "type": "media",
+          "mediaId": "placeholder-tts-generating",
+          "name": "正在生成语音...",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "id": "7e2b6b86-06c1-412a-9ff8-68a5ba13987a",
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1
+        }
+      ],
       "muted": false
     }
   ],
@@ -642,18 +698,43 @@
       "isLinked": true
     },
     {
-      "id": "asset_688907",
-      "name": "旁白.mp3",
+      "id": "asset_793305_1768740767",
+      "name": "TTS: 那是一个宁静的午后",
       "type": "audio",
-      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E6%97%81%E7%99%BD.mp3",
-      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\旁白.mp3"
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
+      "filePath": "F:\\桌面\\开发\\AIcut\\projects\\demo\\assets\\audio\\tts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
+      "duration": 2.256,
+      "isLinked": true
     },
     {
-      "id": "asset_688928",
+      "id": "asset_022242",
       "name": "群星下的远征.mp3",
       "type": "audio",
       "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E7%BE%A4%E6%98%9F%E4%B8%8B%E7%9A%84%E8%BF%9C%E5%BE%81.mp3",
-      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\群星下的远征.mp3"
+      "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\群星下的远征.mp3",
+      "duration": 245.4,
+      "isLinked": true
+    },
+    {
+      "id": "asset_82297_1768741704",
+      "name": "TTS: 洛阳城外",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+      "filePath": "F:\\桌面\\开发\\AIcut\\projects\\demo\\assets\\audio\\tts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+      "duration": 1.608,
+      "isLinked": true
+    },
+    {
+      "id": "asset_688154_1768741886",
+      "name": "TTS: 阳光透过树梢",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_597d3c85-97f9-485a-a0e6-0e832d25b982.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_597d3c85-97f9-485a-a0e6-0e832d25b982.mp3",
+      "filePath": "F:\\桌面\\开发\\AIcut\\projects\\demo\\assets\\audio\\tts_597d3c85-97f9-485a-a0e6-0e832d25b982.mp3",
+      "duration": 2.016,
+      "isLinked": true
     }
   ]
 }

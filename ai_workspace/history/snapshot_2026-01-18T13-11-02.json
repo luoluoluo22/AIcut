@@ -22,7 +22,8 @@
       "width": 1920,
       "height": 1080
     },
-    "canvasMode": "preset"
+    "canvasMode": "preset",
+    "markers": []
   },
   "tracks": [
     {
@@ -289,6 +290,12 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
+          },
+          "transition": {
+            "out": {
+              "type": "fade",
+              "duration": 0.5
+            }
           }
         },
         {
@@ -311,6 +318,12 @@
           "metadata": {
             "importSource": "sdk_v2",
             "animation": "zoomIn"
+          },
+          "transition": {
+            "in": {
+              "type": "fade",
+              "duration": 0.5
+            }
           }
         },
         {
@@ -493,7 +506,7 @@
       "muted": false
     },
     {
-      "id": "1ee1364b-7d24-4520-a192-58ef95a00128",
+      "id": "958ed55e-db73-44ae-a38f-4a65ffbe37ad",
       "name": "Main Track",
       "type": "media",
       "elements": [],
@@ -501,60 +514,47 @@
       "isMain": true
     },
     {
-      "id": "928ae3a2-d066-4428-bd3c-747bdb8b3fbf",
-      "name": "Audio Track",
+      "id": "5d382673-468a-4d8b-aba2-c58ccfc2851b",
+      "name": "AI 语音 21:07:45",
       "type": "audio",
       "elements": [
         {
-          "type": "media",
-          "mediaId": "asset_022242",
-          "name": "群星下的远征.mp3",
-          "duration": 245.4,
-          "startTime": 0,
-          "trimStart": 0,
-          "trimEnd": 238.93333333333334,
-          "id": "33c5f8d1-12ec-4d25-847c-290c66a296fd",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "volume": 1
-        },
-        {
-          "type": "media",
-          "mediaId": "asset_022242",
-          "name": "群星下的远征.mp3",
-          "duration": 245.4,
-          "startTime": 6.466666666666667,
-          "trimStart": 6.466666666666667,
-          "trimEnd": 0,
-          "id": "4b821f56-8ce4-475b-8d5f-4244be4cf56d",
-          "muted": false,
-          "x": 960,
-          "y": 540,
-          "scale": 1,
-          "rotation": 0,
-          "opacity": 1,
-          "volume": 1
-        }
-      ],
-      "muted": false
-    },
-    {
-      "id": "f95bf0bf-61b9-46f4-8a7d-28bb470551ea",
-      "name": "AI 语音 20:52:47",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "eed2365d-0b42-4e5c-a170-0d6ffd97bc64",
+          "id": "14c01c18-8470-430b-bc60-37470098914a",
           "type": "media",
           "mediaId": "asset_793305_1768740767",
           "name": "TTS: 那是一个宁静的午后",
           "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_eed0f0f8-5dbc-4d16-8c32-5f4976d7b664.mp3",
           "startTime": 0.3333333333333333,
           "duration": 2.256,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "muted": false,
+          "volume": 1,
+          "x": 960,
+          "y": 540,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "metadata": {
+            "importSource": "sdk_v2"
+          }
+        }
+      ],
+      "muted": false
+    },
+    {
+      "id": "2c27948c-e358-4f02-883a-72b66f82f269",
+      "name": "AI 语音 21:09:21",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "de8690c6-e06f-4adf-8849-67284d81e0b5",
+          "type": "media",
+          "mediaId": "asset_82297_1768741704",
+          "name": "TTS: 洛阳城外",
+          "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+          "startTime": 2.84,
+          "duration": 1.608,
           "trimStart": 0,
           "trimEnd": 0,
           "muted": false,
@@ -690,6 +690,16 @@
       "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5CAIcut%E5%B0%8F%E7%99%BD%E6%95%99%E7%A8%8B%5C%E9%9C%80%E8%A6%81%E5%89%AA%E8%BE%91%E7%9A%84%E7%B4%A0%E6%9D%90%5C%E7%BE%A4%E6%98%9F%E4%B8%8B%E7%9A%84%E8%BF%9C%E5%BE%81.mp3",
       "filePath": "F:\\桌面\\AIcut小白教程\\需要剪辑的素材\\群星下的远征.mp3",
       "duration": 245.4,
+      "isLinked": true
+    },
+    {
+      "id": "asset_82297_1768741704",
+      "name": "TTS: 洛阳城外",
+      "type": "audio",
+      "url": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+      "thumbnailUrl": "/api/media/serve?path=F%3A%5C%E6%A1%8C%E9%9D%A2%5C%E5%BC%80%E5%8F%91%5CAIcut%5Cprojects%5Cdemo%5Cassets%5Caudio%5Ctts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+      "filePath": "F:\\桌面\\开发\\AIcut\\projects\\demo\\assets\\audio\\tts_81e1d12f-620a-4590-b61b-be6fd26a9640.mp3",
+      "duration": 1.608,
       "isLinked": true
     }
   ]

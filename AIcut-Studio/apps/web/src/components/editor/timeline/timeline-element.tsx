@@ -296,27 +296,20 @@ export function TimelineElement({
 
     // 0. 添加 "Loading Placeholder"
     try {
-      const placeholderTrackId = addTrack("text");
+      const placeholderTrackId = addTrack("audio");
       updateTrack(placeholderTrackId, { name: "AI 语音 (生成中...)" });
 
       textElements.forEach(el => {
         addElementToTrack(placeholderTrackId, {
-          type: "text",
-          content: "⏳ 正在生成语音...",
+          type: "media", // Use media type for audio track
+          mediaId: "placeholder-tts-generating", // Special ID for identification
+          name: "正在生成语音...",
           startTime: el.startTime,
           duration: el.duration,
           trimStart: 0,
           trimEnd: 0,
-          fontSize: 30, // 稍微小一点
-          fontFamily: "Arial",
-          color: "#ffffff",
-          backgroundColor: "#16a34a99", // Greenish for TTS
-          textAlign: "center",
-          x: 960,
-          y: 600,
-          scale: 1,
-          rotation: 0,
-          opacity: 0.8
+          muted: false,
+          volume: 1,
         });
       });
 
@@ -343,6 +336,19 @@ export function TimelineElement({
   };
 
   const renderElementContent = () => {
+    // Check for TTS placeholder first
+    if (element.mediaId === "placeholder-tts-generating") {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-indigo-500/50 rounded overflow-hidden relative">
+          <div className="absolute inset-0 bg-white/10 animate-pulse" />
+          <div className="flex items-center gap-2 z-10 px-2">
+            <div className="w-3 h-3 rounded-full border-2 border-white/50 border-t-white animate-spin shrink-0" />
+            <span className="text-xs text-white/90 font-medium truncate">AI 生成中...</span>
+          </div>
+        </div>
+      );
+    }
+
     if (element.type === "text") {
       const textContent = element.content || "Text";
       return (

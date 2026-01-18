@@ -402,6 +402,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       // 2. Sync current project state to workspace snapshot
       //    This ensures project name changes are reflected in the file
       try {
+        const cleanTracks = timelineStore.tracks.filter(t =>
+          t.name !== "AI 语音 (生成中...)" && t.name !== "AI 字幕 (生成中...)"
+        );
+
         await fetch("/api/ai-edit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -409,7 +413,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
             action: "saveSnapshot",
             data: {
               project: activeProject,
-              tracks: timelineStore.tracks,
+              tracks: cleanTracks,
               // media/assets are managed separately
             }
           })

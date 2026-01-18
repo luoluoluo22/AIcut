@@ -794,5 +794,226 @@
     },
     "timestamp": 1768740743179,
     "processed": true
+  },
+  {
+    "id": "edit_1768741465237_qyjaivavr",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "eed0f0f8-5dbc-4d16-8c32-5f4976d7b664",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.3333333333333333,
+          "duration": 1.7400000000000002
+        }
+      ]
+    },
+    "timestamp": 1768741465237,
+    "processed": true
+  },
+  {
+    "id": "edit_1768741640382_d7qgz19rr",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "eed0f0f8-5dbc-4d16-8c32-5f4976d7b664",
+          "content": "那是一个宁静的午后",
+          "startTime": 0.3333333333333333,
+          "duration": 1.7400000000000002
+        }
+      ]
+    },
+    "timestamp": 1768741640382,
+    "processed": true
+  },
+  {
+    "id": "edit_1768741680313_bfgi57t3e",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "81e1d12f-620a-4590-b61b-be6fd26a9640",
+          "content": "洛阳城外",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999
+        }
+      ]
+    },
+    "timestamp": 1768741680313,
+    "processed": true
+  },
+  {
+    "id": "edit_1768741738015_zkfe0e16m",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "81e1d12f-620a-4590-b61b-be6fd26a9640",
+          "content": "洛阳城外",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999
+        }
+      ]
+    },
+    "timestamp": 1768741738015,
+    "processed": true
+  },
+  {
+    "id": "edit_1768741862627_t12ucj9oz",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "597d3c85-97f9-485a-a0e6-0e832d25b982",
+          "content": "阳光透过树梢",
+          "startTime": 4.44,
+          "duration": 1.3999999999999995
+        }
+      ]
+    },
+    "timestamp": 1768741862627,
+    "processed": true
+  },
+  {
+    "id": "edit_1768741934288_1fcwut0w0",
+    "action": "requestTask",
+    "data": {
+      "taskType": "subtitle_generation",
+      "elementId": "14c01c18-8470-430b-bc60-37470098914a",
+      "mediaId": "asset_793305_1768740767",
+      "mediaName": "TTS: 那是一个宁静的午后"
+    },
+    "timestamp": 1768741934288,
+    "processed": true
+  },
+  {
+    "id": "edit_1768741935866_go4puhjlh",
+    "action": "addMultipleSubtitles",
+    "data": {
+      "subtitles": [
+        {
+          "content": "那是一个宁静的午后",
+          "startTime": 0.47333333333333333,
+          "duration": 1.46,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        }
+      ]
+    },
+    "timestamp": 1768741935866,
+    "processed": true
+  },
+  {
+    "id": "edit_1768742012222_wpvy422sj",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "81e1d12f-620a-4590-b61b-be6fd26a9640",
+          "content": "洛阳城外",
+          "startTime": 2.84,
+          "duration": 0.9199999999999999
+        }
+      ]
+    },
+    "timestamp": 1768742012222,
+    "processed": true
+  },
+  {
+    "id": "edit_1768742142623_50w7sdz4a",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "597d3c85-97f9-485a-a0e6-0e832d25b982",
+          "content": "阳光透过树梢",
+          "startTime": 4.44,
+          "duration": 1.3999999999999995
+        }
+      ]
+    },
+    "timestamp": 1768742142623,
+    "processed": true
+  },
+  {
+    "id": "edit_1768742241733_g5pc1z1ee",
+    "action": "requestTask",
+    "data": {
+      "taskType": "subtitle_generation",
+      "elementId": "04c489b0-7451-4a0b-98d9-92301755858b",
+      "mediaId": "asset_688154_1768741886",
+      "mediaName": "TTS: 阳光透过树梢"
+    },
+    "timestamp": 1768742241733,
+    "processed": true
+  },
+  {
+    "id": "edit_1768742243276_jh6lhi2tp",
+    "action": "addMultipleSubtitles",
+    "data": {
+      "subtitles": [
+        {
+          "content": "阳光透过树梢",
+          "startTime": 4.6000000000000005,
+          "duration": 1.2000000000000002,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        }
+      ]
+    },
+    "timestamp": 1768742243276,
+    "processed": true
+  },
+  {
+    "id": "edit_1768742661417_aybquabso",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "597d3c85-97f9-485a-a0e6-0e832d25b982",
+          "content": "阳光透过树梢",
+          "startTime": 4.44,
+          "duration": 1.3999999999999995
+        }
+      ]
+    },
+    "timestamp": 1768742661417,
+    "processed": true
+  },
+  {
+    "id": "edit_1768742689856_5znnlqste",
+    "action": "requestTask",
+    "data": {
+      "taskType": "tts_generation",
+      "textElements": [
+        {
+          "id": "9a132fd7-0510-444a-9079-5554650f2cac",
+          "content": "远道而来的孔秋",
+          "startTime": 8,
+          "duration": 1.6199999999999992
+        }
+      ]
+    },
+    "timestamp": 1768742689856,
+    "processed": true
   }
 ]
