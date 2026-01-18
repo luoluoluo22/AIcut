@@ -6,7 +6,7 @@ export type TrackType = "media" | "text" | "audio";
 // Base element properties
 interface BaseTimelineElement {
   id: string;
-  name: string;
+  name?: string;
   duration: number;
   startTime: number;
   trimStart: number;
@@ -49,8 +49,7 @@ export interface MediaElement extends BaseTimelineElement {
 // Text element with embedded text data
 export interface TextElement extends BaseTimelineElement {
   type: "text";
-  content?: string; // Legacy
-  text?: string;    // Snapshot compatible
+  content: string;
   fontSize: number;
   fontFamily: string;
   color: string;
@@ -64,16 +63,6 @@ export interface TextElement extends BaseTimelineElement {
   rotation: number; // in degrees
   opacity: number; // 0-1
   voiceId?: string; // TTS音色ID
-  style?: {
-    fontSize?: number;
-    fontFamily?: string;
-    color?: string;
-    backgroundColor?: string;
-    textAlign?: "left" | "center" | "right";
-    fontWeight?: "normal" | "bold";
-    fontStyle?: "normal" | "italic";
-    textDecoration?: "none" | "underline" | "line-through";
-  };
 }
 
 // Typed timeline elements

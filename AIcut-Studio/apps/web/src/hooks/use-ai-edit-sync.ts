@@ -47,9 +47,7 @@ export function useAIEditSync(enabled: boolean = true) {
                 if (textTrack) {
                     useTimelineStore.getState().addElementToTrack(textTrack.id, {
                         type: "text",
-                        name: data.text.substring(0, 20) + (data.text.length > 20 ? "..." : ""),
-                        text: data.text,        // Snapshot format
-                        content: data.text,     // Legacy format
+                        content: data.content || data.text,
                         startTime: data.startTime || 0,
                         duration: data.duration || 5,
                         trimStart: 0,
@@ -87,9 +85,7 @@ export function useAIEditSync(enabled: boolean = true) {
                     for (const sub of subtitles) {
                         store.addElementToTrack(targetTrackId, {
                             type: "text",
-                            name: sub.text.substring(0, 20),
-                            text: sub.text,        // Snapshot format
-                            content: sub.text,     // Legacy format
+                            content: sub.content || sub.text,
                             startTime: sub.startTime || 0,
                             duration: sub.duration || 3,
                             trimStart: 0,
@@ -375,15 +371,14 @@ export function useAIEditSync(enabled: boolean = true) {
                 elements: track.elements.map((element: any) => {
                     if (element.type === 'text') {
                         // Normalize text elements
+                        const { text: _t, name: _n, ...rest } = element;
                         const normalized: any = {
-                            ...element,
-                            // Ensure both 'content' and 'text' are set
+                            ...rest,
+                            // Use 'content' as the single source of truth
                             content: element.content || element.text || 'Text',
-                            text: element.text || element.content || 'Text',
                             // Add missing required fields
                             trimStart: element.trimStart ?? 0,
                             trimEnd: element.trimEnd ?? 0,
-                            name: element.name || (element.text || element.content || 'Text').substring(0, 20),
                         };
 
                         // Flatten style object if it exists

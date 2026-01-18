@@ -23,7 +23,7 @@ import { ExportButton } from "./export-button";
 import { ThemeToggle } from "../theme-toggle";
 
 export function EditorHeader() {
-  const { activeProject, renameProject, deleteProject } = useProjectStore();
+  const { activeProject, renameProject, deleteProject, hasUnsavedChanges, saveCurrentProject } = useProjectStore();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const router = useRouter();
@@ -113,6 +113,25 @@ export function EditorHeader() {
 
   const rightContent = (
     <nav className="flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => saveCurrentProject()}
+        className={`h-8 px-2 text-xs gap-1.5 ${hasUnsavedChanges
+            ? "text-muted-foreground hover:bg-muted/50"
+            : "text-green-600 hover:text-green-700 hover:bg-green-50/50"
+          }`}
+        title="点击强制保存"
+      >
+        <div
+          className={`h-2 w-2 rounded-full ${hasUnsavedChanges ? "bg-gray-400" : "bg-green-500"
+            }`}
+        />
+        {hasUnsavedChanges ? "编辑中..." : "已保存"}
+      </Button>
+
+      <div className="h-4 w-[1px] bg-border/50 mx-1" />
+
       <PanelPresetSelector />
       <KeyboardShortcutsHelp />
       <ExportButton />

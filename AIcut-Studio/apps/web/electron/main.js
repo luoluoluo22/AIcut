@@ -3,10 +3,11 @@
  * 负责创建窗口、管理 Python 进程、提供原生 API
  */
 
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, shell, protocol, net } = require('electron')
 const path = require('path')
 const { spawn } = require('child_process')
 const fs = require('fs')
+const url = require('url')
 
 // 开发模式检测
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
@@ -82,12 +83,12 @@ function createWindow() {
 
   const startUrl = isDev
     ? 'http://localhost:3000'
-    : `file://${path.join(__dirname, '../out/index.html')}`
+    : `http://localhost:${apiPort}`
 
   mainWindow.loadURL(startUrl)
 
   if (isDev) {
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   }
 
   const saveState = () => {
@@ -111,30 +112,64 @@ function createWindow() {
   })
 }
 
-// 启动 Python AI Daemon
-function startPythonDaemon() {
-  const pythonScript = path.join(
-    WORKSPACE_ROOT,
-    'tools',
-    'core',
-    'ai_daemon.py'
-  )
+const { startServer } = require('./serve-api')
 
-  if (!fs.existsSync(pythonScript)) {
-    console.log('[Electron] Python daemon script not found:', pythonScript)
-    return
+// ... (existing constants)
+
+let apiPort = 3000 // Default for Dev
+
+// 启动 Python AI Daemon
+function startPythonDaemon(port) {
+  if (pythonProcess) return
+
+  const isPackaged = app.isPackaged;
+
+  // 确定 Python 解释器路径
+  let pythonPath = 'python'; // 默认使用系统路径
+
+  if (isPackaged) {
+    // 打包后，解释器应该在 resources 目录下 (由 electron-builder 复制)
+    // 根据 Windows 路径规则：resources/python/python.exe
+    const bundledPython = path.join(process.resourcesPath, 'python', 'python.exe');
+    if (fs.existsSync(bundledPython)) {
+      pythonPath = bundledPython;
+      console.log('[Electron] Using bundled Python:', pythonPath);
+    }
   }
 
-  console.log('[Electron] Starting Python AI Daemon...')
+  const pythonScript = path.join(
+    // 注意：在打包且使用内置 Server 的情况下，WORKSPACE_ROOT 可能仍指向 UserData
+    // 但 tools 脚本位于 app.asar/resources/....
+    // 这里也是一个潜在坑点。如果 tools 脚本被打包进 app.asar，Python 可能无法直接运行 py 文件
+    // 先假设 tools 目录被复制到了 extraResources (package.json 配置了)
+    // 如果没有配置 extraResources: "tools"，则需要在 startServer 里把 tools 释放出来，或者由 electron-builder 复制
+    // package.json 里的 extraResources 确实包含了 "tools" -> "tools"
+    isPackaged ? path.join(process.resourcesPath, 'tools', 'core', 'ai_daemon.py') :
+      path.join(WORKSPACE_ROOT, 'tools', 'core', 'ai_daemon.py')
+  );
+
+  if (!fs.existsSync(pythonScript)) {
+    console.log('[Electron] Python daemon script not found:', pythonScript);
+    return;
+  }
+
+  console.log('[Electron] Starting Python AI Daemon on port:', port);
 
   const trySpawn = (cmd) => {
-    console.log(`[Electron] Spawning: ${cmd} "${pythonScript}"`)
+    console.log(`[Electron] Spawning: ${cmd} "${pythonScript}"`);
     const proc = spawn(cmd, ['-u', `"${pythonScript}"`], {
-      cwd: WORKSPACE_ROOT,
-      env: { ...process.env, WORKSPACE_ROOT, PYTHONIOENCODING: 'utf-8' },
+      cwd: isPackaged ? path.join(process.resourcesPath, 'tools') : WORKSPACE_ROOT,
+      env: {
+        ...process.env,
+        WORKSPACE_ROOT: isPackaged ? path.join(process.resourcesPath) : WORKSPACE_ROOT, // Update root for packaged
+        API_PORT: port.toString(), // Pass the dynamic port
+        PYTHONIOENCODING: 'utf-8',
+        // 如果是内置环境，强制让 Python 寻找内置的库路径
+        PYTHONPATH: isPackaged ? path.join(process.resourcesPath, 'tools') : path.join(WORKSPACE_ROOT, 'tools')
+      },
       shell: true,
       windowsVerbatimArguments: true,
-    })
+    });
 
     const decodeOutput = (data) => {
       return data.toString() // 先用最基础的 String 转换，避免 TextDecoder 报错
@@ -163,10 +198,10 @@ function startPythonDaemon() {
       if (pythonProcess === proc) pythonProcess = null
     })
 
-    return proc
-  }
+    return proc;
+  };
 
-  pythonProcess = trySpawn('python')
+  pythonProcess = trySpawn(pythonPath);
 }
 
 // 停止 Python 进程
@@ -179,10 +214,41 @@ function stopPythonDaemon() {
 }
 
 // 生命周期管理
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   ensureDirectories()
+
+  if (!isDev) {
+    // 生产模式：启动本地 API 服务器
+    try {
+      // 在打包环境中，__dirname 位于 resources/app.asar/electron
+      // out 位于 resources/app.asar/out (由 files 配置决定)
+      const staticDir = path.join(__dirname, '..', 'out');
+      console.log('[Electron] Starting local server for:', staticDir);
+
+      // 确保 WORKSPACE_ROOT 正确指向用户数据目录（生产环境）
+      const wsRoot = path.join(app.getPath('userData'), 'workspace');
+      if (!fs.existsSync(wsRoot)) fs.mkdirSync(wsRoot, { recursive: true });
+
+      apiPort = await startServer({
+        workspaceRoot: wsRoot,
+        staticDir: staticDir,
+        port: 0 // Random port
+      });
+      console.log('[Electron] Local server started on port:', apiPort);
+    } catch (e) {
+      console.error('[Electron] Failed to start local server:', e);
+    }
+  }
+
+  // 注册自定义协议，用于正确加载打包后的静态资源
+  if (!isDev) {
+    // Remove old protocol handler...
+    // In packaged mode, the local server handles static files, so the custom protocol handler is no longer needed.
+    // The `startUrl` for `mainWindow.loadURL` will now point to the local server.
+  }
+
   createWindow()
-  startPythonDaemon()
+  startPythonDaemon(apiPort)
 
   // 尝试恢复上次的项目界面
   mainWindow.webContents.on('did-finish-load', () => {
@@ -194,6 +260,7 @@ app.whenReady().then(() => {
           const currentUrl = mainWindow.webContents.getURL()
           if (
             currentUrl.endsWith(':3000/') ||
+            currentUrl.endsWith(`:${apiPort}/`) || // Check for dynamic port
             currentUrl.endsWith('index.html')
           ) {
             console.log(
@@ -202,8 +269,7 @@ app.whenReady().then(() => {
             )
             const editorUrl = isDev
               ? `http://localhost:3000/editor/${appState.lastProjectId}`
-              : `file://${path.join(__dirname, '../out/index.html')}#/editor/${appState.lastProjectId
-              }`
+              : `http://localhost:${apiPort}/editor/${appState.lastProjectId}` // Use dynamic port
             // 注意：Next.js client-side navigation 可能更好，但这里直接注入新 URL
             mainWindow.loadURL(editorUrl)
           }

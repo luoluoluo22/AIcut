@@ -16,12 +16,20 @@
     "format": "biome format src/ --write",
     "electron": "electron .",
     "electron:dev": "cross-env NODE_ENV=development electron .",
-    "electron:build": "next build && electron-builder",
+    "electron:build": "cross-env STATIC_EXPORT=true next build && electron-builder",
     "electron:pack": "electron-builder --dir",
     "postinstall": "electron-builder install-app-deps",
     "app": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\""
   },
   "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.2.1",
+    "nanoid": "^5.1.5",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
     "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
@@ -33,12 +41,21 @@
     "@remotion/player": "4.0.405",
     "@remotion/renderer": "4.0.405",
     "@t3-oss/env-nextjs": "^0.13.8",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/bun": "latest",
+    "@types/node": "^24.2.1",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
-    "dotenv": "^16.5.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
     "embla-carousel-react": "^8.5.1",
     "feed": "^5.1.0",
     "framer-motion": "^11.13.1",
@@ -46,9 +63,9 @@
     "lucide-react": "^0.468.0",
     "mediabunny": "^1.28.0",
     "motion": "^12.18.1",
-    "nanoid": "^5.1.5",
     "next": "15.1.0",
     "next-themes": "^0.4.4",
+    "postcss": "^8",
     "radix-ui": "^1.4.2",
     "react": "^18.2.0",
     "react-country-flag": "^3.1.0",
@@ -68,29 +85,15 @@
     "remotion": "4.0.405",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
+    "tailwindcss": "^4.1.11",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3",
     "unified": "^11.0.5",
     "vaul": "^1.1.1",
-    "wavesurfer.js": "^7.12.1",
-    "zod": "^3.25.67",
-    "zustand": "^5.0.2"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.11",
-    "@tailwindcss/typography": "^0.5.16",
-    "@types/bun": "latest",
-    "@types/node": "^24.2.1",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "concurrently": "^9.1.2",
     "wait-on": "^7.2.0",
-    "cross-env": "^7.0.3",
-    "electron": "^33.0.0",
-    "electron-builder": "^25.1.8",
-    "postcss": "^8",
-    "tailwindcss": "^4.1.11",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "wavesurfer.js": "^7.12.1",
+    "zustand": "^5.0.2"
   },
   "build": {
     "appId": "com.aicut.studio",
@@ -101,7 +104,6 @@
     "files": [
       "electron/**/*",
       "out/**/*",
-      ".next/**/*",
       "public/**/*",
       "package.json"
     ],
@@ -113,6 +115,10 @@
           "**/*.py",
           "**/*.json"
         ]
+      },
+      {
+        "from": "python-runtime",
+        "to": "python"
       }
     ],
     "win": {

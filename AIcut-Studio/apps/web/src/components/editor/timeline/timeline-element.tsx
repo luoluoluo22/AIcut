@@ -162,7 +162,7 @@ export function TimelineElement({
     console.log("[AI Edit] handleRecognizeSubtitles triggered", {
       elementId: element.id,
       mediaId: (element as MediaElement).mediaId,
-      mediaName: mediaItem?.name || element.name
+      mediaName: mediaItem?.name || element.name || (element as any).content || "未知素材"
     });
     toast.info("正在调起 AI 字幕识别服务...");
 
@@ -189,7 +189,7 @@ export function TimelineElement({
             taskType: "subtitle_generation",
             elementId: element.id,
             mediaId: (element as MediaElement).mediaId,
-            mediaName: mediaItem?.name || element.name
+            mediaName: mediaItem?.name || element.name || (element as any).content || "未知素材"
           }
         })
       });
@@ -212,25 +212,25 @@ export function TimelineElement({
         const t = allTracks.find(tr => tr.id === sel.trackId);
         const el = t?.elements.find(e => e.id === sel.elementId);
         if (el && el.type === "text") {
-          const content = (el as any).text || (el as any).content || "";
+          const textEl = el as TextElement;
           textElements.push({
-            id: el.id,
-            content: content,
-            startTime: el.startTime,
-            duration: el.duration - el.trimStart - el.trimEnd,
-            voiceId: (el as any).voiceId
+            id: textEl.id,
+            content: textEl.content,
+            startTime: textEl.startTime,
+            duration: textEl.duration - textEl.trimStart - textEl.trimEnd,
+            voiceId: textEl.voiceId
           });
         }
       }
     } else if (element.type === "text") {
       // 单选模式：只处理当前元素
-      const content = (element as any).text || (element as any).content || "";
+      const textEl = element as TextElement;
       textElements.push({
-        id: element.id,
-        content: content,
-        startTime: element.startTime,
-        duration: element.duration - element.trimStart - element.trimEnd,
-        voiceId: (element as any).voiceId
+        id: textEl.id,
+        content: textEl.content,
+        startTime: textEl.startTime,
+        duration: textEl.duration - textEl.trimStart - textEl.trimEnd,
+        voiceId: textEl.voiceId
       });
     }
 
@@ -261,7 +261,7 @@ export function TimelineElement({
 
   const renderElementContent = () => {
     if (element.type === "text") {
-      const textContent = element.text || element.content || "Text";
+      const textContent = element.content || "Text";
       return (
         <div className="w-full h-full flex items-center justify-start pl-2">
           <span className="text-xs text-white truncate" title={textContent}>{textContent}</span>
@@ -453,7 +453,7 @@ export function TimelineElement({
               : {
                 id: element.id,
                 trackId: track.id,
-                name: element.name,
+                name: element.name || (element as any).content,
                 startTime: element.startTime,
                 duration: element.duration
               };

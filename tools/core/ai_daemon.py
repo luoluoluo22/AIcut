@@ -28,7 +28,8 @@ load_dotenv()
 
 # 配置
 WORKSPACE_ROOT = os.environ.get('WORKSPACE_ROOT', os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-BASE_URL = "http://localhost:3000"
+api_port = os.environ.get('API_PORT', '3000')
+BASE_URL = f"http://localhost:{api_port}"
 POLL_INTERVAL = 0.5
 
 class AIDaemon:

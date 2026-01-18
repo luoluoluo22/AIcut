@@ -81,6 +81,12 @@ interface ProjectStore {
   isInvalidProjectId: (id: string) => boolean;
   markProjectIdAsInvalid: (id: string) => void;
   clearInvalidProjectIds: () => void;
+
+  // Save status tracking
+  hasUnsavedChanges: boolean;
+  autoSaveTimer: NodeJS.Timeout | null;
+  markAsUnsaved: () => void;
+  markAsSaved: () => void;
 }
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
@@ -89,6 +95,23 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   isLoading: true,
   isInitialized: false,
   invalidProjectIds: new Set<string>(),
+  hasUnsavedChanges: false,
+  autoSaveTimer: null,
+
+  markAsUnsaved: () =>
+    set((state) => {
+      if (state.autoSaveTimer) clearTimeout(state.autoSaveTimer);
+      const timer = setTimeout(() => {
+        get().saveCurrentProject();
+      }, 3000);
+      return { hasUnsavedChanges: true, autoSaveTimer: timer };
+    }),
+
+  markAsSaved: () =>
+    set((state) => {
+      if (state.autoSaveTimer) clearTimeout(state.autoSaveTimer);
+      return { hasUnsavedChanges: false, autoSaveTimer: null };
+    }),
 
   // Implementation of bookmark methods
   toggleBookmark: async (time: number) => {
@@ -123,7 +146,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
     try {
       await storageService.saveProject({ project: updatedProject });
-      set({ activeProject: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
       await get().loadAllProjects(); // Refresh the list
     } catch (error) {
       console.error("Failed to update project bookmarks:", error);
@@ -171,7 +194,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
     try {
       await storageService.saveProject({ project: updatedProject });
-      set({ activeProject: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
       await get().loadAllProjects(); // Refresh the list
     } catch (error) {
       console.error("Failed to update project bookmarks:", error);
@@ -233,6 +256,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     } catch (error) {
       toast.error("Failed to save new project");
       throw error;
+    } finally {
+      get().markAsSaved();
     }
   },
 
@@ -353,6 +378,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           console.warn("[Project Store] Failed to sync to ai_workspace:", e);
         }
       }
+      get().markAsSaved();
     }
   },
 
@@ -388,6 +414,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       } catch (e) {
         console.warn("[Project Store] Failed to archive project:", e);
       }
+      get().markAsSaved();
     } catch (error) {
       console.error("Failed to save project:", error);
     }
@@ -520,7 +547,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       // Update activeProject if same project
       const { activeProject } = get();
       if (activeProject?.id === id) {
-        set({ activeProject: updatedProject });
+        set({ activeProject: updatedProject, hasUnsavedChanges: true });
       }
     } catch (error) {
       console.error("Failed to rename project:", error);
@@ -592,7 +619,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
     try {
       await storageService.saveProject({ project: updatedProject });
-      set({ activeProject: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
       await get().loadAllProjects();
     } catch (error) {
       console.error("Failed to update project background:", error);
@@ -623,7 +650,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
     try {
       await storageService.saveProject({ project: updatedProject });
-      set({ activeProject: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
       await get().loadAllProjects();
     } catch (error) {
       console.error("Failed to update background type:", error);
@@ -645,7 +672,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
     try {
       await storageService.saveProject({ project: updatedProject });
-      set({ activeProject: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
       await get().loadAllProjects();
     } catch (error) {
       console.error("Failed to update project FPS:", error);
@@ -668,7 +695,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
     try {
       await storageService.saveProject({ project: updatedProject });
-      set({ activeProject: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
       await get().loadAllProjects();
     } catch (error) {
       console.error("Failed to update canvas size:", error);
@@ -683,7 +710,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     if (!activeProject) return;
 
     const updatedProject = { ...activeProject, ...updates };
-    set({ activeProject: updatedProject });
+    set({ activeProject: updatedProject, hasUnsavedChanges: true });
 
     // Archive to project directory immediately for important settings
     try {

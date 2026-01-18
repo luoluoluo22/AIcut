@@ -1,7 +1,7 @@
 {
   "project": {
     "id": "demo",
-    "name": "AIcut 演示项目",
+    "name": "AIcut Demo Project",
     "thumbnail": null,
     "createdAt": "2026-01-16T09:44:18.173Z",
     "updatedAt": "2026-01-17T02:20:09.317Z",
@@ -26,40 +26,9 @@
     },
     "canvasMode": "original",
     "markers": [],
-    "duration": 20
+    "duration": 25
   },
   "tracks": [
-    {
-      "id": "115c092b-4d0a-47e8-a392-cced876f4df3",
-      "name": "Text Track",
-      "type": "text",
-      "elements": [
-        {
-          "type": "text",
-          "name": "Text",
-          "content": "Default Text",
-          "fontSize": 48,
-          "fontFamily": "Arial",
-          "color": "#ffffff",
-          "backgroundColor": "transparent",
-          "textAlign": "center",
-          "fontWeight": "normal",
-          "fontStyle": "normal",
-          "textDecoration": "none",
-          "x": 0,
-          "y": 0,
-          "rotation": 0,
-          "opacity": 1,
-          "duration": 5,
-          "startTime": 0,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "id": "77b162b9-f52c-4cd9-8eca-6957d85877bb",
-          "text": "Default Text"
-        }
-      ],
-      "muted": false
-    },
     {
       "id": "track-subs",
       "name": "字幕层",
@@ -68,22 +37,13 @@
         {
           "id": "sub-0",
           "type": "text",
-          "text": "欢迎使用 AIcut 全自动视频编辑引擎",
-          "startTime": 0.5,
+          "startTime": 0,
           "duration": 4,
-          "style": {
-            "fontSize": 60,
-            "color": "#ffffff",
-            "fontWeight": "bold",
-            "textAlign": "center",
-            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
-          },
           "x": 960,
           "y": 900,
-          "content": "欢迎使用 AIcut 全自动视频编辑引擎",
+          "content": "欢迎您使用 AIcut 全自动视频编辑引擎",
           "trimStart": 0,
           "trimEnd": 0,
-          "name": "欢迎使用 AIcut 全自动视频编辑引擎",
           "fontSize": 60,
           "fontFamily": "Arial",
           "color": "#ffffff",
@@ -98,22 +58,13 @@
         {
           "id": "sub-1",
           "type": "text",
-          "text": "通过 Python 后端与前端实时同步工作流",
           "startTime": 5.5,
           "duration": 4,
-          "style": {
-            "fontSize": 60,
-            "color": "#ffffff",
-            "fontWeight": "bold",
-            "textAlign": "center",
-            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
-          },
           "x": 960,
           "y": 900,
-          "content": "通过 Python 后端与前端实时同步工作流",
+          "content": " Python 后端与前端实时同步工作流",
           "trimStart": 0,
           "trimEnd": 0,
-          "name": "通过 Python 后端与前端实时同步工",
           "fontSize": 60,
           "fontFamily": "Arial",
           "color": "#ffffff",
@@ -128,22 +79,13 @@
         {
           "id": "sub-2",
           "type": "text",
-          "text": "您可以轻松实现 AI 辅助剪辑与批量生产",
           "startTime": 10.5,
           "duration": 4,
-          "style": {
-            "fontSize": 60,
-            "color": "#ffffff",
-            "fontWeight": "bold",
-            "textAlign": "center",
-            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
-          },
           "x": 960,
           "y": 900,
-          "content": "您可以轻松实现 AI 辅助剪辑与批量生产",
+          "content": "轻松实现 AI 辅助剪辑与批量生产",
           "trimStart": 0,
           "trimEnd": 0,
-          "name": "您可以轻松实现 AI 辅助剪辑与批量生产",
           "fontSize": 60,
           "fontFamily": "Arial",
           "color": "#ffffff",
@@ -158,22 +100,13 @@
         {
           "id": "sub-3",
           "type": "text",
-          "text": "即刻开启您的 AI 创作之旅",
           "startTime": 15.5,
           "duration": 4,
-          "style": {
-            "fontSize": 60,
-            "color": "#ffffff",
-            "fontWeight": "bold",
-            "textAlign": "center",
-            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
-          },
           "x": 960,
           "y": 900,
           "content": "即刻开启您的 AI 创作之旅",
           "trimStart": 0,
           "trimEnd": 0,
-          "name": "即刻开启您的 AI 创作之旅",
           "fontSize": 60,
           "fontFamily": "Arial",
           "color": "#ffffff",

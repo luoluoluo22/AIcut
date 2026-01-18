@@ -71,6 +71,20 @@ function loadProjectToWorkspace(projectId: string) {
         console.log(`[Load] Project ${projectId} not found in projects/`);
         return false;
     }
+
+    // Check if workspace already has this project loaded
+    try {
+        if (fs.existsSync(SNAPSHOT_FILE)) {
+            const currentSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+            if (currentSnapshot?.project?.id === projectId) {
+                console.log(`[Load] Workspace already has project ${projectId} loaded. Skipping overwrite to preserve session.`);
+                return true;
+            }
+        }
+    } catch (e) {
+        console.warn("[Load] Failed to check current workspace state:", e);
+    }
+
     // Backup current workspace first
     backupSnapshot();
     // Copy project snapshot to workspace
@@ -340,7 +354,7 @@ export async function POST(request: NextRequest) {
                 }
                 // Set defaults
                 edit.data = {
-                    text: data.text,
+                    content: data.text || data.content,
                     startTime: data.startTime ?? 0,
                     duration: data.duration ?? 5,
                     x: data.x ?? 960,
@@ -363,7 +377,7 @@ export async function POST(request: NextRequest) {
                 }
                 // Normalize subtitles
                 edit.data.subtitles = data.subtitles.map((sub: any) => ({
-                    text: sub.text,
+                    content: sub.text || sub.content,
                     startTime: sub.startTime ?? 0,
                     duration: sub.duration ?? 3,
                     x: sub.x ?? 960,

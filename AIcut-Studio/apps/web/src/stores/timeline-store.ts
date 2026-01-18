@@ -326,6 +326,8 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
   // Helper to update tracks and auto-save
   const updateTracksAndSave = (newTracks: TimelineTrack[]) => {
     updateTracks(newTracks);
+    // Mark project as unsaved
+    useProjectStore.getState().markAsUnsaved();
     // Auto-save in background
     setTimeout(autoSaveTimeline, 100);
   };
@@ -1196,7 +1198,6 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
                   ? {
                     ...c,
                     trimEnd: c.trimEnd + durationToRemove,
-                    name: getElementNameWithSuffix(c.name, "left"),
                   }
                   : c
               ),
@@ -1236,7 +1237,6 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
                     ...c,
                     startTime: splitTime,
                     trimStart: c.trimStart + relativeTime,
-                    name: getElementNameWithSuffix(c.name, "right"),
                   }
                   : c
               ),
@@ -1929,14 +1929,12 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
                 {
                   ...c,
                   trimEnd: c.trimEnd + secondDuration,
-                  name: getElementNameWithSuffix(c.name, "left"),
                 },
                 {
                   ...c,
                   id: secondElementId,
                   startTime: splitTime,
                   trimStart: c.trimStart + firstDuration,
-                  name: getElementNameWithSuffix(c.name, "right"),
                 },
               ];
             }),
@@ -2150,7 +2148,6 @@ function buildTextElement(
 
   return {
     type: "text",
-    name: t.name ?? DEFAULT_TEXT_ELEMENT.name,
     content: t.content ?? DEFAULT_TEXT_ELEMENT.content,
     duration: t.duration ?? TIMELINE_CONSTANTS.DEFAULT_TEXT_DURATION,
     startTime,

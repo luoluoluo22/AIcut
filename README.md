@@ -20,7 +20,7 @@ AIcut 是一款 **AI 原生** 的自动化视频制作工具。它将**专业时
 ### 3. 启动项目
 只需执行以下指令：
 ```bash
-cd AIcut-Studio
+cd AIcut-Studio\apps\web
 pnpm run app
 ```
 > **💡 说明**: 该指令会同时启动 Next.js 前端和 Electron 壳。Electron 启动后会**自动在后台唤起 Python AI 后端**，无需手动干预。
@@ -79,13 +79,6 @@ client.add_multiple_subtitles([
 ### 让 LLM 直接控制剪辑
 若使用 ChatGPT/Claude 等模型，建议将 `ai_workspace/project-snapshot.json` 作为上下文发送。详见 `docs/SYSTEM_PROMPT.md`。
 
----
-
-## 🔧 常见问题 (FAQ)
-
-- **预览窗口全黑？** 检查 `projects/` 下的素材路径是否正确，并确认软链接已建立。
-- **UI 不更新？** 确保 `ai_daemon.py` 正在运行，它负责在文件修改时通知前端。
-- **导出报错？** 导出依赖 Remotion，请确保已安装 `ffmpeg` (setup.ps1 会协助配置)。
 
 ---
 

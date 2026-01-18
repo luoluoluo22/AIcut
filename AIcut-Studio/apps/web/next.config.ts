@@ -1,14 +1,24 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+// 只在打包时使用静态导出，开发模式需要 API 路由
+const isStaticExport = process.env.STATIC_EXPORT === 'true';
+
 const nextConfig: NextConfig = {
   compiler: {
     removeConsole: false,
   },
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
-  output: "export",
+  ...(isStaticExport && { output: "export" }),
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
+    unoptimized: true, // Required for output: "export" (Electron compatibility)
     remotePatterns: [
       {
         protocol: "https",

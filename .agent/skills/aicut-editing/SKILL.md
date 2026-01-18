@@ -1,6 +1,6 @@
 ---
 name: aicut-editing
-description: Guides how to manipulate the AIcut timeline, add media, create subtitles, and export videos. Use when the user asks about video editing, timeline operations, or media management.
+description: 指导如何操作 AIcut 时间轴、添加媒体、创建字幕及导出视频。当用户询问关于视频剪辑、时间轴操作、添加素材、生成的视频有问题或媒体管理时使用此技能。
 ---
 
 # AIcut Video Editing Skill
@@ -34,14 +34,13 @@ This skill helps understand and manipulate the AIcut video editing system.
 }
 ```
 
-#### 2. Text/Subtitle Element (Crucial)
-To ensure compatibility between Python and Frontend, **ALWAYS** use this expanded format:
+#### 2. Text/Subtitle Element
+To ensure compatibility between Python and Frontend, use this format:
 ```json
 {
   "id": "unique-id",
   "type": "text",
-  "text": "The display text",       // Snapshot & Python preference
-  "content": "The display text",    // Legacy/Frontend preference (Mirror text)
+  "content": "The display text",    // Primary text field
   "startTime": 0.0,
   "duration": 3.0,
   "trimStart": 0, "trimEnd": 0,    // MUST include (default to 0)
@@ -61,8 +60,8 @@ To ensure compatibility between Python and Frontend, **ALWAYS** use this expande
 
 ## Data Schema Rules (The "Contract")
 
-1. **Dual Text Fields**: Always set BOTH `text` and `content` for text elements to prevent rendering failures.
-2. **Flattened Styles**: While Python SDK uses a `style` object, the frontend requires `fontSize`, `color`, etc., at the **top level** of the element.
+1. **Primary Text Field**: Use `content` as the single source of truth for text. The `name` field is OMITTED for text elements to prevent redundancy.
+2. **Flattened Styles**: While Python SDK uses a style object, the frontend requires fontSize, color, etc., at the top level of the element.
 3. **Implicit Defaults**: Never skip `trimStart`, `trimEnd`, `rotation`, and `opacity`. If missing, the frontend might fail to render or default to 0 (invisible).
 4. **Coordinate System**: origin `(0,0)` is Top-Left. 1920x1080 canvas. Standard center is `(960, 540)`.
 5. **IDs**: IDs must be unique strings (e.g., `nanoid` or `sub-0`, `sub-1`).
