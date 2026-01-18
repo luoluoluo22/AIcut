@@ -15,7 +15,6 @@ import {
 import { useMediaStore, getMediaAspectRatio } from "./media-store";
 import { MediaFile, MediaType } from "@/types/media";
 import { findBestCanvasPreset } from "@/lib/editor-utils";
-import { storageService } from "@/lib/storage/storage-service";
 import { useProjectStore } from "./project-store";
 import { useSceneStore } from "./scene-store";
 import { generateUUID } from "@/lib/utils";
@@ -296,31 +295,10 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     });
   };
 
-  // Helper to auto-save timeline changes
+  // Helper to auto-save timeline changes (now handled by project-store's auto-save)
   const autoSaveTimeline = async () => {
-    const activeProject = useProjectStore.getState().activeProject;
-    const currentScene = useSceneStore.getState().currentScene;
-
-    if (activeProject && currentScene) {
-      try {
-        await storageService.saveTimeline({
-          projectId: activeProject.id,
-          tracks: get()._tracks,
-          sceneId: currentScene.id,
-        });
-      } catch (error) {
-        console.error("Failed to auto-save timeline:", error);
-      }
-    } else {
-      console.warn(
-        "Auto-save skipped - missing activeProject or currentScene:",
-        {
-          hasProject: !!activeProject,
-          hasScene: !!currentScene,
-          sceneName: currentScene?.name,
-        }
-      );
-    }
+    // No-op: Timeline is saved as part of the project snapshot via saveCurrentProject
+    // The debounced auto-save in project-store handles this
   };
 
   // Helper to update tracks and auto-save
@@ -1451,64 +1429,8 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
 
     getProjectThumbnail: async (projectId) => {
       try {
-        const project = await storageService.loadProject({ id: projectId });
-
-        // For scene-based projects, use main scene timeline
-        // For legacy projects, use legacy timeline format
-        let sceneId: string | undefined;
-        if (project?.scenes && project.scenes.length > 0) {
-          const mainScene = project.scenes.find((s) => s.isMain);
-          sceneId = mainScene?.id;
-        }
-
-        const tracks = await storageService.loadTimeline({
-          projectId,
-          sceneId,
-        });
-        const mediaItems = await storageService.loadAllMediaFiles({
-          projectId,
-        });
-
-        // 1. Try to get thumbnail from timeline first element
-        if (tracks && mediaItems.length) {
-          const firstMediaElement = tracks
-            .flatMap((track) => track.elements)
-            .filter((element) => element.type === "media")
-            .sort((a, b) => a.startTime - b.startTime)[0];
-
-          if (firstMediaElement) {
-            const mediaFile = mediaItems.find(
-              (item) => item.id === firstMediaElement.mediaId
-            );
-            if (mediaFile) {
-              if (mediaFile.type === "video" && mediaFile.file) {
-                const { generateVideoThumbnail } = await import(
-                  "@/stores/media-store"
-                );
-                const { thumbnailUrl } = await generateVideoThumbnail(mediaFile.file);
-                return thumbnailUrl;
-              }
-              if (mediaFile.type === "image" && mediaFile.url) {
-                return mediaFile.url;
-              }
-            }
-          }
-        }
-
-        // 2. Fallback: Use dedicated project-thumbnail API (doesn't rely on symlink)
-        try {
-          // This API directly serves images from projects/<id>/assets/
-          return `/api/project-thumbnail?projectId=${projectId}`;
-        } catch (e) {
-          // Ignore filesystem fallback errors
-        }
-
-        // 3. Fallback: Use project thumbnail if set
-        if (project?.thumbnail) {
-          return project.thumbnail;
-        }
-
-        return null;
+        // Use the dedicated project-thumbnail API that reads from filesystem
+        return `/api/project-thumbnail?projectId=${projectId}`;
       } catch (error) {
         console.error("Failed to get project thumbnail:", error);
         return null;
@@ -1588,25 +1510,10 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
       projectId: string;
       sceneId?: string;
     }) => {
-      try {
-        const tracks = await storageService.loadTimeline({
-          projectId,
-          sceneId,
-        });
-
-        if (tracks) {
-          updateTracks(tracks);
-        } else {
-          const defaultTracks = ensureMainTrack([]);
-          updateTracks(defaultTracks);
-        }
-        set({ history: [], redoStack: [] });
-      } catch (error) {
-        console.error("Failed to load timeline:", error);
-        const defaultTracks = ensureMainTrack([]);
-        updateTracks(defaultTracks);
-        set({ history: [], redoStack: [] });
-      }
+      // Timeline is now loaded via project snapshot sync
+      // This is kept for backwards compatibility but actual loading
+      // happens in use-ai-edit-sync.ts via handleSnapshotData
+      console.log(`[Timeline] loadProjectTimeline called for ${projectId}/${sceneId} - handled by snapshot sync`);
     },
 
     saveProjectTimeline: async ({
@@ -1616,16 +1523,9 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
       projectId: string;
       sceneId?: string;
     }) => {
-      const { _tracks } = get();
-      try {
-        await storageService.saveTimeline({
-          projectId,
-          tracks: _tracks,
-          sceneId,
-        });
-      } catch (error) {
-        console.error("Failed to save timeline:", error);
-      }
+      // Timeline is now saved via project-store's saveCurrentProject
+      // This is kept for backwards compatibility
+      console.log(`[Timeline] saveProjectTimeline called for ${projectId}/${sceneId} - handled by project save`);
     },
 
     clearTimeline: () => {

@@ -32,6 +32,41 @@ const SNAPSHOT_FILE = path.join(EDITS_DIR, "project-snapshot.json");
 const PENDING_EDITS_FILE = path.join(EDITS_DIR, "pending-edits.json");
 const SYNC_FILE = path.join(EDITS_DIR, "sync-input.json");
 const MAX_HISTORY = 20;
+const PROJECT_ID_MAP_FILE = path.join(PROJECTS_DIR, "projectIdMap.json");
+
+// Helper: Load/Save Project ID Map (Folder Name -> Internal ID)
+function getProjectIdMap(): Record<string, string> {
+    try {
+        if (fs.existsSync(PROJECT_ID_MAP_FILE)) {
+            return JSON.parse(fs.readFileSync(PROJECT_ID_MAP_FILE, "utf-8"));
+        }
+    } catch (e) { }
+    return {};
+}
+
+function saveToIdMap(folderName: string, internalId: string) {
+    const map = getProjectIdMap();
+    map[folderName] = internalId;
+    fs.writeFileSync(PROJECT_ID_MAP_FILE, JSON.stringify(map, null, 2));
+}
+
+// Helper: Find folder by ID or name
+function findProjectFolder(idOrName: string): string | null {
+    // 1. Direct match (Folder name is what user sees)
+    const directPath = path.join(PROJECTS_DIR, idOrName);
+    if (fs.existsSync(directPath) && fs.lstatSync(directPath).isDirectory()) {
+        return idOrName;
+    }
+
+    // 2. Map match (Internal ID -> Folder name)
+    const map = getProjectIdMap();
+    for (const [folderName, internalId] of Object.entries(map)) {
+        if (internalId === idOrName) {
+            return folderName;
+        }
+    }
+    return null;
+}
 
 // Ensure directories exist
 [EDITS_DIR, PROJECTS_DIR, HISTORY_DIR].forEach(dir => {
@@ -54,10 +89,12 @@ function backupSnapshot() {
 }
 
 // Helper: Determine which snapshot is newer (Workspace vs Archive)
-function getNewestSnapshotPath(projectId: string): { path: string; isWorkspace: boolean } {
-    const archivePath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
-    if (!fs.existsSync(archivePath)) {
-        return { path: SNAPSHOT_FILE, isWorkspace: true };
+function getNewestSnapshotPath(projectId: string): { path: string; isWorkspace: boolean; folderName: string | null } {
+    const folderName = findProjectFolder(projectId);
+    const archivePath = folderName ? path.join(PROJECTS_DIR, folderName, "snapshot.json") : null;
+
+    if (!archivePath || !fs.existsSync(archivePath)) {
+        return { path: SNAPSHOT_FILE, isWorkspace: true, folderName: null };
     }
 
     if (fs.existsSync(SNAPSHOT_FILE)) {
@@ -76,24 +113,63 @@ function getNewestSnapshotPath(projectId: string): { path: string; isWorkspace: 
             // If workspace JSON is corrupt, fall back to archive
         }
     }
-    return { path: archivePath, isWorkspace: false };
+    return { path: archivePath, isWorkspace: false, folderName };
 }
 
 // Helper: Archive workspace to project folder
-function archiveToProject(projectId: string) {
+function archiveToProject(idOrName: string) {
     if (!fs.existsSync(SNAPSHOT_FILE)) return false;
-    const projectDir = path.join(PROJECTS_DIR, projectId);
+
+    let internalId = idOrName;
+    let folderName = idOrName;
+    let displayName = idOrName;
+
+    try {
+        const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+        internalId = snapshot?.project?.id || idOrName;
+        displayName = snapshot?.project?.name || idOrName;
+        // Clean folder name for FS
+        folderName = displayName.replace(/[<>:"/\\|?*]/g, '_').trim();
+    } catch (e) {
+        console.error("[Archive] Failed to parse snapshot for metadata:", e);
+    }
+
+    // 1. Find if this project already has a folder (maybe with a different name)
+    const existingFolder = findProjectFolder(internalId);
+
+    // 2. If it exists but the name is different, rename it!
+    if (existingFolder && existingFolder !== folderName) {
+        try {
+            const oldPath = path.join(PROJECTS_DIR, existingFolder);
+            const newPath = path.join(PROJECTS_DIR, folderName);
+            // If new path exists (unlikely but possible if collision), we might need to be careful
+            if (!fs.existsSync(newPath)) {
+                fs.renameSync(oldPath, newPath);
+                console.log(`[Archive] Renamed project folder from ${existingFolder} to ${folderName}`);
+            }
+        } catch (e) {
+            console.warn(`[Archive] Failed to rename folder: ${e}`);
+        }
+    }
+
+    // 3. Ensure the (potentially new/renamed) folder exists
+    const projectDir = path.join(PROJECTS_DIR, folderName);
     if (!fs.existsSync(projectDir)) {
         fs.mkdirSync(projectDir, { recursive: true });
     }
+
+    // 4. Update ID map
+    saveToIdMap(folderName, internalId);
+
+    // 5. Save snapshot
     fs.copyFileSync(SNAPSHOT_FILE, path.join(projectDir, "snapshot.json"));
-    console.log(`[Archive] Saved workspace to projects/${projectId}/snapshot.json`);
+    console.log(`[Archive] Saved workspace to projects/${folderName}/snapshot.json (ID: ${internalId})`);
     return true;
 }
 
 // Helper: Load project snapshot to workspace
 function loadProjectToWorkspace(projectId: string) {
-    const { path: newestPath, isWorkspace } = getNewestSnapshotPath(projectId);
+    const { path: newestPath, isWorkspace, folderName } = getNewestSnapshotPath(projectId);
 
     if (!fs.existsSync(newestPath)) {
         console.log(`[Load] Project ${projectId} not found anywhere`);
@@ -112,15 +188,22 @@ function loadProjectToWorkspace(projectId: string) {
     backupSnapshot();
     // Copy project snapshot to workspace
     fs.copyFileSync(newestPath, SNAPSHOT_FILE);
-    console.log(`[Load] Loaded ${newestPath} to workspace`);
+
+    // Switch materials link to this project
+    const targetFolder = folderName || projectId;
+    switchMaterialsLink(targetFolder);
+
+    console.log(`[Load] Loaded ${newestPath} to workspace and switched materials link to ${targetFolder}`);
     return true;
 }
 
 // Helper: Switch materials symlink to project's assets directory
-function switchMaterialsLink(projectId: string): { success: boolean; error?: string } {
+function switchMaterialsLink(idOrName: string): { success: boolean; error?: string } {
     const { execSync } = require("child_process");
     const materialsLink = path.join(process.cwd(), "public/materials");
-    const projectAssetsDir = path.join(PROJECTS_DIR, projectId, "assets");
+
+    const folderName = findProjectFolder(idOrName) || idOrName;
+    const projectAssetsDir = path.join(PROJECTS_DIR, folderName, "assets");
 
     // Ensure project assets directory exists
     if (!fs.existsSync(projectAssetsDir)) {
@@ -142,7 +225,7 @@ function switchMaterialsLink(projectId: string): { success: boolean; error?: str
 
         // Create new junction link
         execSync(`cmd /c mklink /J "${materialsLink}" "${projectAssetsDir}"`, { stdio: "ignore" });
-        console.log(`[Materials] Switched symlink to projects/${projectId}/assets`);
+        console.log(`[Materials] Switched symlink to projects/${folderName}/assets`);
         return { success: true };
     } catch (e) {
         console.error("[Materials] Failed to switch symlink:", e);
@@ -280,7 +363,7 @@ export async function GET(request: NextRequest) {
         if (action === "listProjects") {
             // List all projects from projects/ directory
             try {
-                const projects: any[] = [];
+                const projectFolders: Record<string, any> = {};
                 if (fs.existsSync(PROJECTS_DIR)) {
                     const dirs = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true });
                     for (const dir of dirs) {
@@ -290,14 +373,22 @@ export async function GET(request: NextRequest) {
                                 try {
                                     const data = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
                                     if (data.project) {
-                                        projects.push({
-                                            id: data.project.id || dir.name,
+                                        const pid = data.project.id || dir.name;
+                                        const pdata = {
+                                            id: pid,
                                             name: data.project.name || dir.name,
                                             createdAt: data.project.createdAt,
                                             updatedAt: data.project.updatedAt,
                                             thumbnail: data.project.thumbnail,
+                                            folderName: dir.name,
                                             source: "filesystem"
-                                        });
+                                        };
+
+                                        // De-duplicate: If multiple folders have same project ID,
+                                        // prefer the one that matches the folder name exactly, or is newer
+                                        if (!projectFolders[pid] || dir.name === pdata.name) {
+                                            projectFolders[pid] = pdata;
+                                        }
                                     }
                                 } catch (e) {
                                     console.warn(`Failed to parse ${snapshotPath}:`, e);
@@ -306,6 +397,7 @@ export async function GET(request: NextRequest) {
                         }
                     }
                 }
+                const projects = Object.values(projectFolders);
                 return NextResponse.json({ success: true, projects });
             } catch (e) {
                 console.error("Failed to list projects:", e);
@@ -502,6 +594,31 @@ export async function POST(request: NextRequest) {
                 }
             }
 
+            case "saveSnapshot": {
+                // Save project and tracks to workspace snapshot
+                try {
+                    let existingSnapshot = {};
+                    if (fs.existsSync(SNAPSHOT_FILE)) {
+                        try {
+                            existingSnapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, "utf-8"));
+                        } catch (e) { }
+                    }
+
+                    const newSnapshot = {
+                        ...existingSnapshot,
+                        project: data?.project || existingSnapshot.project,
+                        tracks: data?.tracks || existingSnapshot.tracks,
+                    };
+
+                    fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(newSnapshot, null, 2));
+                    console.log(`[API] Saved snapshot for project ${data?.project?.name || 'unknown'}`);
+                    return NextResponse.json({ success: true, message: "Snapshot saved" });
+                } catch (e) {
+                    console.error("[API] Failed to save snapshot:", e);
+                    return NextResponse.json({ success: false, error: `Failed to save snapshot: ${e}` }, { status: 500 });
+                }
+            }
+
             case "archiveProject": {
                 // Archive current workspace to projects/
                 const projectId = data?.projectId;
@@ -518,6 +635,10 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({ success: false, error: "Missing projectId and cannot detect from snapshot" }, { status: 400 });
                 }
                 archiveToProject(projectId);
+                // Notify frontend to refresh projects list
+                try {
+                    fs.writeFileSync(SYNC_FILE, JSON.stringify({ action: "refreshProjects", projectId }, null, 2));
+                } catch (e) { }
                 return NextResponse.json({ success: true, message: `Archived to projects/${projectId}` });
             }
 
@@ -540,16 +661,76 @@ export async function POST(request: NextRequest) {
                 const loaded = loadProjectToWorkspace(newProjectId);
 
                 if (loaded) {
+                    // Notify frontend to refresh projects list and potentially switch view
+                    try {
+                        fs.writeFileSync(SYNC_FILE, JSON.stringify({ action: "refreshProjects", projectId: newProjectId }, null, 2));
+                    } catch (e) { }
+
                     return NextResponse.json({
                         success: true,
-                        message: `Switched to project ${newProjectId}`,
-                        // materialsLinked: true // No longer needing symlink
+                        message: `Switched to project ${newProjectId}`
                     });
                 } else {
                     return NextResponse.json({
                         success: false,
                         error: `Project ${newProjectId} not found`,
                     }, { status: 404 });
+                }
+            }
+
+            case "deleteProject": {
+                const projectId = data?.projectId;
+                if (!projectId) {
+                    return NextResponse.json({ success: false, error: "Missing projectId for deleteProject" }, { status: 400 });
+                }
+
+                const folderName = findProjectFolder(projectId);
+                if (folderName) {
+                    try {
+                        const projectPath = path.join(PROJECTS_DIR, folderName);
+
+                        // Try Node.js native removal first
+                        try {
+                            fs.rmSync(projectPath, { recursive: true, force: true });
+                        } catch (nativeErr) {
+                            // Fallback to Windows-specific removal for paths with special chars
+                            console.warn(`[Delete] Native rmSync failed, trying PowerShell: ${nativeErr}`);
+                            const { execSync } = require("child_process");
+                            // Use PowerShell's Remove-Item which handles special chars better
+                            execSync(`powershell -Command "Remove-Item -LiteralPath '${projectPath}' -Recurse -Force"`, {
+                                stdio: "pipe"
+                            });
+                        }
+
+                        // Verify deletion was successful
+                        if (fs.existsSync(projectPath)) {
+                            console.error(`[Delete] Folder still exists after deletion: ${projectPath}`);
+                            return NextResponse.json({ success: false, error: `Failed to delete project folder - files may be in use` }, { status: 500 });
+                        }
+
+                        // Clean up from map
+                        const map = getProjectIdMap();
+                        if (map[folderName]) {
+                            delete map[folderName];
+                            fs.writeFileSync(PROJECT_ID_MAP_FILE, JSON.stringify(map, null, 2));
+                        }
+
+                        // Notify frontend to refresh projects list and redirect to projects page
+                        try {
+                            fs.writeFileSync(SYNC_FILE, JSON.stringify({
+                                action: "projectDeleted",
+                                deletedProjectId: projectId,
+                                redirectTo: "/projects"
+                            }, null, 2));
+                        } catch (e) { }
+
+                        console.log(`[Delete] Successfully deleted project: ${folderName}`);
+                        return NextResponse.json({ success: true, message: `Deleted project ${folderName}` });
+                    } catch (e) {
+                        return NextResponse.json({ success: false, error: `Failed to delete project: ${e}` }, { status: 500 });
+                    }
+                } else {
+                    return NextResponse.json({ success: false, error: `Project ${projectId} not found on filesystem` }, { status: 404 });
                 }
             }
 

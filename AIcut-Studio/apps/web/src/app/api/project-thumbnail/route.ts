@@ -4,6 +4,46 @@ import * as path from "path";
 
 const WORKSPACE_ROOT = path.join(process.cwd(), "../../../");
 const PROJECTS_DIR = path.join(WORKSPACE_ROOT, "projects");
+const PROJECT_ID_MAP_FILE = path.join(PROJECTS_DIR, "projectIdMap.json");
+
+// Helper: Find project folder by ID (same as in ai-edit/route.ts)
+function findProjectFolder(projectId: string): string | null {
+    // Try projectIdMap.json first
+    if (fs.existsSync(PROJECT_ID_MAP_FILE)) {
+        try {
+            const map = JSON.parse(fs.readFileSync(PROJECT_ID_MAP_FILE, "utf-8"));
+            for (const [folderName, id] of Object.entries(map)) {
+                if (id === projectId) {
+                    return folderName;
+                }
+            }
+        } catch (e) { }
+    }
+
+    // Fallback: search directories
+    if (fs.existsSync(PROJECTS_DIR)) {
+        const dirs = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true });
+        for (const dir of dirs) {
+            if (dir.isDirectory()) {
+                // Check if folder name matches projectId directly
+                if (dir.name === projectId) {
+                    return dir.name;
+                }
+                // Check snapshot.json for matching project ID
+                const snapshotPath = path.join(PROJECTS_DIR, dir.name, "snapshot.json");
+                if (fs.existsSync(snapshotPath)) {
+                    try {
+                        const data = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
+                        if (data.project?.id === projectId) {
+                            return dir.name;
+                        }
+                    } catch (e) { }
+                }
+            }
+        }
+    }
+    return null;
+}
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -14,9 +54,15 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const snapshotPath = path.join(PROJECTS_DIR, projectId, "snapshot.json");
-        if (!fs.existsSync(snapshotPath)) {
+        // Find the actual folder name for this project ID
+        const folderName = findProjectFolder(projectId);
+        if (!folderName) {
             return new NextResponse("Project not found", { status: 404 });
+        }
+
+        const snapshotPath = path.join(PROJECTS_DIR, folderName, "snapshot.json");
+        if (!fs.existsSync(snapshotPath)) {
+            return new NextResponse("Project snapshot not found", { status: 404 });
         }
 
         const data = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
@@ -43,7 +89,7 @@ export async function GET(request: NextRequest) {
             thumbnailFile = thumbnailFile.replace("/materials/", "");
         }
 
-        const absolutePath = path.join(PROJECTS_DIR, projectId, "assets", thumbnailFile);
+        const absolutePath = path.join(PROJECTS_DIR, folderName, "assets", thumbnailFile);
 
         if (!fs.existsSync(absolutePath)) {
             return new NextResponse(`Thumbnail file not found: ${thumbnailFile}`, { status: 404 });

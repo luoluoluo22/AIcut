@@ -1,6 +1,5 @@
 import { TProject, BlurIntensity, Scene } from "@/types/project";
 import { create } from "zustand";
-import { storageService } from "@/lib/storage/storage-service";
 import { toast } from "sonner";
 import { useMediaStore } from "./media-store";
 import { useTimelineStore } from "./timeline-store";
@@ -145,9 +144,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
       set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      await get().loadAllProjects(); // Refresh the list
+
     } catch (error) {
       console.error("Failed to update project bookmarks:", error);
       toast.error("Failed to update bookmarks", {
@@ -193,9 +191,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
       set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      await get().loadAllProjects(); // Refresh the list
+
     } catch (error) {
       console.error("Failed to update project bookmarks:", error);
       toast.error("Failed to remove bookmark", {
@@ -222,9 +219,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     });
 
     try {
-      await storageService.saveProject({ project: newProject });
       // Reload all projects to update the list
-      await get().loadAllProjects();
+
 
       // Sync new project to file system for AI tools
       try {
@@ -285,43 +281,37 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     mediaPanelStore.setPreviewMedia(null);
 
     try {
-      console.log(`[Project Store] Loading from IndexedDB...`);
-      let project = await storageService.loadProject({ id });
-      console.log(`[Project Store] IndexedDB result:`, project ? `Found "${project.name}"` : "Not found");
+      console.log(`[Project Store] Loading from filesystem via API...`);
+      let project = null;
 
-      // If not found in IndexedDB, try loading from filesystem
-      if (!project) {
-        console.log(`[Project Store] Trying filesystem via API...`);
-        try {
-          const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${id}`);
-          const data = await res.json();
-          console.log(`[Project Store] Filesystem API result:`, data.success ? `Found project` : data.error);
-          if (data.success && data.snapshot?.project) {
-            // Create project from filesystem snapshot
-            const fsProject = data.snapshot.project;
-            project = {
-              id: fsProject.id || id,
-              name: fsProject.name || id,
-              thumbnail: fsProject.thumbnail || null,
-              createdAt: new Date(fsProject.createdAt || Date.now()),
-              updatedAt: new Date(fsProject.updatedAt || Date.now()),
-              scenes: fsProject.scenes || [createMainScene()],
-              currentSceneId: fsProject.currentSceneId || fsProject.scenes?.[0]?.id || "",
-              backgroundColor: fsProject.backgroundColor || "#000000",
-              backgroundType: fsProject.backgroundType || "color",
-              blurIntensity: fsProject.blurIntensity || 0,
-              bookmarks: fsProject.bookmarks || [],
-              fps: fsProject.fps || 30,
-              canvasSize: fsProject.canvasSize || { width: 1920, height: 1080 },
-              canvasMode: fsProject.canvasMode || "preset",
-            };
-            // Save to IndexedDB for future loads
-            await storageService.saveProject({ project });
-            console.log(`[Project Store] Imported project ${id} from filesystem to IndexedDB`);
-          }
-        } catch (e) {
-          console.warn("[Project Store] Failed to load from filesystem:", e);
+      // Load project from filesystem API
+      try {
+        const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${id}`);
+        const data = await res.json();
+        console.log(`[Project Store] Filesystem API result:`, data.success ? `Found project` : data.error);
+        if (data.success && data.snapshot?.project) {
+          // Create project from filesystem snapshot
+          const fsProject = data.snapshot.project;
+          project = {
+            id: fsProject.id || id,
+            name: fsProject.name || id,
+            thumbnail: fsProject.thumbnail || null,
+            createdAt: new Date(fsProject.createdAt || Date.now()),
+            updatedAt: new Date(fsProject.updatedAt || Date.now()),
+            scenes: fsProject.scenes || [createMainScene()],
+            currentSceneId: fsProject.currentSceneId || fsProject.scenes?.[0]?.id || "",
+            backgroundColor: fsProject.backgroundColor || "#000000",
+            backgroundType: fsProject.backgroundType || "color",
+            blurIntensity: fsProject.blurIntensity || 0,
+            bookmarks: fsProject.bookmarks || [],
+            fps: fsProject.fps || 30,
+            canvasSize: fsProject.canvasSize || { width: 1920, height: 1080 },
+            canvasMode: fsProject.canvasMode || "preset",
+          };
+          console.log(`[Project Store] Loaded project ${id} from filesystem`);
         }
+      } catch (e) {
+        console.warn("[Project Store] Failed to load from filesystem:", e);
       }
 
       if (project) {
@@ -391,16 +381,34 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       const sceneStore = useSceneStore.getState();
       const currentScene = sceneStore.currentScene;
 
+      // 1. First save timeline (no-op now but kept for compatibility)
       await Promise.all([
-        storageService.saveProject({ project: activeProject }),
         timelineStore.saveProjectTimeline({
           projectId: activeProject.id,
           sceneId: currentScene?.id,
         }),
       ]);
-      await get().loadAllProjects(); // Refresh the list
 
-      // Archive to projects/ directory for AI tools
+      // 2. Sync current project state to workspace snapshot
+      //    This ensures project name changes are reflected in the file
+      try {
+        await fetch("/api/ai-edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "saveSnapshot",
+            data: {
+              project: activeProject,
+              tracks: timelineStore.tracks,
+              // media/assets are managed separately
+            }
+          })
+        });
+      } catch (e) {
+        console.warn("[Project Store] Failed to sync snapshot:", e);
+      }
+
+      // 3. Archive to projects/ directory for AI tools
       try {
         await fetch("/api/ai-edit", {
           method: "POST",
@@ -426,58 +434,33 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }
 
     try {
-      // 1. Load from IndexedDB
-      const indexedDBProjects = await storageService.loadAllProjects();
+      // Load projects directly from filesystem
+      const res = await fetch("/api/ai-edit?action=listProjects");
+      const data = await res.json();
 
-      // 2. Load from filesystem (projects/ directory)
-      let filesystemProjects: any[] = [];
-      try {
-        const res = await fetch("/api/ai-edit?action=listProjects");
-        const data = await res.json();
-        if (data.success && Array.isArray(data.projects)) {
-          filesystemProjects = data.projects;
-        }
-      } catch (e) {
-        console.warn("[Project Store] Failed to load filesystem projects:", e);
+      if (data.success && Array.isArray(data.projects)) {
+        const projects = data.projects.map((fp: any) => ({
+          id: fp.id,
+          name: fp.name,
+          thumbnail: fp.thumbnail || null,
+          createdAt: new Date(fp.createdAt || Date.now()),
+          updatedAt: new Date(fp.updatedAt || Date.now()),
+          scenes: [],
+          currentSceneId: "",
+          backgroundColor: "#000000",
+          backgroundType: "color" as const,
+          blurIntensity: 0,
+          bookmarks: [],
+          fps: 30,
+          canvasSize: { width: 1920, height: 1080 },
+          canvasMode: "preset" as const,
+        }));
+
+        set({ savedProjects: projects });
       }
-
-      // 3. Merge: filesystem projects override IndexedDB names
-      const mergedProjects = indexedDBProjects.map(p => {
-        const fsProject = filesystemProjects.find(fp => fp.id === p.id);
-        if (fsProject) {
-          return {
-            ...p,
-            name: fsProject.name, // Use name from filesystem
-          };
-        }
-        return p;
-      });
-
-      // 4. Add filesystem-only projects (not in IndexedDB)
-      for (const fp of filesystemProjects) {
-        if (!indexedDBProjects.find(p => p.id === fp.id)) {
-          mergedProjects.push({
-            id: fp.id,
-            name: fp.name,
-            thumbnail: fp.thumbnail || null,
-            createdAt: new Date(fp.createdAt || Date.now()),
-            updatedAt: new Date(fp.updatedAt || Date.now()),
-            scenes: [],
-            currentSceneId: "",
-            backgroundColor: "#000000",
-            backgroundType: "color" as const,
-            blurIntensity: 0,
-            bookmarks: [],
-            fps: 30,
-            canvasSize: { width: 1920, height: 1080 },
-            canvasMode: "preset" as const,
-          });
-        }
-      }
-
-      set({ savedProjects: mergedProjects });
     } catch (error) {
       console.error("Failed to load projects:", error);
+      set({ savedProjects: [] });
     } finally {
       set({ isLoading: false, isInitialized: true });
     }
@@ -485,16 +468,19 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
   deleteProject: async (id: string) => {
     try {
-      await Promise.all([
-        storageService.deleteProjectMedia({ projectId: id }),
-        storageService.deleteProjectTimeline({ projectId: id }),
-        storageService.deleteProject({ id }),
-      ]);
-      await get().loadAllProjects(); // Refresh the list
+      // Check if we're deleting the active project before making the API call
+      const { activeProject } = get();
+      const isDeletingActive = activeProject?.id === id;
+
+      // Delete from filesystem via API
+      await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "deleteProject", data: { projectId: id } })
+      });
 
       // If deleted active project, close it and clear data
-      const { activeProject } = get();
-      if (activeProject?.id === id) {
+      if (isDeletingActive) {
         set({ activeProject: null });
         const mediaStore = useMediaStore.getState();
         const timelineStore = useTimelineStore.getState();
@@ -503,9 +489,20 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         mediaStore.clearAllMedia();
         timelineStore.clearTimeline();
         sceneStore.clearScenes();
+
+        toast.info("项目已删除，正在返回项目列表...");
+
+        // Redirect to projects page (this will be handled by the component that calls deleteProject)
+        // We use a small delay to let the toast appear
+        setTimeout(() => {
+          window.location.href = "/projects";
+        }, 500);
       }
+
+      await get().loadAllProjects(); // Refresh the list
     } catch (error) {
       console.error("Failed to delete project:", error);
+      toast.error("删除项目失败");
     }
   },
 
@@ -522,51 +519,49 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   renameProject: async (id: string, name: string) => {
-    const { savedProjects } = get();
+    const { activeProject } = get();
 
-    // Find the project to rename
-    const projectToRename = savedProjects.find((p) => p.id === id);
-    if (!projectToRename) {
-      toast.error("Project not found", {
-        description: "Please try again",
-      });
+    // Only allow renaming active project for now (to keep it simple)
+    if (!activeProject || activeProject.id !== id) {
+      toast.error("Please open the project first");
       return;
     }
 
     const updatedProject = {
-      ...projectToRename,
+      ...activeProject,
       name,
       updatedAt: new Date(),
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
+      set({ activeProject: updatedProject, hasUnsavedChanges: true });
+      await get().saveCurrentProject();
 
+      // Refresh project list to show new name
       await get().loadAllProjects();
 
-      // Update activeProject if same project
-      const { activeProject } = get();
-      if (activeProject?.id === id) {
-        set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      }
+      toast.success("项目已重命名");
     } catch (error) {
       console.error("Failed to rename project:", error);
-      toast.error("Failed to rename project", {
+      toast.error("重命名失败", {
         description:
-          error instanceof Error ? error.message : "Please try again",
+          error instanceof Error ? error.message : "请重试",
       });
     }
   },
 
   duplicateProject: async (projectId: string) => {
     try {
-      const project = await storageService.loadProject({ id: projectId });
-      if (!project) {
+      // Load project from filesystem API
+      const res = await fetch(`/api/ai-edit?action=getSnapshot&projectId=${projectId}`);
+      const data = await res.json();
+      if (!data.success || !data.snapshot?.project) {
         toast.error("Project not found", {
           description: "Please try again",
         });
         throw new Error("Project not found");
       }
+      const project = data.snapshot.project;
 
       const { savedProjects } = get();
 
@@ -594,8 +589,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         updatedAt: new Date(),
       };
 
-      await storageService.saveProject({ project: newProject });
-      await get().loadAllProjects();
+
       return newProject.id;
     } catch (error) {
       console.error("Failed to duplicate project:", error);
@@ -618,9 +612,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
       set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      await get().loadAllProjects();
+
     } catch (error) {
       console.error("Failed to update project background:", error);
       toast.error("Failed to update background", {
@@ -649,9 +642,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
       set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      await get().loadAllProjects();
+
     } catch (error) {
       console.error("Failed to update background type:", error);
       toast.error("Failed to update background", {
@@ -671,9 +663,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
       set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      await get().loadAllProjects();
+
     } catch (error) {
       console.error("Failed to update project FPS:", error);
       toast.error("Failed to update project FPS", {
@@ -694,9 +685,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
       set({ activeProject: updatedProject, hasUnsavedChanges: true });
-      await get().loadAllProjects();
+
     } catch (error) {
       console.error("Failed to update canvas size:", error);
       toast.error("Failed to update canvas size", {

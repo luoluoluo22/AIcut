@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import type { SoundEffect, SavedSound } from "@/types/sounds";
-import { storageService } from "@/lib/storage/storage-service";
 import { toast } from "sonner";
 import { useMediaStore } from "./media-store";
 import { useTimelineStore } from "./timeline-store";
@@ -31,7 +30,7 @@ interface SoundsStore {
   totalCount: number;
   isLoadingMore: boolean;
 
-  // Saved sounds state
+  // Saved sounds state (now in-memory only)
   savedSounds: SavedSound[];
   isSavedSoundsLoaded: boolean;
   isLoadingSavedSounds: boolean;
@@ -137,40 +136,28 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
       isLoadingMore: false,
     }),
 
-  // Saved sounds actions
+  // Saved sounds actions (now in-memory only, no persistence)
   loadSavedSounds: async () => {
     if (get().isSavedSoundsLoaded) return;
-
-    try {
-      set({ isLoadingSavedSounds: true, savedSoundsError: null });
-      const savedSoundsData = await storageService.loadSavedSounds();
-      set({
-        savedSounds: savedSoundsData.sounds,
-        isSavedSoundsLoaded: true,
-        isLoadingSavedSounds: false,
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to load saved sounds";
-      set({
-        savedSoundsError: errorMessage,
-        isLoadingSavedSounds: false,
-      });
-      console.error("Failed to load saved sounds:", error);
-    }
+    // No persistence - just mark as loaded
+    set({ isSavedSoundsLoaded: true, isLoadingSavedSounds: false });
   },
 
   saveSoundEffect: async (soundEffect: SoundEffect) => {
     try {
-      await storageService.saveSoundEffect({ soundEffect });
-
-      // Refresh saved sounds
-      const savedSoundsData = await storageService.loadSavedSounds();
-      set({ savedSounds: savedSoundsData.sounds });
+      // In-memory only
+      const savedSound: SavedSound = {
+        id: soundEffect.id,
+        name: soundEffect.name,
+        duration: soundEffect.duration,
+        previewUrl: soundEffect.previewUrl,
+        savedAt: new Date().toISOString(),
+      };
+      set((state) => ({
+        savedSounds: [...state.savedSounds, savedSound],
+      }));
+      toast.success("Sound saved");
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to save sound";
-      set({ savedSoundsError: errorMessage });
       toast.error("Failed to save sound");
       console.error("Failed to save sound:", error);
     }
@@ -178,16 +165,10 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 
   removeSavedSound: async (soundId: number) => {
     try {
-      await storageService.removeSavedSound({ soundId });
-
-      // Update local state immediately
       set((state) => ({
         savedSounds: state.savedSounds.filter((sound) => sound.id !== soundId),
       }));
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to remove sound";
-      set({ savedSoundsError: errorMessage });
       toast.error("Failed to remove sound");
       console.error("Failed to remove sound:", error);
     }
@@ -209,19 +190,10 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
   },
 
   clearSavedSounds: async () => {
-    try {
-      await storageService.clearSavedSounds();
-      set({
-        savedSounds: [],
-        savedSoundsError: null,
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to clear saved sounds";
-      set({ savedSoundsError: errorMessage });
-      toast.error("Failed to clear saved sounds");
-      console.error("Failed to clear saved sounds:", error);
-    }
+    set({
+      savedSounds: [],
+      savedSoundsError: null,
+    });
   },
 
   addSoundToTimeline: async (sound) => {

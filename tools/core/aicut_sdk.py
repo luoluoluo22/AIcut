@@ -212,6 +212,14 @@ class AIcutClient:
             payload["projectId"] = project_id
         return self._post("archiveProject", payload)
 
+    def delete_project(self, project_id: str) -> Dict:
+        """删除物理项目文件夹（注意：不可逆）
+        
+        Args:
+            project_id: 要删除的项目 ID
+        """
+        return self._post("deleteProject", {"projectId": project_id})
+
 
 def demo():
     """演示 AIcut SDK 用法"""

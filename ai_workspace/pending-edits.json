@@ -1,0 +1,228 @@
+[
+  {
+    "id": "edit_1768701655783_sus82fasf",
+    "action": "addSubtitle",
+    "data": {
+      "content": "欢迎来到 新项目 (10:00:55)",
+      "startTime": 0,
+      "duration": 3,
+      "x": 960,
+      "y": 900,
+      "fontSize": 64,
+      "fontFamily": "Arial",
+      "color": "#00FF00",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768701655783,
+    "processed": true
+  },
+  {
+    "id": "edit_1768701655792_k7p67kpqk",
+    "action": "addSubtitle",
+    "data": {
+      "content": "这是通过 Python 脚本自动创建并初始化的。",
+      "startTime": 3,
+      "duration": 4,
+      "x": 960,
+      "y": 900,
+      "fontSize": 48,
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768701655792,
+    "processed": true
+  },
+  {
+    "id": "edit_1768701817382_6o9zstxbz",
+    "action": "addSubtitle",
+    "data": {
+      "content": "欢迎来到 新项目 (10:03:37)",
+      "startTime": 0,
+      "duration": 3,
+      "x": 960,
+      "y": 900,
+      "fontSize": 64,
+      "fontFamily": "Arial",
+      "color": "#00FF00",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768701817382,
+    "processed": true
+  },
+  {
+    "id": "edit_1768701817392_fdjb776dn",
+    "action": "addSubtitle",
+    "data": {
+      "content": "这是通过 Python 脚本自动创建并初始化的。",
+      "startTime": 3,
+      "duration": 4,
+      "x": 960,
+      "y": 900,
+      "fontSize": 48,
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768701817392,
+    "processed": true
+  },
+  {
+    "id": "edit_1768701988466_wu8ljv5yt",
+    "action": "addSubtitle",
+    "data": {
+      "content": "欢迎来到 新项目 (10:06:28)",
+      "startTime": 0,
+      "duration": 3,
+      "x": 960,
+      "y": 900,
+      "fontSize": 64,
+      "fontFamily": "Arial",
+      "color": "#00FF00",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768701988466,
+    "processed": true
+  },
+  {
+    "id": "edit_1768701988482_c3o3nshlf",
+    "action": "addSubtitle",
+    "data": {
+      "content": "这是通过 Python 脚本自动创建并初始化的。",
+      "startTime": 3,
+      "duration": 4,
+      "x": 960,
+      "y": 900,
+      "fontSize": 48,
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768701988482,
+    "processed": true
+  },
+  {
+    "id": "edit_1768703459775_gkbws4rsf",
+    "action": "addSubtitle",
+    "data": {
+      "content": "欢迎来到 新项目 (10:30:59)",
+      "startTime": 0,
+      "duration": 3,
+      "x": 960,
+      "y": 900,
+      "fontSize": 64,
+      "fontFamily": "Arial",
+      "color": "#00FF00",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768703459775,
+    "processed": true
+  },
+  {
+    "id": "edit_1768703459791_k963k1pqx",
+    "action": "addSubtitle",
+    "data": {
+      "content": "这是通过 Python 脚本自动创建并初始化的。",
+      "startTime": 3,
+      "duration": 4,
+      "x": 960,
+      "y": 900,
+      "fontSize": 48,
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768703459791,
+    "processed": true
+  },
+  {
+    "id": "edit_1768703500116_olzgk1kq3",
+    "action": "addMultipleSubtitles",
+    "data": {
+      "subtitles": [
+        {
+          "content": "这是测试字幕 1",
+          "startTime": 7,
+          "duration": 3,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FF0000",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "这是测试字幕 2",
+          "startTime": 10,
+          "duration": 3,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#0000FF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        },
+        {
+          "content": "AIcut 正在为您服务",
+          "startTime": 13,
+          "duration": 5,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center"
+        }
+      ]
+    },
+    "timestamp": 1768703500116,
+    "processed": true
+  },
+  {
+    "id": "edit_1768705411938_uwtv2k9z2",
+    "action": "addSubtitle",
+    "data": {
+      "content": "欢迎来到 新项目 (11:03:31)",
+      "startTime": 0,
+      "duration": 3,
+      "x": 960,
+      "y": 900,
+      "fontSize": 64,
+      "fontFamily": "Arial",
+      "color": "#00FF00",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768705411938,
+    "processed": true
+  },
+  {
+    "id": "edit_1768705411957_l75ut1c5z",
+    "action": "addSubtitle",
+    "data": {
+      "content": "这是通过 Python 脚本自动创建并初始化的。",
+      "startTime": 3,
+      "duration": 4,
+      "x": 960,
+      "y": 900,
+      "fontSize": 48,
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "backgroundColor": "rgba(0,0,0,0.7)",
+      "textAlign": "center"
+    },
+    "timestamp": 1768705411957,
+    "processed": true
+  }
+]

@@ -1,0 +1,119 @@
+{
+  "project": {
+    "id": "custom-project-77c7ebe9",
+    "name": "新项目 (10:30:59)",
+    "thumbnail": null,
+    "createdAt": "2026-01-18T02:30:59.000Z",
+    "updatedAt": "2026-01-18T02:30:59.000Z",
+    "scenes": [
+      {
+        "id": "scene1",
+        "name": "Scene 1",
+        "isMain": true,
+        "createdAt": "2026-01-16T10:25:00.000Z",
+        "updatedAt": "2026-01-16T10:25:00.000Z"
+      }
+    ],
+    "currentSceneId": "scene1",
+    "backgroundColor": "#000000",
+    "backgroundType": "color",
+    "blurIntensity": 0,
+    "bookmarks": [],
+    "fps": 30,
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvasMode": "original",
+    "markers": [
+      {
+        "id": "a1c0cb7c-efcc-4fe9-9629-d61d0b72a6e9",
+        "time": 1.8,
+        "label": "Marker",
+        "color": "#3b82f6"
+      }
+    ]
+  },
+  "tracks": [
+    {
+      "id": "86d35c70-2602-40d4-b6ab-d8cfe7da4e60",
+      "name": "AI 字幕",
+      "type": "text",
+      "elements": [
+        {
+          "type": "text",
+          "content": "这是测试字幕 1",
+          "startTime": 0.6666666666666666,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FF0000",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center",
+          "fontWeight": "normal",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1,
+          "id": "ceea9c55-05bb-4b17-a009-5aae883e1d4d"
+        },
+        {
+          "type": "text",
+          "content": "这是测试字幕 2",
+          "startTime": 10,
+          "duration": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#0000FF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center",
+          "fontWeight": "normal",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1,
+          "id": "b9ae677b-d011-419f-afbe-128bd852f85f"
+        },
+        {
+          "type": "text",
+          "content": "AIcut 正在为您服务",
+          "startTime": 13,
+          "duration": 5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "x": 960,
+          "y": 900,
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "backgroundColor": "rgba(0,0,0,0.7)",
+          "textAlign": "center",
+          "fontWeight": "normal",
+          "fontStyle": "normal",
+          "textDecoration": "none",
+          "rotation": 0,
+          "opacity": 1,
+          "id": "ab0656d6-2be4-4b25-84b1-b19c6c05196e"
+        }
+      ],
+      "muted": false
+    },
+    {
+      "id": "7b8f0f48-a137-4355-9acc-4c1a1e2405cb",
+      "name": "Main Track",
+      "type": "media",
+      "elements": [],
+      "muted": false,
+      "isMain": true
+    }
+  ],
+  "assets": []
+}

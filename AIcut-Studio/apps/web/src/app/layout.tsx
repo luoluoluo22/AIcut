@@ -4,8 +4,6 @@ import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "../components/ui/sonner";
 import { TooltipProvider } from "../components/ui/tooltip";
-import { StorageProvider } from "../components/storage-provider";
-import { ScenesMigrator } from "../components/providers/migrators/scenes-migrator";
 import { baseMetaData } from "./metadata";
 import { defaultFont } from "../lib/font-config";
 import { env } from "@/env";
@@ -23,9 +21,7 @@ export default function RootLayout({
         <div suppressHydrationWarning>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange>
             <TooltipProvider>
-              <StorageProvider>
-                <ScenesMigrator>{children}</ScenesMigrator>
-              </StorageProvider>
+              {children}
               <Analytics />
               <Toaster />
               <Script

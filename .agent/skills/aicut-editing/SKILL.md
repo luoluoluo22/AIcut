@@ -1,6 +1,6 @@
 ---
 name: aicut-editing
-description: 指导如何操作 AIcut 时间轴、添加媒体、创建字幕及导出视频。当用户询问关于视频剪辑、时间轴操作、添加素材、生成的视频有问题或媒体管理时使用此技能。
+description: 指导如何进行项目管理（新建、查看、切换、删除）、操作 AIcut 时间轴、添加媒体、创建字幕及导出视频。当用户询问关于项目列表管理、新建/切换/删除项目、视频剪辑、时间轴操作、添加素材、生成的视频有问题或媒体管理时使用此技能。
 ---
 
 # AIcut Video Editing Skill
@@ -11,19 +11,24 @@ This skill helps understand and manipulate the AIcut video editing system.
 
 ### Project Structure
 - **Project Snapshot**: `ai_workspace/project-snapshot.json` - The single source of truth for timeline state.
-- **Assets**: `projects/<project-id>/assets/` - Media files organized by type.
+- **Project Folders**: `projects/<display-name>/` - Readable folder names mapped to internal IDs via `projects/projectIdMap.json`.
+- **Assets**: `projects/<display-name>/assets/` - Media files organized by type.
 - **Exports**: `exports/` - Final rendered videos.
 
 ### Project Management
 
-#### 1. UI Creation
-Users can click the **"New Project"** button in the `/projects` page. The system will auto-generate a UUID and initialize a default timeline.
+#### 1. UI Creation & Management
+- **Create**: Click **"New Project"** in the `/projects` page.
+- **View**: Browse existing projects in the UI list. The UI synchronizes with the filesystem in real-time.
+- **Delete**: Click the **Delete** icon on a project card. This removes the project from the UI and deletes its folder from the `projects/` directory.
 
-#### 2. Programmatic Creation (New Project Logic)
-To create a project via API/Python:
-1.  **Initialize**: Call `switch_project(projectId)` with a new ID. The API will detect the project is missing and create it locally.
-2.  **Archiving**: Use `archive_project()` to persist the current workspace to the specific project folder.
-3.  **Flow**: `Switch (New ID)` -> `Update Snapshot` -> `Archive`.
+#### 2. Programmatic Lifecycle (New/Switch/Delete Project Logic)
+To manage projects via API/Python:
+1.  **Initialize**: Call `switch_project(projectId)`. If the project is loaded for the first time, it creates the folder. If it exists, the UI will automatically jump to that project.
+2.  **Archiving (Readable Folders)**: Use `archive_project()`. The system uses the project's **name** as the folder name.
+3.  **Switching**: Call `switch_project(anotherId)`. The UI will perform a hot-reload and navigate to the new project editor.
+4.  **Mapping**: Folder names are mapped to internal IDs in `projectIdMap.json`.
+5.  **Deletion**: Call `delete_project(projectId)` to permanently remove the project folder and its ID mapping.
 
 ### Element Types
 
@@ -94,17 +99,34 @@ To ensure compatibility between Python and Frontend, use this format:
 
 ## API Integration
 
-The frontend exposes these endpoints:
-- `GET /api/ai-edit?action=getSnapshot` - Get current state
-- `POST /api/ai-edit?action=updateSnapshot` - Push changes
-- `POST /api/ai-edit?action=export` - Trigger video export
+The frontend exposes a state-syncing API at `POST /api/ai-edit`. **Always prefer using the Python SDK (`scripts/aicut_sdk.py`) over raw HTTP requests.**
+
+### Supported Actions (POST)
+
+| Action                 | Description              | Key Data Fields                                      |
+| :--------------------- | :----------------------- | :--------------------------------------------------- |
+| `addSubtitle`          | Add a single subtitle    | `text`, `startTime`, `duration`, `fontSize`, `color` |
+| `addMultipleSubtitles` | Batch add subtitles      | `subtitles` (Array of subtitle objects)              |
+| `clearSubtitles`       | Remove subtitles         | `startTime`, `duration` (Optional range)             |
+| `importMedia`          | Add video/image/audio    | `filePath`, `type` (video/image/audio), `startTime`  |
+| `switchProject`        | Load or create project   | `projectId`                                          |
+| `archiveProject`       | Save workspace to disk   | `projectId` (Optional)                               |
+| `deleteProject`        | Delete project folder    | `projectId`                                          |
+| `updateSnapshot`       | Push full timeline state | `project`, `tracks`, `assets` (Full JSON object)     |
+
+### GET Endpoints
+- `GET /api/ai-edit?action=getSnapshot`: Retrieve current timeline state.
+- `GET /api/ai-edit?action=listProjects`: List all archived projects.
+- `GET /api/ai-edit?action=poll`: Polled by frontend to fetch pending edits.
 
 ## Best Practices
 
-1. **Atomic Updates**: Read the full snapshot, modify your slice, then write the full snapshot back.
-2. **Validation**: Before writing, ensure all numeric fields are `number` type, not strings.
-3. **Paths**: Use relative paths starting with `/materials/` for URLs and project-relative paths for `filePath`.
-4. **Order**: Maintain `tracks` order (Text tracks normally go at index 0 to stay on top).
+1. **Avoid `curl` on Windows**: When sending complex JSON via CLI (PowerShell/CMD), **NEVER** use `curl`. Escaping double quotes is error-prone and often causes silent failures or hung processes. Use a temporary Python script with `requests` or the AIcut SDK.
+2. **Atomic Updates**: Read the full snapshot, modify your slice, then write the full snapshot back.
+3. **Validation**: Before writing, ensure all numeric fields are `number` type, not `string`.
+4. **Paths**: Use relative paths starting with `/materials/` for URLs and project-relative paths (e.g., `projects/demo/assets/...`) for `filePath`.
+5. **Layering**: Text tracks normally go at index 0 (top of the list) to ensure they render above media tracks.
+6. **SDK First**: Always import `AIcutClient` from `scripts/aicut_sdk.py` for programmatic operations to ensure you follow the latest schema.
 
 ## Executable Scripts
 
@@ -113,6 +135,8 @@ The following scripts are available in the `scripts/` directory for automation:
 | Script                       | Purpose                                                | Usage                                       |
 | ---------------------------- | ------------------------------------------------------ | ------------------------------------------- |
 | `create_project.py`          | Create and initialize a new project                    | `python scripts/create_project.py`          |
+| `switch_project.py`          | Switch current editor to another project               | `python scripts/switch_project.py <id>`     |
+| `delete_project.py`          | Delete a project by ID or Folder Name                  | `python scripts/delete_project.py <id>`     |
 | `fix_subtitle_positions.py`  | Automatically align all subtitles to the bottom center | `python scripts/fix_subtitle_positions.py`  |
 | `update_subtitle_content.py` | Batch update subtitle tracking                         | `python scripts/update_subtitle_content.py` |
 

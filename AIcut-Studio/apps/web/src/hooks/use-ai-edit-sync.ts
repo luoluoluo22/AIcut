@@ -605,6 +605,39 @@ export function useAIEditSync(enabled: boolean = true) {
                     }
                 } else if (data.action === "updateElement" && data.elementId) {
                     useTimelineStore.getState().updateElement(data.elementId, data.updates);
+                } else if (data.action === "refreshProjects") {
+                    // Refresh project list
+                    useProjectStore.getState().loadAllProjects();
+
+                    // If focusing a specific project and it's different, switch to it
+                    if (data.projectId) {
+                        const currentActiveId = useProjectStore.getState().activeProject?.id;
+                        if (currentActiveId && currentActiveId !== data.projectId) {
+                            console.log(`[AI Sync] Project switch requested to: ${data.projectId}`);
+                            router.push(`/editor/${data.projectId}`);
+                        }
+                    }
+                } else if (data.action === "projectDeleted") {
+                    // A project was deleted via Python script or API
+                    console.log(`[AI Sync] Project deleted: ${data.deletedProjectId}`);
+
+                    // Check if the deleted project is the currently active one
+                    const currentActiveId = useProjectStore.getState().activeProject?.id;
+                    if (currentActiveId === data.deletedProjectId) {
+                        console.log("[AI Sync] Current project was deleted, redirecting to projects page...");
+
+                        // Clear current project state
+                        useProjectStore.setState({ activeProject: null });
+                        useTimelineStore.getState().clearTimeline();
+
+                        // Redirect to projects page
+                        if (data.redirectTo) {
+                            router.push(data.redirectTo);
+                        }
+                    }
+
+                    // Refresh project list regardless
+                    useProjectStore.getState().loadAllProjects();
                 }
             } catch (e) {
                 console.error("[AI Sync] Update parse error:", e);

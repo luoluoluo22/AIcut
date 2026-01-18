@@ -47,6 +47,7 @@ export default function ProjectsPage() {
     isInitialized,
     deleteProject,
     createNewProject,
+    loadAllProjects, // Added loadAllProjects to destructuring
     getFilteredAndSortedProjects,
   } = useProjectStore();
   const [thumbnailCache, setThumbnailCache] = useState<
@@ -63,6 +64,38 @@ export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("createdAt-desc");
   const router = useRouter();
+
+  // Load projects on mount
+  useEffect(() => {
+    console.log("[Projects] Initial load...");
+    loadAllProjects();
+  }, [loadAllProjects]);
+
+  // SSE listener for real-time project list refresh
+  useEffect(() => {
+    console.log("[Projects] Establishing SSE for list sync...");
+    const eventSource = new EventSource("/api/ai-edit/sync");
+
+    eventSource.addEventListener("update", (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.action === "refreshProjects" || data.action === "projectDeleted") {
+          console.log("[Projects] External project change detected, refreshing list...");
+          loadAllProjects();
+        }
+      } catch (e) {
+        console.error("[Projects] SSE message parse error:", e);
+      }
+    });
+
+    eventSource.onerror = () => {
+      // EventSource handles retries automatically
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [loadAllProjects]);
 
   const getProjectThumbnail = useCallback(
     async (projectId: string): Promise<string | null> => {
@@ -386,6 +419,7 @@ function ProjectCard({
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [dynamicThumbnail, setDynamicThumbnail] = useState<string | null>(null);
   const [isLoadingThumbnail, setIsLoadingThumbnail] = useState(true);
+  const [imageError, setImageError] = useState(false);
   const { deleteProject, renameProject, duplicateProject } = useProjectStore();
 
   useEffect(() => {
@@ -394,6 +428,7 @@ function ProjectCard({
       try {
         const thumbnail = await getProjectThumbnail(project.id);
         setDynamicThumbnail(thumbnail);
+        setImageError(false);
       } finally {
         setIsLoadingThumbnail(false);
       }
@@ -467,12 +502,13 @@ function ProjectCard({
             <div className="w-full h-full bg-muted/50 flex items-center justify-center">
               <Loader2 className="h-12 w-12 text-muted-foreground animate-spin" />
             </div>
-          ) : dynamicThumbnail ? (
+          ) : dynamicThumbnail && !imageError ? (
             <Image
               src={dynamicThumbnail}
               alt="Project thumbnail"
               fill
               className="object-cover"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-full h-full bg-muted/50 flex items-center justify-center">

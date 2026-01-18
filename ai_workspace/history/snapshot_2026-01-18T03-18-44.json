@@ -1,0 +1,39 @@
+{
+  "project": {
+    "id": "84a3f637-0732-431e-bc74-a4956e03c3de",
+    "name": "新建项目",
+    "thumbnail": "",
+    "createdAt": "2026-01-18T03:18:39.620Z",
+    "updatedAt": "2026-01-18T03:18:39.620Z",
+    "scenes": [
+      {
+        "id": "7bee48c5-517d-4693-b5e2-c9f8d45509b3",
+        "name": "Main Scene",
+        "isMain": true,
+        "createdAt": "2026-01-18T03:18:39.620Z",
+        "updatedAt": "2026-01-18T03:18:39.620Z"
+      }
+    ],
+    "currentSceneId": "7bee48c5-517d-4693-b5e2-c9f8d45509b3",
+    "backgroundColor": "#000000",
+    "backgroundType": "color",
+    "blurIntensity": 8,
+    "bookmarks": [],
+    "fps": 30,
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvasMode": "preset",
+    "markers": [
+      {
+        "id": "a1c0cb7c-efcc-4fe9-9629-d61d0b72a6e9",
+        "time": 1.8,
+        "label": "Marker",
+        "color": "#3b82f6"
+      }
+    ]
+  },
+  "tracks": [],
+  "assets": []
+}

@@ -5,7 +5,7 @@ import { ChevronDown, ArrowLeft, SquarePen, Trash } from "lucide-react";
 import { HeaderBase } from "../header-base";
 import { useProjectStore } from "@/stores/project-store";
 import { KeyboardShortcutsHelp } from "../keyboard-shortcuts-help";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,10 +23,38 @@ import { ExportButton } from "./export-button";
 import { ThemeToggle } from "../theme-toggle";
 
 export function EditorHeader() {
-  const { activeProject, renameProject, deleteProject, hasUnsavedChanges, saveCurrentProject } = useProjectStore();
+  const {
+    activeProject,
+    renameProject,
+    deleteProject,
+    hasUnsavedChanges,
+    saveCurrentProject,
+    savedProjects,
+    loadAllProjects,
+    isInitialized
+  } = useProjectStore();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const router = useRouter();
+
+  // Load projects if not initialized to populate the recent list
+  useEffect(() => {
+    if (!isInitialized) {
+      loadAllProjects();
+    }
+  }, [isInitialized, loadAllProjects]);
+
+  // Get 5 most recent projects (excluding the active one)
+  const recentProjects = useMemo(() => {
+    return savedProjects
+      .filter((p) => p.id !== activeProject?.id)
+      .sort((a, b) => {
+        const dateA = a.updatedAt instanceof Date ? a.updatedAt.getTime() : new Date(a.updatedAt).getTime();
+        const dateB = b.updatedAt instanceof Date ? b.updatedAt.getTime() : new Date(b.updatedAt).getTime();
+        return dateB - dateA;
+      })
+      .slice(0, 5);
+  }, [savedProjects, activeProject?.id]);
 
   const handleNameSave = async (newName: string) => {
     console.log("handleNameSave", newName);
@@ -54,44 +82,67 @@ export function EditorHeader() {
         <DropdownMenuTrigger asChild>
           <Button
             variant="secondary"
-            className="h-auto py-1.5 px-2.5 flex items-center justify-center"
+            className="h-auto py-1.5 px-2.5 flex items-center justify-center gap-0.5"
           >
-            <ChevronDown className="text-muted-foreground" />
-            <span className="text-[0.85rem] mr-2">{activeProject?.name}</span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground mr-1" />
+            <span className="text-[0.85rem] font-medium max-w-[120px] truncate">{activeProject?.name}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-40 z-100">
+        <DropdownMenuContent align="start" className="w-56 z-[100] p-1.5">
           <Link href="/projects">
-            <DropdownMenuItem className="flex items-center gap-1.5">
-              <ArrowLeft className="h-4 w-4" />
-              所有项目
+            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer py-2">
+              <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium text-[0.85rem]">所有项目</span>
             </DropdownMenuItem>
           </Link>
+
+          {recentProjects.length > 0 && (
+            <>
+              <DropdownMenuSeparator className="my-1" />
+              <div className="px-2 py-1.5 text-[0.65rem] font-bold text-muted-foreground/70 uppercase tracking-widest">
+                最近编辑
+              </div>
+              {recentProjects.map((project) => (
+                <DropdownMenuItem
+                  key={project.id}
+                  className="flex items-center gap-2 cursor-pointer py-1.5 group"
+                  onClick={() => router.push(`/editor/${project.id}`)}
+                >
+                  <div className="w-2 h-2 rounded-full bg-blue-500/40 group-hover:bg-blue-500 transition-colors" />
+                  <span className="truncate flex-1 text-[0.8rem] text-foreground/90 group-hover:text-foreground">
+                    {project.name}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
+
+          <DropdownMenuSeparator className="my-1" />
           <DropdownMenuItem
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-2 cursor-pointer py-2"
             onClick={() => setIsRenameDialogOpen(true)}
           >
-            <SquarePen className="h-4 w-4" />
-            重命名项目
+            <SquarePen className="h-4 w-4 text-muted-foreground" />
+            <span className="text-[0.85rem]">重命名项目</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-2 cursor-pointer py-2"
             onClick={() => setIsDeleteDialogOpen(true)}
           >
             <Trash className="h-4 w-4" />
-            删除项目
+            <span className="text-[0.85rem]">删除项目</span>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-1" />
           <DropdownMenuItem asChild>
             <Link
               href="https://discord.gg/zmR9N35cjK"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5"
+              className="flex items-center gap-2 cursor-pointer py-2"
             >
-              <FaDiscord className="h-4 w-4" />
-              Discord
+              <FaDiscord className="h-4 w-4 text-muted-foreground" />
+              <span className="text-[0.85rem]">Discord</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -118,8 +169,8 @@ export function EditorHeader() {
         size="sm"
         onClick={() => saveCurrentProject()}
         className={`h-8 px-2 text-xs gap-1.5 ${hasUnsavedChanges
-            ? "text-muted-foreground hover:bg-muted/50"
-            : "text-green-600 hover:text-green-700 hover:bg-green-50/50"
+          ? "text-muted-foreground hover:bg-muted/50"
+          : "text-green-600 hover:text-green-700 hover:bg-green-50/50"
           }`}
         title="点击强制保存"
       >

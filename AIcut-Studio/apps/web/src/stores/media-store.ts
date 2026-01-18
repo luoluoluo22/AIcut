@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { storageService } from "@/lib/storage/storage-service";
 import { useTimelineStore } from "./timeline-store";
 import { generateUUID } from "@/lib/utils";
 import { MediaType, MediaFile } from "@/types/media";
@@ -15,7 +14,7 @@ interface MediaStore {
     file: Omit<MediaFile, "id"> | MediaFile
   ) => Promise<MediaFile>;
   removeMediaFile: (projectId: string, id: string) => Promise<void>;
-  loadProjectMedia: (projectId: string) => Promise<void>;
+  loadProjectMedia: (projectId: string, media: MediaFile[]) => void;
   clearProjectMedia: (projectId: string) => Promise<void>;
   clearAllMedia: () => void;
 }
@@ -139,7 +138,7 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
   mediaFiles: [],
   isLoading: false,
 
-  addMediaFile: async (projectId, file) => {
+  addMediaFile: async (_projectId, file) => {
     const newItem: MediaFile = {
       ...file,
       id: (file as any).id || generateUUID(),
@@ -150,29 +149,10 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
       mediaFiles: [...state.mediaFiles, newItem],
     }));
 
-    // If it's a linked file (e.g. from local filesystem via AI sync), 
-    // OR if we are in local development mode where we want to avoid IndexedDB blobs
-    if ((file as any).isLinked || newItem.filePath || newItem.url?.startsWith("/materials")) {
-      console.log("[Media Store] Asset is local/linked, skipping IndexedDB blobbing:", newItem.name);
-      return newItem;
-    }
-
-    // Save to persistent storage in background
-    try {
-      await storageService.saveMediaFile({ projectId, mediaItem: newItem });
-    } catch (error) {
-      console.error("Failed to save media item:", error);
-      // Remove from local state if save failed
-      set((state) => ({
-        mediaFiles: state.mediaFiles.filter((media) => media.id !== newItem.id),
-      }));
-      throw error;
-    }
-
     return newItem;
   },
 
-  removeMediaFile: async (projectId: string, id: string) => {
+  removeMediaFile: async (_projectId: string, id: string) => {
     const state = get();
     const item = state.mediaFiles.find((media) => media.id === id);
 
@@ -210,55 +190,14 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
       setSelectedElements(elementsToRemove);
       deleteSelected();
     }
-
-    // 3) Remove from persistent storage
-    try {
-      await storageService.deleteMediaFile({ projectId, id });
-    } catch (error) {
-      console.error("Failed to delete media item:", error);
-    }
   },
 
-  loadProjectMedia: async (projectId) => {
-    set({ isLoading: true });
-
-    try {
-      const mediaItems = await storageService.loadAllMediaFiles({ projectId });
-
-      // Regenerate thumbnails for video items
-      const updatedMediaItems = await Promise.all(
-        mediaItems.map(async (item) => {
-          if (item.type === "video" && item.file) {
-            try {
-              const { thumbnailUrl, width, height } =
-                await generateVideoThumbnail(item.file);
-              return {
-                ...item,
-                thumbnailUrl,
-                width: width || item.width,
-                height: height || item.height,
-              };
-            } catch (error) {
-              console.error(
-                `Failed to regenerate thumbnail for video ${item.id}:`,
-                error
-              );
-              return item;
-            }
-          }
-          return item;
-        })
-      );
-
-      set({ mediaFiles: updatedMediaItems });
-    } catch (error) {
-      console.error("Failed to load media items:", error);
-    } finally {
-      set({ isLoading: false });
-    }
+  loadProjectMedia: (_projectId, media: MediaFile[]) => {
+    // Simply set the media from snapshot
+    set({ mediaFiles: media || [], isLoading: false });
   },
 
-  clearProjectMedia: async (projectId) => {
+  clearProjectMedia: async (_projectId) => {
     const state = get();
 
     // Cleanup all object URLs
@@ -273,16 +212,6 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
 
     // Clear local state
     set({ mediaFiles: [] });
-
-    // Clear persistent storage
-    try {
-      const mediaIds = state.mediaFiles.map((item) => item.id);
-      await Promise.all(
-        mediaIds.map((id) => storageService.deleteMediaFile({ projectId, id }))
-      );
-    } catch (error) {
-      console.error("Failed to clear media items from storage:", error);
-    }
   },
 
   clearAllMedia: () => {

@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { Scene } from "@/types/project";
 import { useProjectStore } from "./project-store";
 import { useTimelineStore } from "./timeline-store";
-import { storageService } from "@/lib/storage/storage-service";
 import { generateUUID } from "@/lib/utils";
 
 export function getMainScene({ scenes }: { scenes: Scene[] }): Scene | null {
@@ -94,24 +93,12 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
-      useProjectStore.setState({ activeProject: updatedProject });
+      useProjectStore.setState({ activeProject: updatedProject, hasUnsavedChanges: true });
       set({ scenes: updatedScenes });
 
-      // Archive to project directory immediately
-      try {
-        await fetch("/api/ai-edit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "archiveProject",
-            data: { projectId: activeProject.id }
-          })
-        });
-        console.log("[Scene Store] Scene created and archived");
-      } catch (archiveErr) {
-        console.warn("[Scene Store] Failed to archive after creating scene:", archiveErr);
-      }
+      // Save project via API
+      await useProjectStore.getState().saveCurrentProject();
+      console.log("[Scene Store] Scene created and saved");
 
       return newScene.id;
     } catch (error) {
@@ -155,8 +142,7 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
-      useProjectStore.setState({ activeProject: updatedProject });
+      useProjectStore.setState({ activeProject: updatedProject, hasUnsavedChanges: true });
       set({
         scenes: updatedScenes,
         currentScene: newCurrentScene,
@@ -171,20 +157,9 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
         });
       }
 
-      // Archive to project directory immediately
-      try {
-        await fetch("/api/ai-edit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "archiveProject",
-            data: { projectId: activeProject.id }
-          })
-        });
-        console.log("[Scene Store] Scene deleted and archived");
-      } catch (archiveErr) {
-        console.warn("[Scene Store] Failed to archive after deleting scene:", archiveErr);
-      }
+      // Save project via API
+      await useProjectStore.getState().saveCurrentProject();
+      console.log("[Scene Store] Scene deleted and saved");
     } catch (error) {
       console.error("Failed to delete scene:", error);
       throw error;
@@ -212,8 +187,7 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
     };
 
     try {
-      await storageService.saveProject({ project: updatedProject });
-      useProjectStore.setState({ activeProject: updatedProject });
+      useProjectStore.setState({ activeProject: updatedProject, hasUnsavedChanges: true });
       set({
         scenes: updatedScenes,
         currentScene: updatedScenes.find((s) => s.id === sceneId) || null,
@@ -256,8 +230,7 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
         updatedAt: new Date(),
       };
 
-      await storageService.saveProject({ project: updatedProject });
-      useProjectStore.setState({ activeProject: updatedProject });
+      useProjectStore.setState({ activeProject: updatedProject, hasUnsavedChanges: true });
     }
 
     set({ currentScene: targetScene });
@@ -273,26 +246,8 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
   },
 
   loadProjectScenes: async ({ projectId }: { projectId: string }) => {
-    try {
-      const project = await storageService.loadProject({ id: projectId });
-      if (project?.scenes) {
-        const ensuredScenes = project.scenes.map((scene) => ({
-          ...scene,
-          isMain: scene.isMain || false,
-        }));
-        const currentScene =
-          ensuredScenes.find((s) => s.id === project.currentSceneId) ||
-          ensuredScenes[0];
-
-        set({
-          scenes: ensuredScenes,
-          currentScene,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to load project scenes:", error);
-      set({ scenes: [], currentScene: null });
-    }
+    // Scenes are now loaded via project snapshot sync
+    console.log(`[Scene Store] loadProjectScenes called for ${projectId} - handled by project load`);
   },
 
   initializeScenes: ({
@@ -325,17 +280,7 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
           updatedAt: new Date(),
         };
 
-        storageService
-          .saveProject({ project: updatedProject })
-          .then(() => {
-            useProjectStore.setState({ activeProject: updatedProject });
-          })
-          .catch((error) => {
-            console.error(
-              "Failed to save project with background scene:",
-              error
-            );
-          });
+        useProjectStore.setState({ activeProject: updatedProject, hasUnsavedChanges: true });
       }
     }
   },
