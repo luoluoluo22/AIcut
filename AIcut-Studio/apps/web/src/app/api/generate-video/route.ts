@@ -15,11 +15,34 @@ export async function POST(request: Request) {
         }
 
         // Prepare directories
-        // public/materials/ai-generated -> use base project root or current app public dir
-        const publicDir = path.resolve(process.cwd(), 'public/materials/ai-generated');
+        // Prepare directories
+        // Determine output directory based on current project
+        let outputDir;
+        try {
+            // Attempt to find the project root and read snapshot
+            const workspaceRoot = path.resolve(process.cwd(), '../../../');
+            const snapshotPath = path.join(workspaceRoot, 'ai_workspace', 'project-snapshot.json');
+
+            if (fs.existsSync(snapshotPath)) {
+                const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf-8'));
+                const projectId = snapshot.project?.id;
+
+                if (projectId) {
+                    outputDir = path.join(workspaceRoot, 'projects', projectId, 'assets', 'videos');
+                }
+            }
+        } catch (err) {
+            console.error("[AI Video] Failed to resolve project path:", err);
+        }
+
+        // Fallback
+        if (!outputDir) {
+            outputDir = path.resolve(process.cwd(), 'public/materials/ai-generated');
+        }
+
         const tempDir = path.resolve(process.cwd(), 'temp/uploads');
 
-        if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
+        if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
         if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
         let imagePath = '';
@@ -31,7 +54,7 @@ export async function POST(request: Request) {
 
         const scriptPath = path.resolve(process.cwd(), '../../../tools/grok_adapter.py');
         console.log(`[AI Video] Starting ${mode}-to-video generation...`);
-        console.log(`[AI Video] Saving to: ${publicDir}`);
+        console.log(`[AI Video] Saving to: ${outputDir}`);
 
         // Call Python Adapter
         const resultPath = await new Promise<string>((resolve, reject) => {
@@ -39,7 +62,7 @@ export async function POST(request: Request) {
                 scriptPath,
                 '--mode', mode,
                 '--prompt', prompt,
-                '--output_dir', publicDir // Pass absolute path
+                '--output_dir', outputDir // Pass absolute path
             ];
             if (imagePath) {
                 args.push('--image', imagePath);
@@ -84,7 +107,7 @@ export async function POST(request: Request) {
         }
 
         const filename = path.basename(resultPath);
-        const urlPath = `/materials/ai-generated/${filename}`;
+        const urlPath = `/api/media/serve?path=${encodeURIComponent(resultPath)}`;
 
         return NextResponse.json({
             url: urlPath,
